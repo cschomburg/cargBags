@@ -1,0 +1,26 @@
+## Interface: 30200
+## Title: cargBags
+## Author: Cargor
+## Version: 1.3
+## X-eMail: xconstruct@gmail.com
+## X-Website: http://www.xconstruct.net
+## X-Credits: Trond A Ekseth for his innovative layout-functions
+## Notes: Inventory framework for the people. Does nothing by itself.
+## OptionalDeps: cargoShip
+
+# Needed files:
+core.lua
+
+# Plugins depend on it:
+helpers.lua
+handler.lua
+
+# Optional, only used in layout:
+keys\basic.lua
+keys\tooltip.lua
+
+plugins\bagbar.lua
+plugins\databroker.lua
+plugins\money.lua
+plugins\purchase.lua
+plugins\space.lua
