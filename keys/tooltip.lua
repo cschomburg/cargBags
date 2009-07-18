@@ -25,23 +25,22 @@ Description:
 	This data requires to parse a tooltip to work, so it gets its extra file
 ]]
 
-local tooltip
 local function generateTooltip()
-	tooltip = CreateFrame("GameTooltip", "cargBagsTooltip")
-	tooltip:SetOwner( WorldFrame, "ANCHOR_NONE" ) 
+	local tooltip = CreateFrame("GameTooltip", "cargBagsTooltip")
+	tooltip:SetOwner(WorldFrame, "ANCHOR_NONE") 
 	tooltip:AddFontStrings( 
 		tooltip:CreateFontString("$parentTextLeft1", nil, "GameTooltipText"), 
 		tooltip:CreateFontString("$parentTextRight1", nil, "GameTooltipText")
 	)
-	return tooltip
 end
 
 cargBags.ItemKeys["bindOn"] = function(i)
 	if(not i.link) then return end
-	tooltip = tooltip or generateTooltip()
-	tooltip:SetHyperlink(i.link)
+	if(not cargBagsTooltip) then generateTooltip() end
+	cargBagsTooltip:ClearLines()
+	cargBagsTooltip:SetHyperlink(i.link)
 	local bound = cargBagsTooltipTextLeft2 and cargBagsTooltipTextLeft2:GetText()
-	if(not bound) then return end
+	if(not bound) then if(i.slotID == 16 and i.bagID == 3) then debug("c", cargBagsTooltipTextLeft1:GetText()) end return end
 
 	local bindOn
 	if(bound:match(ITEM_BIND_ON_EQUIP)) then bindOn = "equip"
