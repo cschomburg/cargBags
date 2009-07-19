@@ -3,6 +3,7 @@ cargBags Changelog
 * licensed as GPL 3
 * fixed background texture of empty bag buttons
 * hovering over a bag button can now fade different bag objects
+* fixed tooltip-parsing not working correctly
 * and now the usual developer-stuff:
 
 - BagBar new property: BagBar.BackgroundTexture - texture path if no icon was found
