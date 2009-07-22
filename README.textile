@@ -1,4 +1,5 @@
 h1. cargBags
+
 cargBags is a lightweight and modular bag framework. It is designed that you can completely focus on how your items are displayed and sorted rather than caring about getting item info, updating your bags or handle interaction with items. You can define how many virtual bags you'd like to have and what items should go into it.
 
 The core addon only moves and sorts information between the handler and the layout - it's up to your layout how to present the items to the user!
@@ -6,12 +7,15 @@ The core addon only moves and sorts information between the handler and the layo
 So, to see something going on, you need a layout! See below or on the "Optional Files"-tab for additonal resources.
 
 h2. Filtering
+
 cargBags can react on special rules or filters to check if an item goes into that bag, but it's completely optional. So there's the possibility to make a complete all-in-one bag or separate small bags which hide gray items or show only keys, for example.
 
 h2. Modular
+
 There's the possibility to add/modify parts of cargBags on all sides. You could write a custom layout - or just a small different money display which other layouts can easily spawn in their code. Or just hook into the backend, the item data, and manipulate it, e.g. writing a handler which displays the contents of some sort of database rather than your inventory.
 
 h2. Lightweight
+
 cargBags tries to be efficient in both terms of CPU- and memory usage and there are thoughts on optimization before almost every update.
 
 But aren't item filters in conflict with the term 'lightweight'?
@@ -19,12 +23,14 @@ Well, it depends on which features you'd like to have, but the default configura
 Item buttons which are not used will be recycled for later use, so there are no extra frames generated which are not needed.
 
 h2. Default features
+
 * item filters
 * modular: custom layouts, plugins or handlers
 * lightweight: strip out features you don't need
 * comes with money display, space indicator and bag button bar
 
 Planned features for 2.0
+
 * stack compression
 * include GetItemCount()
 * guild bank support
