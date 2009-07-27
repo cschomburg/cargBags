@@ -40,7 +40,7 @@ cargBags.ItemKeys["bindOn"] = function(i)
 	cargBagsTooltip:ClearLines()
 	cargBagsTooltip:SetHyperlink(i.link)
 	local bound = cargBagsTooltipTextLeft2 and cargBagsTooltipTextLeft2:GetText()
-	if(not bound) then if(i.slotID == 16 and i.bagID == 3) then debug("c", cargBagsTooltipTextLeft1:GetText()) end return end
+	if(not bound) then return end
 
 	local bindOn
 	if(bound:match(ITEM_BIND_ON_EQUIP)) then bindOn = "equip"
