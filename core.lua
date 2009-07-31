@@ -278,6 +278,7 @@ local function createButton(tpl, bagID, slotID)
 		button.Name = name
 		button.template = tpl
 		if(DEBUG) then button.history = { "Created" } button.Recheck = Recheck end
+		fire(cargBags, "PostCreateButton", button)
 	end
 
 	button:SetID(slotID)
