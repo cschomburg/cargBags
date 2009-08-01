@@ -17,20 +17,8 @@
     along with cargBags.  If not, see <http://www.gnu.org/licenses/>.
 ]]
 
---[[doc
-Plugin: Money
-
-Description:
-	Creates a frame which shows the player's money
-
-Spawns with:
-	:SpawnPlugin("Money"): spawn a frame with the player's money
-	:SpawnPlugin("Money", "static"): spawn a frame with a static amount of money
-	:SpawnPlugin("Money, frame): change the frame into a frame of the player's money
-
-Money callbacks functions:
-	:UpdateMoney(cost): To set the amount of money in copper
-doc]]
+-- YOU CAN FIND A DETAILED DOCUMENTATION UNDER:
+-- http://wiki.github.com/xconstruct/cargBags
 
 -- Update the display
 local function updater(self, event)

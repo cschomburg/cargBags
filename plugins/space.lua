@@ -17,23 +17,8 @@
     along with cargBags.  If not, see <http://www.gnu.org/licenses/>.
 ]]
 
---[[doc
-Plugin: Space
-
-Description:
-	a) Creates a fontstring which shows formatted text
-	b) Makes a given frame into a space updater
-
-Spawn with:
-	:SpawnPlugin("Space", text [, bags]): Create a formatted space display (for bags, see cargBags:ParseBags(bags))
-	:SpawnPlugin("Space", frame [, bags]): Make this frame into a space updater (for bags, see cargBags:ParseBags(bags))
-
-Space properties:
-	.Text: Holds the formatted text, with tags [free], [used] and [max] (Default: "[free] / [max]")
-
-Space callback functions:
-	:UpdateText(free, max): overwrite this for custom functions
-doc]]
+-- YOU CAN FIND A DETAILED DOCUMENTATION UNDER:
+-- http://wiki.github.com/xconstruct/cargBags
 
 -- Update the space display
 local function updater(self, event)

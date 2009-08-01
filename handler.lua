@@ -17,33 +17,8 @@
     along with cargBags.  If not, see <http://www.gnu.org/licenses/>.
 ]]
 
---[[doc
-Handler: Standard
-
-Description:
-	Provides item and container information for cargBags
-
-Pipe functions:
-	See Blizz-API for complete syntax, you should provide these as default:
-	GetContainerNumSlots
-	GetContainerNumFreeSlots
-	GetContainerItemInfo
-	GetContainerItemLink
-	GetInventoryItemLink
-	GetInventoryItemTexture
-	GetNumBankSlots
-	GetMoney
-
-Callback functions:
-	:Enabled(): called when this handler was enabled
-	:Disable(): called when this handler was disabled
-	template = :GetButtonTemplate(bagID, slotID): Return the needed template for this button
-	button = :CreateButton(template, name): Return an item button with the passed name and template type
-	:LoadItemInfo(item): Write all available item data into the passed table
-	.BagSlotButton_OnEnter(button): called when a bag slot is entered by the mouse cursor
-	success = .PutItemInBag(bagID, slotID): Puts the item from the cursor in the selected container
-	PickupBagFromSlot(bagID, slotID): called when a bag should be picked from its bag slot
-doc]]
+-- YOU CAN FIND A DETAILED DOCUMENTATION UNDER:
+-- http://wiki.github.com/xconstruct/cargBags
 
 local handler = CreateFrame"Frame"
 handler.GetContainerNumSlots = GetContainerNumSlots

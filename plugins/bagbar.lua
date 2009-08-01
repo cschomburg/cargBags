@@ -17,27 +17,8 @@
     along with cargBags.  If not, see <http://www.gnu.org/licenses/>.
 ]]
 
---[[doc
-Plugin: BagBar
-
-Description:
-	Creates a button bar which hold the player's containers
-
-Spawn with:
-	:SpawnPlugin("BagBar", bags): Create a bag bar (for bags, see cargBags:ParseBags(bags))
-
-BagBar functions:
-	:CreateKeyRingButton(): Create a fake key ring button (please set script "OnClick"!)
-
-BagBar properties:
-	.NoFading: Boolean which disables fading of bags when hovering (Default: nil)
-	.FadeAlpha: Alpha value of faded bags when hovering (Default: 0.3)
-	.BackgroundTexture: Texture path to the background replacement if no icon exists
-
-BagBar callback functions:
-	:PreUpdateBagButton(button): Fired before a button is updated
-	:PostUpdateBagButton(button) Fired after a button was updated
-doc]]
+-- YOU CAN FIND A DETAILED DOCUMENTATION UNDER:
+-- http://wiki.github.com/xconstruct/cargBags
 
 local _G = getfenv(0)
 local FadeContainer

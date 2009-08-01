@@ -17,19 +17,8 @@
     along with cargBags.  If not, see <http://www.gnu.org/licenses/>.
 ]]
 
---[[doc
-Plugin: Purchase
-
-Description:
-	Creates a button for purchasing bank slots
-
-Spawn with:
-	:SpawnPlugin("Purchase"): Create a purchase button
-	:SpawnPlugin("Purchase", frame): Make this frame into a purchase button
-
-Purchase properties:
-	.Cost: Holds the money-plugin which displays the cost (Default: nil)
-doc]]
+-- YOU CAN FIND A DETAILED DOCUMENTATION UNDER:
+-- http://wiki.github.com/xconstruct/cargBags
 
 -- Update the cost
 local updater = function(self, event)

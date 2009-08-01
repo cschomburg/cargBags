@@ -17,16 +17,8 @@
     along with cargBags.  If not, see <http://www.gnu.org/licenses/>.
 ]]
 
---[[doc
-Plugin: DataBroker
-
-Description:
-	Creates a display block for a databroker object
-	cargoShip is required for this addon to work
-
-Spawns with:
-	:SpawnPlugin("DataBroker", name [, options]): spawn a frame with named data object and the additional options
-doc]]
+-- YOU CAN FIND A DETAILED DOCUMENTATION UNDER:
+-- http://wiki.github.com/xconstruct/cargBags
 
 -- Register the plugin
 cargBags:RegisterPlugin("DataBroker", function(self, ...)

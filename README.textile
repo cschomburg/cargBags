@@ -3,8 +3,10 @@ h1. cargBags
 cargBags is a lightweight and modular bag framework. It is designed that you can completely focus on how your items are displayed and sorted rather than caring about getting item info, updating your bags or handle interaction with items. You can define how many virtual bags you'd like to have and what items should go into it.
 
 The core addon only moves and sorts information between the handler and the layout - it's up to your layout how to present the items to the user!
-
 So, to see something going on, you need a layout! See below or on the "Optional Files"-tab for additonal resources.
+
+A detailed overview can be found at:  
+[http://wiki.github.com/xconstruct/cargBags](http://wiki.github.com/xconstruct/cargBags)
 
 h2. Filtering
 

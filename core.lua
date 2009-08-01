@@ -17,61 +17,8 @@
     along with cargBags.  If not, see <http://www.gnu.org/licenses/>.
 ]]
 
---[[doc
-cargBags Core
-
-Description:
-	The main core used for bag organizing and filtering, it is the connection between handler, plugins and layout
-
-Spawn with:
-	cargBags:Spawn(name, parentFrame): Create a new bag object
-
-cargBags functions:
-	:Spawn(name, parentFrame): Create a new bag object
-	:RegisterStyle(name, func): Register a new layout for use
-	:SetActiveLayout(name): Set the active layout
-	:RegisterHandler(name, handler, ...): Register a new handler, additional options are passed to handler:Enable()
-	:SetActiveHandler(name, ...): Set the active handler, additional options are passed to handler:Enable()
-	:GetHandler(): Returns the currently active handler
-	:GetItemInfo(bagID, slotID): Returns a table with all item info of the specified slot
-	:RegisterPlugin(name, func): Registers a new plugin, the function is called when the plugin needs to be created
-	:AddCallback(object, func): Registers a callback for an object to be notified when the bags are updated
-
-cargBags properties:
-	.ItemKeys: table of all custom itemdata-functions
-	.PositionEveryTime: Boolean whether UpdateButtonPositions should be called every time (default = nil)
-	.Version: version number of cargBags
-
-cargBags storage tables: (do not modify them!)
-	.Bags: table of all bags, their slots and used buttons
-	.Handler: table of all handlers
-	.Objects: table of all spawned objects
-	.Plugins: table of all plugins
-	.TempButtons: table of all buttons currently unused
-
-cargBags callback functions:
-	:PreUpdateBags(event, bagID, slotID): fired before the objects are updated (filters added, item buttons updated)
-	:PostUpdateBags(event, bagID, slotID): fired after the objects are updated (filters added, item buttons updated)
-	:PreCheckFilters(item, updateType): fired before the filters of an item are checked
-
-Bag object functions:
-	:SpawnPlugin(name, ...): Spawn a plugin for use in the layout, parameters are plugin-specific
-	:IterateButtons(): Creates an iterator over all item buttons for use within a for-loop [overwritable]
-	:GetItemInfo(bagID, slotID): Returns a table with all item info of the specified slot
-	:GetHandler(): Returns the currently active handler, provided from cargBags for convenience
-	:CheckFilters(item): Returns if the item table fits into this bag object [overwritable]
-	:SetFilter(func, state): Sets the state for the filter function (true: enabled, nil: disabled, -1: inverted; Default: nil)
-	:Fire(callback, ...): Fires the function in the object named callback with the arguments
-
-Bag object callback functions:
-	:PostCreateBag(bag, bagID): fired after a bag was created in  the object
-	:PostAddButton(button): fired after a button was added/moved to the object
-	:PostRemoveButton(button): fired after a button was removed from the object
-	:UpdateButton(button, item, updateType): fired if a button needs to be updated
-	:UpdateButtonLock(button, i, updateType): fired if a button's lock needs to be updated
-	:UpdateButtonCooldown(button, i, updateType): fired if a button's' cooldown needs to be updated
-	:UpdateButtonPositions(): fired if the button positions need to be updated, typically after adding/removing buttons from the object
-doc]]
+-- YOU CAN FIND A DETAILED DOCUMENTATION UNDER:
+-- http://wiki.github.com/xconstruct/cargBags
 
 local DEBUG = nil
 -- if set to true:
