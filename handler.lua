@@ -35,6 +35,8 @@ handler.GetMoney = GetMoney
 
 handler:SetScript("OnEvent", function(self, event, ...) cargBags:UpdateBags(event, ...) end)
 
+local _GF = function(...) return _G[format(...)] end
+
 -- Enable the handler ...
 function handler:Enable()
 	self:RegisterEvent"PLAYER_LOGIN"
@@ -63,6 +65,7 @@ end
 -- Create an item button with the defined template and name
 function handler:CreateButton(template, name)
 	local button = CreateFrame("Button", name, nil, template)
+	name = button:GetName()
 	button.Count = _G[name.."Count"]
 	button.Icon = _G[name.."IconTexture"]
 	button.Cooldown = _G[name.."Cooldown"]

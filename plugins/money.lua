@@ -22,10 +22,8 @@
 
 -- Update the display
 local function updater(self, event)
-	if((not event or event == "PLAYER_MONEY" or event == "PLAYER_LOGIN") and self.UpdateMoney) then
-		local cost = cargBags:GetHandler().GetMoney()
-		self:UpdateMoney(cost)
-	end
+	local cost = cargBags:GetHandler().GetMoney()
+	self:UpdateMoney(cost)
 end
 
 -- Register the plugin
@@ -45,7 +43,9 @@ cargBags:RegisterPlugin("Money", function(self, arg1)
 	frame.Object = self
 
 	if((arg1) ~= "static") then
-		cargBags:AddCallback(frame, updater)
+		frame:RegisterEvent("PLAYER_MONEY")
+		frame:RegisterEvent("PLAYER_LOGIN")
+		frame:SetScript("OnEvent", updater)
 	end
 	return frame
 end)

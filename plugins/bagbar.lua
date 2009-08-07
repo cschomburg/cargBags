@@ -134,7 +134,7 @@ local bagButtonTexture = [[interface\paperdoll\UI-PaperDoll-Slot-Bag]]
 
 -- Updating the icons
 local function updater(self, event)
-	if(event == "ITEM_LOCK_CHANGED" or event == "BAG_UPDATE_COOLDOWN" or event == "PLAYER_MONEY") then return end
+	if(event == "ITEM_LOCK_CHANGED" or event == "BAG_UPDATE_COOLDOWN") then return end
 
 	local handler = cargBags:GetHandler()
 	local object = self.Object

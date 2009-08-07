@@ -22,7 +22,7 @@
 
 -- Update the space display
 local function updater(self, event)
-	if(event == "ITEM_LOCK_CHANGED" or event == "BAG_UPDATE_COOLDOWN"  or event == "PLAYER_MONEY") then return end
+	if(event == "ITEM_LOCK_CHANGED" or event == "BAG_UPDATE_COOLDOWN") then return end
 
 	local max = 0
 	local free = 0

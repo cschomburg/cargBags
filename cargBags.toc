@@ -9,7 +9,9 @@
 ## OptionalDeps: cargoShip
 
 # Needed files:
-core.lua
+core\core.lua
+core\bagobject.lua
+core\events.lua
 
 # Plugins depend on it:
 helpers.lua
