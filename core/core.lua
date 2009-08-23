@@ -36,6 +36,7 @@ local cargBags = CreateFrame("Frame", "cargBags")
 local metatable
 
 local assertf = function(cond, ...) return assert(cond, format(...)) end
+cargBags.assertf = assertf
 
 local styles, style = {}
 local objects = {}

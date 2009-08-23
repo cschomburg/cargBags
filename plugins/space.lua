@@ -53,6 +53,7 @@ end
 -- Register the plugin
 cargBags:RegisterPlugin("Space", function(self, arg1, bagType)
 	local plugin
+	cargBags.assertf(type(bagType) == "string" or type(bagType) == "table", "Bad argument #3 to 'SpawnPlugin(Space)': (string/table expected, got %s", type(bagType))
 	if(type(arg1) == "table") then -- Custom frame
 		plugin = arg1
 	else -- Default frame

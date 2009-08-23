@@ -167,6 +167,7 @@ end
 
 -- Register the plugin
 cargBags:RegisterPlugin("BagBar", function(self, bagType)
+	cargBags.assertf(type(bagType) == "string" or type(bagType) == "table", "Bad argument #2 to 'SpawnPlugin(BagBar)': (string/table expected, got %s", type(bagType))
 	local table = cargBags:ParseBags(bagType)
 	local bar = CreateFrame("Frame",  nil, self)
 	bar.Object = self

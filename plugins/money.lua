@@ -28,7 +28,7 @@ end
 
 -- Register the plugin
 local count = 0
-cargBags:RegisterPlugin("Money", function(self, arg1)
+cargBags:RegisterPlugin("Money", function(self, arg1, arg2)
 	local frame
 	if(type(arg1) ~= "table") then
 		-- Create our own frame
@@ -39,6 +39,7 @@ cargBags:RegisterPlugin("Money", function(self, arg1)
 	else
 		-- Use delivered frame
 		frame = arg1
+		arg1 = arg2
 	end
 	frame.Object = self
 
