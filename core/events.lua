@@ -28,7 +28,7 @@ function events:PLAYERBANKSLOTS_CHANGED(event, bagID, slotID)
 		return true, bagID, slotID
 	end
 
-	timeBag(bagID-NUM_BANKGENERIC_SLOTS)
+	self:TimeBag(bagID-NUM_BANKGENERIC_SLOTS)
 end
 
 function events:PLAYER_LOGIN(event)
