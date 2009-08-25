@@ -31,10 +31,10 @@ local hasOGlow = oGlow and oGlow.RegisterPipe
 local createGlow
 if(hasOGlow) then
 	local function dummy() end
-	oGlow:RegisterPipe('cargBags_Aurora', dummy, nil, dummy, [[The cargBags layout Aurora.]])
-	oGlow:RegisterFilterOnPipe('cargBags_Aurora', 'quality')
-	oGlow:RegisterFilterOnPipe('cargBags_Aurora', 'quest')
-elseif(oGlow) then
+	oGlow:RegisterPipe('cargBags', dummy, nil, dummy, [[cargBags, an inventory framework.]])
+	oGlow:RegisterFilterOnPipe('cargBags', 'quality')
+	oGlow:RegisterFilterOnPipe('cargBags', 'quest')
+else
 	createGlow = function(button)
 		local glow = button:CreateTexture(nil, "OVERLAY")
 		glow:SetTexture"Interface\\Buttons\\UI-ActionButton-Border"
@@ -64,16 +64,16 @@ function BagObject:UpdateButton(button, item)
 	end
 
 	-- Color the button's border based on the item's rarity / quality!
-	if(hasOGlow) then
-		oGlow:CallFilters('cargBags', button, item.link)
-	elseif(oGlow) then
-		oGlow(button, item.link)
-	elseif(not self.NoGlow and item.rarity and item.rarity > 1) then
-		if(not button.Glow) then createGlow(button) end
-		button.Glow:SetVertexColor(GetItemQualityColor(item.rarity))
-		button.Glow:Show()
-	elseif(button.Glow) then
-		button.Glow:Hide()
+	if(not self.NoGlow) then
+		if(hasOGlow) then
+			oGlow:CallFilters('cargBags', button, item.link)
+		elseif(item.rarity and item.rarity > 1) then
+			if(not button.Glow) then createGlow(button) end
+			button.Glow:SetVertexColor(GetItemQualityColor(item.rarity))
+			button.Glow:Show()
+		elseif(button.Glow) then
+			button.Glow:Hide()
+		end
 	end
 end
 
@@ -107,6 +107,6 @@ function BagObject:UpdateButtonPositions()
 		end
 	end
 
-	local height = row + (col>0 and 1 or 0)) * 38 + margin
+	local height = (row + (col>0 and 1 or 0)) * 38 + margin
 	self:Fire("UpdateDimensions", height)
 end

@@ -1,12 +1,12 @@
 ## Interface: 30200
 ## Title: cargBags
 ## Author: Cargor
-## Version: 1.3
+## Version: 1.4
 ## X-eMail: xconstruct@gmail.com
 ## X-Website: http://www.xconstruct.net
 ## X-Credits: Trond A Ekseth for his innovative layout-functions
 ## Notes: Inventory framework for the people. Does nothing by itself.
-## OptionalDeps: cargoShip
+## OptionalDeps: cargoShip, oGlow
 
 # Needed files:
 core\core.lua

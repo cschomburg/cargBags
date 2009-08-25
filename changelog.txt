@@ -1,4 +1,15 @@
 cargBags Changelog
+1.4
+* standard Blizz updating functions are now (again) included in the core
+* item glow is now enabled by default, as well as oGlow-support.
+
+- fixed: timeBag-error when at bank
+- fixed: money-plugin spawn arguments
+- new property: object.NoGlow - true: disable item border glow (default: nil)
+- new callback: object:PreUpdateButton(button, item, updateType) - fired before a button is updated
+- new callback: object:PostCreateButton(button, item, updateType) - fired after a button was created
+- splitted core into three files and improved event handling
+
 1.3
 * licensed as GPL 3
 * fixed background texture of empty bag buttons
