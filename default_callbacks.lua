@@ -55,7 +55,7 @@ function BagObject:UpdateButton(button, item)
 	end
 	if(button.Count) then
 		local count = button.Count
-		if(item.count > 1) then
+		if(item.count and item.count > 1) then
 			count:SetText(item.count and item.count >= 1e3 and "*" or item.count)
 			count:Show()
 		else
@@ -95,8 +95,8 @@ function BagObject:UpdateButtonPositions()
 
 	for _, button in self:IterateButtons() do
 		button:ClearAllPoints()
-		local xPos = col * 38 + 10
-		local yPos = -1 * row * 38 - margin
+		local xPos = col * 38 + (self.xOffset or 0)
+		local yPos = -1 * row * 38 + (self.yOffset or 0)
 
 		button:SetPoint("TOPLEFT", self, "TOPLEFT", xPos, yPos)	 
 		if(col >= self.Columns-1) then	 
@@ -107,6 +107,6 @@ function BagObject:UpdateButtonPositions()
 		end
 	end
 
-	local height = (row + (col>0 and 1 or 0)) * 38 + margin
+	local height = (row + (col>0 and 1 or 0)) * 38
 	self:Fire("UpdateDimensions", height)
 end

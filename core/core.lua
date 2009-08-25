@@ -169,14 +169,13 @@ function cargBags:Spawn(arg1, ...)
 		name = arg1
 		arg1 = nil
 	end
+	if(not name) then name = "cargBagsObject"..(#objects+1) end
 
 	assertf(style, "Unable to create frame [%s]. No styles have been registered.", name)
 	assertf(handler, "Unable to create frame [%s]. No handlers have been registered.", name)
 
-	if(not name) then name = "cargBagsObject"..(#objects+1) end
-
 	local style = styles[style]
-	local object = CreateFrame("Button", name, parent or UIParent)
+	local object = CreateFrame("Button", name, UIParent)
 
 	metatable = metatable or {__index = self.BagObject}
 	setmetatable(object, metatable)
@@ -191,10 +190,15 @@ function cargBags:Spawn(arg1, ...)
 	object.Init = true
 
 	if(arg1) then
-		style(object, name, arg1, ...)
+		style(object, arg1, ...)
 	else
-		style(object, name, ...)
+		style(object, ...)
 	end
+
+	if(not self.NoCloseOnEscape) then
+		tinsert(UISpecialFrames, self:GetName())
+	end
+
 	fire(handler, "Init", object, name, ...)
 
 	objects[#objects+1] = object
