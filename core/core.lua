@@ -363,9 +363,13 @@ local function updateSlot(bagID, slotID, updateType)
 		button = getButton(bagID, slotID, true)
 		object = button.Object
 		if(DEBUG and updateType ~= CD) then tinsert(button.history, "Holding: "..(i.link or "")) end
-		if(not updateType) then fire(object, "UpdateButton", button, i, updateType) end
-		if(updateType ~= CD) then fire(object, "UpdateButtonLock", button, i, updateType) end
-		if(updateType ~= LOCK) then fire(object, "UpdateButtonCooldown", button, i, updateType) end
+		fire(object, "PreUpdateButton", button, i, updateType)
+		if(not updateType) then fire(object, "UpdateButton", button, i, updateType)
+		end
+		if(updateType ~= CD) then fire(object, "UpdateButtonLock", button, i, updateType)
+		end
+		if(updateType ~= LOCK) then fire(object, "UpdateButtonCooldown", button, i, updateType)
+		end
 		fire(object, "PostUpdateButton", button, i, updateType)
 	elseif(button) then
 		move(button, nil)
@@ -441,7 +445,10 @@ function cargBags:UpdateBags(event, ...)
 
 	-- Lots of PostUpdate-callbacks
 	for _, object in ipairs(objects) do
-		if(object.updateNeeded or object.PositionEveryTime) then fire(object, "UpdateButtonPositions", event, bagID, slotID) object.updateNeeded = nil end
+		if(object.updateNeeded or object.PositionEveryTime) then
+			fire(object, "UpdateButtonPositions", event, bagID, slotID)
+			object.updateNeeded = nil
+		end
 		fire(object, "PostUpdateBags", event, bagID, slotID)
 		if(object.Init) then object.Init = nil end
 	end
