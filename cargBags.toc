@@ -21,6 +21,8 @@ handler.lua
 keys\basic.lua
 keys\tooltip.lua
 
+default_callbacks.lua
+
 plugins\bagbar.lua
 plugins\databroker.lua
 plugins\money.lua
