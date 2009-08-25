@@ -86,7 +86,7 @@ end
 -- Register a style
 function cargBags:RegisterStyle(name, func)
 	assertf(type(name) == "string", "Bad argument #1 to 'RegisterStyle' (string expected, got %s)", type(name))
-	assertf(type(func) == "table" and type(getmetatable(func).__call) == "function", "Bad argument #2 to 'RegisterStyle' (table expected, got %s)", type(func))
+	assertf(type(func) == "function" or (type(func) == "table" and type(getmetatable(func).__call)) == "function", "Bad argument #2 to 'RegisterStyle' (function or table expected, got %s)", type(func))
 	assertf(not styles[name], "Style [%s] already registered.", name)
 
 	if(not style) then style = name end
