@@ -364,12 +364,9 @@ local function updateSlot(bagID, slotID, updateType)
 		object = button.Object
 		if(DEBUG and updateType ~= CD) then tinsert(button.history, "Holding: "..(i.link or "")) end
 		fire(object, "PreUpdateButton", button, i, updateType)
-		if(not updateType) then fire(object, "UpdateButton", button, i, updateType)
-		end
-		if(updateType ~= CD) then fire(object, "UpdateButtonLock", button, i, updateType)
-		end
-		if(updateType ~= LOCK) then fire(object, "UpdateButtonCooldown", button, i, updateType)
-		end
+		if(not updateType) then fire(object, "UpdateButton", button, i, updateType) end
+		if(updateType ~= CD) then fire(object, "UpdateButtonLock", button, i, updateType) end
+		if(updateType ~= LOCK) then fire(object, "UpdateButtonCooldown", button, i, updateType) end
 		fire(object, "PostUpdateButton", button, i, updateType)
 	elseif(button) then
 		move(button, nil)
