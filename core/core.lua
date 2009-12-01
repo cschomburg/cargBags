@@ -33,7 +33,6 @@ local type = type
 
 -- add-on object
 local cargBags = CreateFrame("Frame", "cargBags")
-local metatable
 
 local assertf = function(cond, ...) return assert(cond, format(...)) end
 cargBags.assertf = assertf
@@ -47,8 +46,6 @@ local callbacks = {}
 local plugins = {}
 local events = {}
 local init = true
-
-
 
 --[[##############################
 	Callback functions
@@ -176,8 +173,6 @@ function cargBags:Spawn(arg1, ...)
 
 	local style = styles[style]
 	local object = CreateFrame("Button", name, UIParent)
-
-	metatable = metatable or {__index = self.BagObject}
 	setmetatable(object, metatable)
 
 	object.Name = name

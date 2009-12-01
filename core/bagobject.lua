@@ -29,6 +29,7 @@ local cargBags = cargBags
 
 local BagObject = CreateFrame"Button"
 cargBags.BagObject = BagObject
+BagObject.__index = BagObject
 
 -- Check if the passed item data can go into this object
 function BagObject:CheckFilters(item)
@@ -46,6 +47,11 @@ function BagObject:SetFilter(filter, enabled, noUpdate)
 	if(not self.Init and not noUpdate) then cargBags:UpdateBags() end
 end
 
+function BagObject:SetFilters(enabled, ...)
+	for _, filter in pairs(arg) do
+		self:SetFilter(filter, enabled)
+	end
+end
 
 -- The function for iterating the bags
 -- it ensures that the buttons are placed in the right order

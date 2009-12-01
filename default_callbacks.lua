@@ -99,7 +99,7 @@ function BagObject:UpdateButtonPositions()
 		local yPos = -1 * row * 38 + (self.yOffset or 0)
 
 		button:SetPoint("TOPLEFT", self, "TOPLEFT", xPos, yPos)	 
-		if(col >= self.Columns-1) then	 
+		if(col >= self.Columns-1) then
 			col = 0	 
 			row = row + 1	 
 		else	 
