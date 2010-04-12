@@ -20,13 +20,6 @@
 -- YOU CAN FIND A DETAILED DOCUMENTATION UNDER:
 -- http://wiki.github.com/xconstruct/cargBags
 
-local DEBUG = nil
--- if set to true:
--- button-history in .History
--- saved item data in button.i,
--- button:Recheck() for re-checking the filters
--- output update time in chat
-
 local _G = getfenv(0)
 local select = select
 local type = type
@@ -201,13 +194,6 @@ function cargBags:Spawn(arg1, ...)
 	return object
 end
 
-local Recheck
-if(DEBUG) then
-	Recheck = function(button)
-		if(self.Object) then return self.Object:CheckFilters(self.i) end
-	end
-end
-
 --[[##############################
 	Button-recycling functions
 		where the buttons are created, moved and deleted
@@ -215,7 +201,6 @@ end
 
 -- Remove a button and insert it in the temporary storage
 local function recycleButton(button)
-	if(DEBUG) then tinsert(button.history, "Recycled") end
 	local tpl, bagID, slotID = button.template, button.bagID, button.slotID
 	if(not bags[bagID]) then bags[bagID] = {} end
 	bags[bagID][slotID] = nil
@@ -237,7 +222,6 @@ local function createButton(tpl, bagID, slotID)
 		button = handler:CreateButton(tpl, name)
 		button.Name = name
 		button.template = tpl
-		if(DEBUG) then button.history = { "Created" } button.Recheck = Recheck end
 		fire(cargBags, "PostCreateButton", button)
 	end
 
@@ -267,7 +251,6 @@ local function move(button, object)
 	local bagID, slotID = button.bagID, button.slotID
 	local oldObject = button.Object
 	if(object == oldObject and object ~= nil) then return true end
-	if(DEBUG) then tinsert(button.history, "Moved from "..(oldObject and oldObject.Name or "").." to "..(object and object.Name or "")) end
 
 	if(oldObject) then
 		if(oldObject == object) then return true end
@@ -318,15 +301,7 @@ local function checkButtonObject(i)
 	local bagID = i.bagID
 	for _, object in ipairs(objects) do
 		if(not (object.Bags[bagID] and object.Bags[bagID].Hidden) and object:CheckFilters(i)) then
-			local button = getButton(bagID, i.slotID)
-			if(DEBUG) then
-				local x = {}
-				for k,v in pairs(i) do x[k] = v end
-				button.i = x
-				x.object = object
-				tinsert(button.history, "Passed filters: "..object.Name)
-			end
-			return move(button, object)
+			return move(getButton(bagID, i.slotID), object)
 		end
 	end
 	return nil
@@ -361,7 +336,6 @@ local function updateSlot(bagID, slotID, updateType)
 	if((updateType and object) or (not updateType and checkButtonObject(i))) then
 		button = getButton(bagID, slotID, true)
 		object = button.Object
-		if(DEBUG and updateType ~= CD) then tinsert(button.history, "Holding: "..(i.link or "")) end
 		fire(object, "PreUpdateButton", button, i, updateType)
 		if(not updateType) then fire(object, "UpdateButton", button, i, updateType) end
 		if(updateType ~= CD) then fire(object, "UpdateButtonLock", button, i, updateType) end
