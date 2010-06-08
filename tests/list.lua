@@ -93,11 +93,11 @@ function ScrollContainer:OnCreate(name, settings)
 	infoFrame:SetPoint("TOPRIGHT", -10, -3)
 	infoFrame:SetHeight(32)
 
-	local space = self:SpawnPlugin("SpaceText", "[free]/[max]", settings.Bags, infoFrame)
-	space:SetFont("Interface\\AddOns\\cargBags_Simplicity\\media\\cambriai.ttf", 16)
-	space:SetPoint("LEFT", infoFrame, "LEFT")
+	local space = self:SpawnPlugin("TagDisplay", "[space:free/max]", infoFrame)
+	space.bags = cargBags:ParseBags(settings.Bags)
+	space:SetPoint("LEFT")
 
-	self:SpawnPlugin("Money", infoFrame):SetPoint("RIGHT")
+	self:SpawnPlugin("TagDisplay", "[money]", infoFrame):SetPoint("RIGHT", -10, 0)
 
 	local search = self:SpawnPlugin("SearchBar", infoFrame)
 	search:SetParent(mainFrame)

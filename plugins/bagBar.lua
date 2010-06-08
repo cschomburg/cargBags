@@ -172,19 +172,20 @@ cargBags:RegisterPlugin("BagBar", function(self, bags)
 		bags = cargBags:ParseBags(bags)
 	end
 
-	local bar = CreateFrame("Frame",  nil, parent or self)
+	local bar = CreateFrame("Frame",  nil, self)
 	bar.container = self
 
 	bar.layouts = cargBags.classes.Container.layouts
 	bar.LayoutButtons = cargBags.classes.Container.LayoutButtons
 
-	local protoButton = self.implementation:GetClass("BagButton", true, "BagButton")
+	local buttonClass = self.implementation:GetClass("BagButton", true, "BagButton")
 	bar.buttons = {}
 	for i=1, #bags do
 		if(not disabled[bags[i]]) then -- Temporary until I include fake buttons for backpack, bankframe and keyring
-			bar.buttons[i] = protoButton:Create(bags[i])
-			bar.buttons[i]:SetParent(bar)
-			bar.buttons[i].bar = bar
+			local button = buttonClass:Create(bags[i])
+			button:SetParent(bar)
+			button.bar = bar
+			table.insert(bar.buttons, button)
 		end
 	end
 
