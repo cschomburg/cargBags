@@ -167,7 +167,7 @@ local disabled = {
 }
 
 -- Register the plugin
-cargBags:RegisterPlugin("BagBar", function(self, bags, parent)
+cargBags:RegisterPlugin("BagBar", function(self, bags)
 	if(cargBags.ParseBags) then
 		bags = cargBags:ParseBags(bags)
 	end

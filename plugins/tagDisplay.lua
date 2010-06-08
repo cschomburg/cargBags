@@ -60,13 +60,11 @@ local function setTagString(self, tagString)
 	end
 end
 
-cargBags:RegisterPlugin("TagDisplay", function(self, tagString, parent, layer, font)
+cargBags:RegisterPlugin("TagDisplay", function(self, tagString, parent)
 	parent = parent or self
-	layer = layer or "OVERLAY"
-	font = font or "GameFontHighlight"
 	tagString = tagString or ""
 
-	local plugin = parent:CreateFontString(nil, layer, font)
+	local plugin = parent:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
 	plugin.implementation = self.implementation
 	plugin.SetTagString = setTagString
 	plugin.tags = tagPool
