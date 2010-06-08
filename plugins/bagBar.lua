@@ -160,6 +160,12 @@ local function onLock(self, event, bagID, slotID)
 	end
 end
 
+local disabled = {
+	[-2] = true,
+	[-1] = true,
+	[0] = true,
+}
+
 -- Register the plugin
 cargBags:RegisterPlugin("BagBar", function(self, bags, parent)
 	if(cargBags.ParseBags) then
@@ -175,9 +181,11 @@ cargBags:RegisterPlugin("BagBar", function(self, bags, parent)
 	local protoButton = self.implementation:GetClass("BagButton", true, "BagButton")
 	bar.buttons = {}
 	for i=1, #bags do
-		bar.buttons[i] = protoButton:Create(bags[i])
-		bar.buttons[i]:SetParent(bar)
-		bar.buttons[i].bar = bar
+		if(not disabled[bags[i]]) then -- Temporary until I include fake buttons for backpack, bankframe and keyring
+			bar.buttons[i] = protoButton:Create(bags[i])
+			bar.buttons[i]:SetParent(bar)
+			bar.buttons[i].bar = bar
+		end
 	end
 
 	self.implementation:RegisterCallback("BAG_UPDATE", bar, updater)

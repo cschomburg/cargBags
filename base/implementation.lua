@@ -155,7 +155,7 @@ end
 	@param name <string> The relative itembutton class name
 	@return class <table> The class prototype
 ]]
-function Implementation:GetButtonClass(name)
+function Implementation:GetItemButtonClass(name)
 	return self:GetClass((name or "").."ItemButton", true, "ItemButton")
 end
 
