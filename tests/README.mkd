@@ -1,5 +1,4 @@
-Implementation Examples
-#######################
+# Implementation Examples #
 
 This folder holds all example implementations which were used in the development of cargBags. Their purpose was to explore and extend the possibilities of the framework and are provided here in case someone finds them useful.
 There is no guaranteed chance that these will work without modifications and won't be up-to-date. Nevertheless, the basic functionality should still be working.

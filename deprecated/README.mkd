@@ -1,0 +1,5 @@
+# Deprecated Plugins #
+
+This folder holds all older plugins which became obsolete through other ones. They are provided here for reference or until people want to have them re-included.
+
+You can use them freely in your implementation, just copy them out of here. But I won't provide support for them.
