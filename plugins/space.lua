@@ -1,74 +1,76 @@
 --[[
-    Copyright (C) 2009  Constantin Schomburg
+LICENSE
+	cargBags: An inventory framework addon for World of Warcraft
 
-    This file is part of cargBags.
+	Copyright (C) 2010  Constantin "Cargor" Schomburg <xconstruct@gmail.com>
 
-    cargBags is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+	cargBags is free software; you can redistribute it and/or
+	modify it under the terms of the GNU General Public License
+	as published by the Free Software Foundation; either version 2
+	of the License, or (at your option) any later version.
 
-    cargBags is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+	cargBags is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with cargBags.  If not, see <http://www.gnu.org/licenses/>.
+	You should have received a copy of the GNU General Public License
+	along with cargBags; if not, write to the Free Software
+	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+
+DESCRIPTION
+	Two simple space-displays for your bags.
+
+	"Space" transforms a frame/table into a space-updater, provide frame:UpdateSpace(free, max) - e.g. :SpawnPlugin("Space", myFrame, "backpack+bags"
+	"SpaceText" creates a tagged space-fontstring, e.g. :SpawnPlugin("SpaceText", "[used]/[max] used", "bankframe+bank") 
+	
+	Following tags are supported for tagString: [free], [used], [max]
+	bags can either be a table of bagIDs or an argument for ParseBags, e.g. a bagString like "backpack"
+DEPENDENCIES
+	mixins/plugins
+	mixins/parseBags (optional)
+CALLBACKS
+	:UpdateSpace(free, max) - only for default fontstring
 ]]
 
--- YOU CAN FIND A DETAILED DOCUMENTATION UNDER:
--- http://wiki.github.com/xconstruct/cargBags
 
 -- Update the space display
 local function updater(self, event)
-	if(event == "ITEM_LOCK_CHANGED" or event == "BAG_UPDATE_COOLDOWN") then return end
-
-	local max = 0
-	local free = 0
-	local handler = cargBags:GetHandler()
-	if(self.Bags) then
-		for _, id in pairs(self.Bags) do
-			free = free + handler.GetContainerNumFreeSlots(id)
-			max = max + handler.GetContainerNumSlots(id)
-		end
-	elseif(self.Object.Bags) then
-		for id, _ in pairs(self.Object.Bags) do
-			if(tonumber(id)) then
-				free = free + handler.GetContainerNumFreeSlots(id)
-				max = max + handler.GetContainerNumSlots(id)
-			end
+	local max, free = 0, 0
+	if(self.bags) then
+		for _, id in pairs(self.bags) do
+			free = free + GetContainerNumFreeSlots(id)
+			max = max + GetContainerNumSlots(id)
 		end
 	end
 
-	if(self.UpdateText) then return self:UpdateText(free, max) end
-	if(not self.Text) then return end
-
-	local text = self.Text:gsub("%[free%]", free)
-	text = text:gsub("%[used%]", max-free)
-	text = text:gsub("%[max%]", max)
-	self:SetText(text)
+	if(self.UpdateSpace) then return self:UpdateSpace(free, max) end
 end
 
 -- Register the plugin
-cargBags:RegisterPlugin("Space", function(self, arg1, bagType)
-	local plugin
-	cargBags.assertf(type(bagType) == "string" or type(bagType) == "table", "Bad argument #3 to 'SpawnPlugin(Space)': (string/table expected, got %s", type(bagType))
-	if(type(arg1) == "table") then -- Custom frame
-		plugin = arg1
-	else -- Default frame
-		plugin = self:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
-		plugin.Text = arg1 or "[free] / [max]"
-	end
-	plugin.Object = self
+cargBags:RegisterPlugin("Space", function(self, frame, bags)
+	frame.bags = type(bags) == "table" and bags or cargBags:ParseBags(bags)
+	self.implementation:RegisterCallback("BAG_UPDATE", frame, updater)
+	return frame
+end)
 
-	local table = cargBags:ParseBags(bagType)
-	local bags = {}
-	plugin.Bags = bags
-	for k, v in pairs(table) do
-		bags[k] = v
-	end
+local function updateSpaceText(self, free, max)
+	local text = self.tagString or ""
 
-	cargBags:AddCallback(plugin, updater)
-	return plugin
+	local text = text:gsub("%[free%]", free)
+	text = text:gsub("%[used%]", max-free)
+	text = text:gsub("%[max%]", max)
+	self:SetText(text)
+
+	if(self.OnUpdateSpace) then self:OnUpdateSpace(free, max) end
+end
+
+cargBags:RegisterPlugin("SpaceText", function(self, tagString, bags, parent)
+	parent = parent or self
+	local plugin = parent:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+
+	plugin.tagString = tagString or "[free] / [max]"
+	plugin.UpdateSpace = updateSpaceText
+
+	return self:SpawnPlugin("Space", plugin, bags)
 end)

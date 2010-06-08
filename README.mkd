@@ -1,0 +1,44 @@
+# cargBags 2.0 #
+
+cargBags is an inventory framework for the popular MMORPG 'World of Warcraft'. It aims to include most of the core logic for creating a bag addon, so that you can start right-away with your layout. You don't have to care anymore about item data fetching, updating on the right time or creating a sophisticated filtering system.
+
+Just start with the commented default layout xconstruct/cargBags_Simplicity, build upon it and implement your own features. cargBags encourages you to overwrite core functions to your liking, it just wants to define a simple set of specifications, so you can hopefully share code-snippets and ideas between implementations/layouts.
+
+## Default features ##
+
+*	object-oriented approach
+*	modular: remove features you don't need
+*	simple, fully extensible filtering-system (optional)
+*	extend core functions through callbacks or overwrite them as you like
+*	plugin-system for often-used snippets like a space- or money-display (optional)
+
+
+
+# Changes from 1.x #
+
+This file should provide a basic overview about the design direction of cargBags 2.0 and the planned features.
+
+## Focus shifts from Memory to CPU ##
+
+*	Let's face the truth: Lightweightness is most of the time attributed to low memory-usage and cargBags 1.x followed the trend happily by staying under 100kb.
+*	Version 2.0 won't remove features just to stay at low memory - the increased modularity should help die-hard low-mem-enthusiasts to remove most of the features anyway.
+*	Most of the initialization is moved to the first opening of the bags to speed up the loading screen.
+
+## Modularity ##
+
+*	The new class-based system makes implementation of new functions a lot easier, so previous core features of 1.x can be made fully optional
+
+## Object-oriented Approach ##
+
+*	object-oriented approach: most frames are instances of classes, which inherit functions from the core
+*	new callback system: Rather than using lots of Post- and Pre-functions in the layout, you can overwrite the specific function directly or (in most cases) hook it by prefixing 'On'.
+	The functions are relative to the specific subclass: (old) layout:PostUpdateButton() -> (new) button:OnUpdate()
+*	Attributes/properties are also subclass-specific: button.glowTex instead of layout.buttonGlowTex
+
+## To Do ##
+
+*	Incorporate the old Handler-system for different data sources
+*	global BagBar
+*	Guild bank support
+*	Try optional stack compression and item-databases
+*	optional filter-configuration GUI

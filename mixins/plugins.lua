@@ -18,25 +18,28 @@ LICENSE
 	along with cargBags; if not, write to the Free Software
 	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-DESCRIPTION:
-	Spawns a Blizzard Money-Frame
-
-	Currently very small and unnecessary as a plugin, until I figure out
-	how to implement the Handler-API in the new system.
-	Then we can expect events here.
-	
-	attributes:
-		.CopperText - Copper fontstring
-		.SilverText - Silver fontstring
-		.GoldText - Gold fontstring
+DESCRIPTION
+	Base functions for the plugin-system
 ]]
 
-cargBags:RegisterPlugin("Money", function(self, parent)
-	local money = CreateFrame("Frame", self:GetName().."Money", parent or self, "SmallMoneyFrameTemplate")
-	
-	money.CopperText = _G[money:GetName() .. "CopperButtonText"]
-	money.SilverText = _G[money:GetName() .. "SilverButtonText"]
-	money.GoldText = _G[money:GetName() .. "GoldButtonText"]
-	
-	return money
-end)
+local cargBags = cargBags
+local Implementation = cargBags.classes.Implementation
+local Container = cargBags.classes.Container
+
+local plugins = {}
+
+function Implementation:SpawnPlugin(name, ...)
+	if(plugins[name]) then
+		local plugin = plugins[name](self, ...)
+		if(plugin) then
+			self[name] = plugin
+			plugin.parent = self
+		end
+		return plugin
+	end
+end
+Container.SpawnPlugin = Implementation.SpawnPlugin
+
+function cargBags:RegisterPlugin(name, func)
+	plugins[name] = func
+end

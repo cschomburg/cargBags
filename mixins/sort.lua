@@ -19,24 +19,22 @@ LICENSE
 	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 DESCRIPTION:
-	Spawns a Blizzard Money-Frame
-
-	Currently very small and unnecessary as a plugin, until I figure out
-	how to implement the Handler-API in the new system.
-	Then we can expect events here.
-	
-	attributes:
-		.CopperText - Copper fontstring
-		.SilverText - Silver fontstring
-		.GoldText - Gold fontstring
+	This file provides default sort-functions for your Containers.
 ]]
 
-cargBags:RegisterPlugin("Money", function(self, parent)
-	local money = CreateFrame("Frame", self:GetName().."Money", parent or self, "SmallMoneyFrameTemplate")
-	
-	money.CopperText = _G[money:GetName() .. "CopperButtonText"]
-	money.SilverText = _G[money:GetName() .. "SilverButtonText"]
-	money.GoldText = _G[money:GetName() .. "GoldButtonText"]
-	
-	return money
-end)
+local Container = cargBags.classes.Container
+Container.sort = {}
+local sort = Container.sort
+
+function Container:SortButtons(arg1)
+	table.sort(self.buttons, self.sort[arg1] or arg1)
+end
+
+
+function sort.bagSlot(a, b)
+	if(a.bagID == b.bagID) then
+		return a.slotID < b.slotID
+	else
+		return a.bagID < b.bagID
+	end
+end
