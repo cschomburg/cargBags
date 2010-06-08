@@ -145,7 +145,7 @@ end
 	@param name <string> The relative container class name
 	@return class <table> The class prototype
 ]]
-function Implementation:GetContainerPrototype(name)
+function Implementation:GetContainerClass(name)
 	return self:GetClass((name or "").."Container", true, "Container")
 end
 
@@ -155,8 +155,8 @@ end
 	@param name <string> The relative itembutton class name
 	@return class <table> The class prototype
 ]]
-function Implementation:GetButtonPrototype(name)
-	return self:GetClass((name or "").."Button", true, "ItemButton")
+function Implementation:GetButtonClass(name)
+	return self:GetClass((name or "").."ItemButton", true, "ItemButton")
 end
 
 --[[!
@@ -164,9 +164,9 @@ end
 	@param name <string> The relative itembutton class name
 	@return class <table> The newly set class
 ]]
-function Implementation:SetDefaultButtonPrototype(name)
-	self.protoButton = self:GetButtonPrototype(name)
-	return self.protoButton
+function Implementation:SetDefaultItemButtonClass(name)
+	self.buttonClass = self:GetItemButtonClass(name)
+	return self.buttonClass
 end
 
 --[[!
@@ -229,8 +229,8 @@ function Implementation:Init()
 
 	if(self.OnInit) then self:OnInit() end
 
-	if(not self.protoButton) then
-		self:SetDefaultButtonPrototype()
+	if(not self.buttonClass) then
+		self:SetDefaultItemButtonClass()
 	end
 
 	self:RegisterEvent("BAG_UPDATE")
@@ -313,7 +313,7 @@ function Implementation:UpdateSlot(bagID, slotID)
 				container:AddButton(button)
 			end
 		else
-			button = self.protoButton:New(bagID, slotID)
+			button = self.buttonClass:New(bagID, slotID)
 			self:SetButton(bagID, slotID, button)
 			container:AddButton(button)
 		end

@@ -3,7 +3,7 @@
 -- It's not a pretty layout (just a bunch of items!), but should nevertheless be fully functional
 
 local Implementation = cargBags:NewImplementation("Basic")
-local Container = Implementation:GetContainerPrototype()
+local Container = Implementation:GetContainerClass()
 Implementation:RegisterBlizzard()
 
 function Implementation:OnInit()

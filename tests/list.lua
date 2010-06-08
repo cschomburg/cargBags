@@ -3,8 +3,8 @@
 -- Think of a very simple Baud Manifest
 
 local ListExample = cargBags:NewImplementation("ListExample")
-local ScrollContainer = ListExample:GetContainerPrototype()
-local ListButton = ListExample:GetButtonPrototype()
+local ScrollContainer = ListExample:GetContainerClass()
+local ListButton = ListExample:GetItemButtonClass()
 
 ListExample:RegisterBlizzard()
 
