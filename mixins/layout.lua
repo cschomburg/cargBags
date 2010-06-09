@@ -55,7 +55,7 @@ function layouts:grid(columns, spacing, xOffset, yOffset)
 		button:SetPoint("TOPLEFT", self, "TOPLEFT", xPos+xOffset, yPos+yOffset)
 	end
 
-	return columns * (37+spacing)-spacing, row * (37+spacing)-spacing
+	return columns * (width+spacing)-spacing, row * (height+spacing)-spacing
 end
 
 function layouts:circle(radius, xOffset, yOffset)
