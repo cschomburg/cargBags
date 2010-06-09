@@ -6,36 +6,7 @@
 ## X-Website: http://www.xconstruct.net
 ## Notes: Inventory framework
 
-## Base framework
-## Can't live without it!
-
-base\core.lua
-base\implementation.lua
-base\container.lua
-base\itembutton.lua
-
-## Mixins currently just for development
-## They will likely be merged later
-## All optional, however
-
-mixins\filters.lua
-mixins\layout.lua
-mixins\plugins.lua
-mixins\parseBags.lua
-mixins\sort.lua
-mixins\textFilter.lua
-
-## Item keys, providing additional item data
-keys\basic.lua
-keys\tooltip.lua
-
-## Plugins for your containers
-## Optional as usual
-plugins\bagBar.lua
-plugins\money.lua
-plugins\searchBar.lua
-plugins\space.lua
-plugins\tagDisplay.lua
+embed.xml
 
 ## Test implementations
 ## Normally these should be commented
