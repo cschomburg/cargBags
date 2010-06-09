@@ -1,0 +1,39 @@
+<Ui>
+	<!--
+		Base framework
+		Can't live without it!
+	-->
+	<Script file='base\core.lua'/>
+	<Script file='base\implementation.lua'/>
+	<Script file='base\container.lua'/>
+	<Script file='base\itembutton.lua'/>
+
+	<!--
+		Mixins currently just for development
+		They will likely be merged later
+		All optional, however
+	-->
+	<Script file='mixins\filters.lua'/>
+	<Script file='mixins\layout.lua'/>
+	<Script file='mixins\plugins.lua'/>
+	<Script file='mixins\parseBags.lua'/>
+	<Script file='mixins\sort.lua'/>
+	<Script file='mixins\textFilter.lua'/>
+
+	<!--
+		Item keys, providing additional item data
+		These are optional aswell
+	-->
+	<Script file='keys\basic.lua'/>
+	<Script file='keys\tooltip.lua'/>
+
+	<!--
+		Plugins for your containers
+		Optional as usual
+	-->
+	<Script file='plugins\bagBar.lua'/>
+	<Script file='plugins\money.lua'/>
+	<Script file='plugins\searchBar.lua'/>
+	<Script file='plugins\space.lua'/>
+	<Script file='plugins\tagDisplay.lua'/>
+</Ui>
