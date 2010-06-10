@@ -32,8 +32,6 @@
 		Optional as usual
 	-->
 	<Script file='plugins\bagBar.lua'/>
-	<Script file='plugins\money.lua'/>
 	<Script file='plugins\searchBar.lua'/>
-	<Script file='plugins\space.lua'/>
 	<Script file='plugins\tagDisplay.lua'/>
 </Ui>
