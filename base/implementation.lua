@@ -36,9 +36,10 @@ local mt_gen_key = {__index = function(self,k) self[k] = {}; return self[k]; end
 	@return impl <Implementation>
 ]]
 function Implementation:New(name)
-	if(self.instances[name]) then return error(("cargBags: Implementation already exists: '%s'"):format(name)) end
+	if(self.instances[name]) then return error(("cargBags: Implementation '%s' already exists!"):format(name)) end
+	if(_G[name]) then return error(("cargBags: Global '%s' for Implementation is already used!"):format(name)) end
 
-	local impl = setmetatable(CreateFrame("Button", "cargBags"..name, UIParent), self.__index)
+	local impl = setmetatable(CreateFrame("Button", name, UIParent), self.__index)
 	impl.name = name
 
 	impl:SetAllPoints()
@@ -54,7 +55,7 @@ function Implementation:New(name)
 	impl.callbacks = {} -- @property callbacks <table> Holds all callbacks
 	impl.notInited = true -- @property notInited <bool>
 
-	tinsert(UISpecialFrames, impl:GetName())
+	tinsert(UISpecialFrames, name)
 
 	self.instances[name] = impl
 
