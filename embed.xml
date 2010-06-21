@@ -26,6 +26,7 @@
 	-->
 	<Script file='keys\basic.lua'/>
 	<Script file='keys\tooltip.lua'/>
+	<!--<Script file='keys\equipSets.lua'/>-->
 
 	<!--
 		Plugins for your containers
