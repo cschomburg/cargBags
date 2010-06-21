@@ -15,6 +15,7 @@
 	-->
 	<Script file='mixins\filters.lua'/>
 	<Script file='mixins\layout.lua'/>
+	<!--<Script file='mixins\locale'/>-->
 	<Script file='mixins\plugins.lua'/>
 	<Script file='mixins\parseBags.lua'/>
 	<Script file='mixins\sort.lua'/>
@@ -25,8 +26,8 @@
 		These are optional aswell
 	-->
 	<Script file='keys\basic.lua'/>
-	<Script file='keys\tooltip.lua'/>
 	<!--<Script file='keys\equipSets.lua'/>-->
+	<Script file='keys\tooltip.lua'/>
 
 	<!--
 		Plugins for your containers
