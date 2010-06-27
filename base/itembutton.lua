@@ -73,7 +73,7 @@ end
 local slotsNum = 0
 function ItemButton:Create(tpl)
 	slotsNum = slotsNum+1
-	local name = "cargBagsSlot"..slotsNum
+	local name = self.implementation.name.."Slot"..slotsNum
 
 	local button = setmetatable(CreateFrame("Button", name, nil, tpl), self.__index)
 
