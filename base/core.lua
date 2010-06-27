@@ -19,7 +19,6 @@
 	class-generation, helper-functions and the Blizzard-replacement.
 ]]
 
-if(cargBags) then return end
 local parent, ns = ...
 local global = GetAddOnMetadata(parent, 'X-cargBags')
 
