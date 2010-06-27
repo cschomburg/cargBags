@@ -32,6 +32,8 @@ CALLBACKS
 	BagButton:OnCreate(bagID)
 
 ]]
+local _, ns = ...
+local cargBags = ns.cargBags
 
 local BagButton = cargBags:NewClass("BagButton", nil, "CheckButton")
 
