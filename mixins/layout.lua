@@ -21,6 +21,8 @@ LICENSE
 DESCRIPTION:
 	This file holds a list of default layouts
 ]]
+local _, ns = ...
+local cargBags = ns.cargBags
 
 local Container = cargBags.classes.Container
 Container.layouts = {}

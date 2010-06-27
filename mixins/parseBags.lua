@@ -28,8 +28,9 @@ DESCRIPTION
 		- a single number, e.g. 0
 	and returns an indexed table of all bagIDs
 ]]
+local _, ns = ...
+local cargBags = ns.cargBags
 
-local cargBags = cargBags
 local Implementation = cargBags.classes.Implementation
 local Container = cargBags.classes.Container
 

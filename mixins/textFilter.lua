@@ -22,6 +22,8 @@ DESCRIPTION
 	Provides a text-based filtering approach, e.g. for searchbars or GUIs
 	Only one text filter per container can be active at any time!
 ]]
+local _, ns = ...
+local cargBags = ns.cargBags
 
 local Container = cargBags.classes.Container
 

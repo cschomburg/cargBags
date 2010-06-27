@@ -21,6 +21,8 @@ LICENSE
 DESCRIPTION:
 	This file provides default sort-functions for your Containers.
 ]]
+local _, ns = ...
+local cargBags = ns.cargBags
 
 local Container = cargBags.classes.Container
 Container.sort = {}

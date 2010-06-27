@@ -27,6 +27,8 @@ USAGE:
 
 	L[englishName] returns localized name
 ]]
+local _, ns = ...
+local cargBags = ns.cargBags
 
 local L
 

@@ -22,6 +22,8 @@ DESCRIPTION:
 	Provides a searchbar for your containers.
 	If you specify a frame as arg #2, it will serve as a clickable placeholder to open it
 ]]
+local _, ns = ...
+local cargBags = ns.cargBags
 
 local tmpFilters = {}
 

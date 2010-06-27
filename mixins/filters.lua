@@ -23,6 +23,8 @@ DESCRIPTION
 	It is not compatible with other container-choosing extensions, especially not
 	with the ones using Implementation:GetContainerForItem()
 ]]
+local _, ns = ...
+local cargBags = ns.cargBags
 
 local Implementation = cargBags.classes.Implementation
 

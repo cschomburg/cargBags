@@ -21,6 +21,8 @@ LICENSE
 DESCRIPTION:
 	Item keys which require tooltip parsing to work
 ]]
+local _, ns = ...
+local cargBags = ns.cargBags
 
 local function generateTooltip()
 	local tooltip = CreateFrame("GameTooltip", "cargBagsTooltip")

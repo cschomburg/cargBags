@@ -20,14 +20,17 @@
 ]]
 
 if(cargBags) then return end
+local parent, ns = ...
+local global = GetAddOnMetadata(parent, 'X-cargBags')
 
 --- @class table
 --  @name cargBags
 --  This class provides the underlying fundamental functions, such as
 --  class-generation, helper-functions and the Blizzard-replacement
-local cargBags = CreateFrame("Button", "cargBags")
+local cargBags = CreateFrame("Button")
 cargBags.classes = {} --- <table> Holds all classes by their name
 cargBags.itemKeys = {} --- <table> Holds all ItemKeys by their name
+ns.cargBags = cargBags
 
 local widgets = setmetatable({}, {__index = function(self, widget)
 	self[widget] = getmetatable(CreateFrame(widget))
@@ -165,3 +168,12 @@ local m_item = {__index = function(i,k) return cargBags.itemKeys[k] and cargBags
 function cargBags:NewItemTable()
 	return setmetatable({}, m_item)
 end
+
+if(global) then
+	if(parent ~= 'cargBags' and global == 'cargBags') then
+		error('cargBags: %s is setting its global to cargBags.', parent)
+	else
+		_G[global] = cargBags
+	end
+end
+ns.cargBags = cargBags

@@ -21,6 +21,8 @@ LICENSE
 DESCRIPTION:
 	Item keys for the Blizz equipment sets
 ]]
+local _, ns = ...
+local cargBags = ns.cargBags
 
 local ItemKeys = cargBags.ItemKeys
 
