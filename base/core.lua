@@ -94,16 +94,16 @@ function cargBags:RegisterBlizzard(implementation)
 	self.blizzard = implementation
 end
 
-cargBags:RegisterEvent("PLAYER_LOGIN")
+cargBags:RegisterEvent(IsAddOnLoaded("AddonLoader") and "ADDON_LOADED" or "PLAYER_LOGIN")
 cargBags:RegisterEvent("BANKFRAME_OPENED")
 cargBags:RegisterEvent("BANKFRAME_CLOSED")
 
-cargBags:SetScript("OnEvent", function(self, event)
+cargBags:SetScript("OnEvent", function(self, event, arg1)
 	if(not self.blizzard) then return end
 
 	local impl = self.blizzard
 
-	if(event == "PLAYER_LOGIN") then
+	if(event == "PLAYER_LOGIN" or (event == "ADDON_LOADED" and arg1 == parent)) then
 		self:ReplaceBlizzard(impl)
 	elseif(event == "BANKFRAME_OPENED") then
 		self.atBank = true
