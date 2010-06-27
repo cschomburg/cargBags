@@ -176,4 +176,3 @@ if(global) then
 		_G[global] = cargBags
 	end
 end
-ns.cargBags = cargBags

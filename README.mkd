@@ -42,3 +42,4 @@ This file should provide a basic overview about the design direction of cargBags
 *	Guild bank support
 *	Try optional stack compression and item-databases
 *	optional filter-configuration GUI
+*	MainFrame-class plugin which can hold a number of container-frames
