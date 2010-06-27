@@ -21,11 +21,11 @@ LICENSE
 DESCRIPTION:
 	Item keys which require tooltip parsing to work
 ]]
-local _, ns = ...
+local parent, ns = ...
 local cargBags = ns.cargBags
 
 local function generateTooltip()
-	local tooltip = CreateFrame("GameTooltip", "cargBagsTooltip")
+	local tooltip = CreateFrame("GameTooltip", parent.."Tooltip")
 	tooltip:SetOwner(WorldFrame, "ANCHOR_NONE") 
 	tooltip:AddFontStrings( 
 		tooltip:CreateFontString("$parentTextLeft1", nil, "GameTooltipText"), 

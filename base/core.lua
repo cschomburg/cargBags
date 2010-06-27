@@ -27,9 +27,15 @@ local global = GetAddOnMetadata(parent, 'X-cargBags')
 --  This class provides the underlying fundamental functions, such as
 --  class-generation, helper-functions and the Blizzard-replacement
 local cargBags = CreateFrame("Button")
+
+ns.cargBags = cargBags
+if(parent == "cargBags") then
+	_G[parent] = cargBags
+end
+
+
 cargBags.classes = {} --- <table> Holds all classes by their name
 cargBags.itemKeys = {} --- <table> Holds all ItemKeys by their name
-ns.cargBags = cargBags
 
 local widgets = setmetatable({}, {__index = function(self, widget)
 	self[widget] = getmetatable(CreateFrame(widget))
