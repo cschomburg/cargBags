@@ -24,7 +24,7 @@ DESCRIPTION:
 local _, ns = ...
 local cargBags = ns.cargBags
 
-local ItemKeys = cargBags.ItemKeys
+local ItemKeys = cargBags.itemKeys
 
 local setItems
 
@@ -43,6 +43,7 @@ local function initUpdater()
 			for slot, id in pairs(items) do
 				setItems[id] = setID
 			end
+		end
 	end
 
 	updater:SetScript("OnEvent", updateSets)
