@@ -99,7 +99,7 @@ function cargBags:RegisterBlizzard(implementation)
 	self.blizzard = implementation
 
 	if(IsLoggedIn()) then
-		self:ReplaceBlizzard(impl)
+		self:ReplaceBlizzard(self.blizzard)
 	else
 		self:RegisterEvent("PLAYER_LOGIN")
 	end
