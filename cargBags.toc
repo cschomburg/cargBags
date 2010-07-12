@@ -4,6 +4,7 @@
 ## Version: 2.0-beta
 ## X-eMail: xconstruct@gmail.com
 ## X-Website: http://www.xconstruct.net
+## x-cargBags: cargBags
 ## Notes: Inventory framework
 
 embed.xml

@@ -29,10 +29,9 @@ local global = GetAddOnMetadata(parent, 'X-cargBags')
 local cargBags = CreateFrame("Button")
 
 ns.cargBags = cargBags
-if(parent == "cargBags") then
-	_G[parent] = cargBags
+if(global) then
+	_G[global] = cargBags
 end
-
 
 cargBags.classes = {} --- <table> Holds all classes by their name
 cargBags.itemKeys = {} --- <table> Holds all ItemKeys by their name
@@ -179,10 +178,3 @@ function cargBags:NewItemTable()
 	return setmetatable({}, m_item)
 end
 
-if(global) then
-	if(parent ~= 'cargBags' and global == 'cargBags') then
-		error('cargBags: %s is setting its global to cargBags.', parent)
-	else
-		_G[global] = cargBags
-	end
-end
