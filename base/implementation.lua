@@ -433,8 +433,11 @@ function Implementation:BAG_UPDATE_COOLDOWN(event, bagID)
 			end
 		end
 	else
-		for bagID = -2, 11 do
-			self:BAG_UPDATE_COOLDOWN(bagID)
+		for id, container in pairs(self.contByID) do
+			for i, button in pairs(container.buttons) do
+				local item = self:GetItemInfo(button.bagID, button.slotID)
+				button:UpdateCooldown(item)
+			end
 		end
 	end
 end
@@ -474,13 +477,10 @@ end
 	Fired when the quest log of a unit changes
 ]]
 function Implementation:UNIT_QUEST_LOG_CHANGED(event)
-	for bagID = -2, 11 do
-		for slotID=1, self:GetContainerNumSlots(bagID) do
-			local button = self:GetButton(bagID, slotID)
-			if(button) then
-				local item = self:GetItemInfo(bagID, slotID)
-				button:UpdateQuest(item)
-			end
+	for id, container in pairs(self.contByID) do
+		for i, button in pairs(container.buttons) do
+			local item = self:GetItemInfo(button.bagID, button.slotID)
+			button:UpdateQuest(item)
 		end
 	end
 end
