@@ -30,7 +30,6 @@ Implementation.instances = {}
 Implementation.itemKeys = {}
 
 local toBagSlot = cargBags.ToBagSlot
-local mt_gen_key = {__index = function(self,k) self[k] = {}; return self[k]; end}
 
 --[[!
 	Creates a new instance of the class
@@ -53,7 +52,7 @@ function Implementation:New(name)
 	impl.contByID = {} --! @property contByID <table> Holds all child-Containers by index
 	impl.contByName = {} --!@ property contByName <table> Holds all child-Containers by name
 	impl.buttons = {} -- @property buttons <table> Holds all ItemButtons by bagSlot
-	impl.bags = {} -- @property bags <table> Holds all bag-information by bagID
+	impl.bagSizes = {} -- @property bagSizes <table> Holds the size of all bags
 	impl.events = {} -- @property events <table> Holds all event callbacks
 	impl.notInited = true -- @property notInited <bool>
 
@@ -371,17 +370,14 @@ local closed
 	@param bagID <number>
 ]]
 function Implementation:UpdateBag(bagID)
-	self.bags[bagID] = self.bags[bagID] or { numSlots = 0 }
-	local bag = self.bags[bagID]
-
 	local numSlots
 	if(closed) then
 		numSlots, closed = 0
 	else
 		numSlots = self:GetContainerNumSlots(bagID)
 	end
-	local lastSlots = self.bags.numSlots or 0
-	self.bags.numSlots = numSlots
+	local lastSlots = self.bagSizes[bagID] or 0
+	self.bagSizes[bagID] = numSlots
 
 	for slotID=1, numSlots do
 		self:UpdateSlot(bagID, slotID)
