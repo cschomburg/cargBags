@@ -26,6 +26,21 @@ local cargBags = ns.cargBags
 ]]
 local ItemButton = cargBags:NewClass("ItemButton", nil, "Button")
 
+local function ItemButton_OnEnter(self)
+	local manager = self.implementation.source:GetItemButtonManager(self)
+	manager.manages = self
+
+	self:SetID(self.bagID)
+	manager:SetID(self.slotID)
+
+	manager:SetParent(self)
+	manager:ClearAllPoints()
+	manager:SetAllPoints(self)
+	manager:Show()
+
+	if(self.OnEnter) then self:OnEnter() end
+end
+
 --[[!
 	Gets a template name for the bagID
 	@param bagID <number> [optional]
@@ -45,14 +60,12 @@ local mt_gen_key = {__index = function(self,k) self[k] = {}; return self[k]; end
 	@return button <ItemButton>
 ]]
 function ItemButton:New(bagID, slotID)
-	self.recycled = self.recycled or setmetatable({}, mt_gen_key)
+	self.recycled = self.recycled or {}
 
-	local tpl = self:GetTemplate(bagID)
-	local button = table.remove(self.recycled[tpl]) or self:Create(tpl)
+	local button = table.remove(self.recycled) or self:Create()
 
 	button.bagID = bagID
 	button.slotID = slotID
-	button:SetID(slotID)
 	button:Show()
 
 	return button
@@ -65,14 +78,13 @@ end
 	@callback button:OnCreate(tpl)
 ]]
 function ItemButton:Create(tpl)
-	local impl = self.implementation
-	impl.numSlots = (impl.numSlots or 0) + 1
-	local name = ("%sSlot%d"):format(impl.name, impl.numSlots)
-
-	local button = setmetatable(CreateFrame("Button", name, nil, tpl), self.__index)
+	local button = self.CreateFrame and self:CreateFrame() or CreateFrame("Button")
+	setmetatable(button, self.__index)
 
 	if(button.Scaffold) then button:Scaffold(tpl) end
 	if(button.OnCreate) then button:OnCreate(tpl) end
+
+	button:SetScript("OnEnter", ItemButton_OnEnter)
 
 	return button
 end
@@ -82,7 +94,7 @@ end
 ]]
 function ItemButton:Free()
 	self:Hide()
-	table.insert(self.recycled[self:GetTemplate()], self)
+	table.insert(self.recycled, self)
 end
 
 --[[!

@@ -18,10 +18,10 @@ LICENSE
 	along with cargBags; if not, write to the Free Software
 	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-DESCRIPTION
+DESCRIPTION:
 	Provides a Scaffold that generates a default Blizz' ContainerButton
 
-DEPENDENCIES
+DEPENDENCIES:
 	mixins/api-common.lua
 ]]
 
@@ -29,6 +29,13 @@ local addon, ns = ...
 local cargBags = ns.cargBags
 
 local function noop() end
+
+local function ItemButton_CreateFrame(self, bagID, slotID)
+	self.numSlots = (self.numSlots or 0) + 1
+	local name = self.implementation.name.."Slot"..self.numSlots
+
+	return CreateFrame("Button", name, nil, "ContainerFrameItemButtonTemplate")
+end
 
 local function ItemButton_Scaffold(self)
 	self:SetSize(37, 37)
@@ -41,6 +48,13 @@ local function ItemButton_Scaffold(self)
 	self.Border = _G[name.."NormalTexture"]
 end
 
+local function ItemButton_OnEnter(self)
+	self:LockHighlight()
+end
+
+local function ItemButton_OnLeave(self)
+	self:UnlockHighlight()
+end
 --[[!
 	Update the button with new item-information
 	@param item <table> The itemTable holding information, see Implementation:GetItemInfo()

@@ -35,6 +35,7 @@ end
 
 cargBags.classes = {} --- <table> Holds all classes by their name
 cargBags.itemKeys = {} --- <table> Holds all ItemKeys by their name
+cargBags.sources = {} --- <table> Holds all data sources by their name
 
 local widgets = setmetatable({}, {__index = function(self, widget)
 	self[widget] = getmetatable(CreateFrame(widget))
@@ -152,6 +153,12 @@ function cargBags.SetScriptHandlers(self, ...)
 		local handler = select(i, ...)
 		self:SetScript(handler, handlerFuncs[handler])
 	end
+end
+
+--- Registers a data source with cargBags
+--  @param source <table>
+function cargBags:RegisterSource(source)
+	self.sources[source.name] = source
 end
 
 --- Gets the bagSlot-index of a bagID-slotID-pair

@@ -64,6 +64,46 @@ function Implementation:New(name)
 	return impl
 end
 
+function Implementation:SetSource(arg1)
+	local source = cargBags.sources[arg1] or source
+	
+	if(self.source) then
+		for pipe in pairs(self.source.pipes) do
+			self[pipe] = nil
+		end
+
+		for event in pairs(self.source.events) do
+			self:RegisterCallback(self, event)
+		end
+	end
+
+	self.source = source
+
+	for pipe, func in pairs(source.pipes) do
+		self[pipe] = func
+	end
+
+	for event, func in pairs(source.events) do
+		if(type(func) == "string") then
+			func = self[func]
+		end
+		self:RegisterEvent(event, self, func)
+	end
+
+	if(source.OnInit) then
+		source.OnInit(self)
+	end
+end
+
+function Implementation:SetFirstSource(...)
+	for i=1, select('#', ...) do
+		local source = select(i, ...)
+		if(cargBags.sources[source]) then
+			return self:SetSource(source)
+		end
+	end
+end
+
 --[[!
 	Script handler, inits and updates the Implementation when shown
 	@callback OnOpen
@@ -237,12 +277,12 @@ function Implementation:Init()
 		self:SetDefaultItemButtonClass()
 	end
 
-	self:RegisterEvent("BAG_UPDATE", self, self.BAG_UPDATE)
-	self:RegisterEvent("BAG_UPDATE_COOLDOWN", self, self.BAG_UPDATE_COOLDOWN)
-	self:RegisterEvent("ITEM_LOCK_CHANGED", self, self.ITEM_LOCK_CHANGED)
-	self:RegisterEvent("PLAYERBANKSLOTS_CHANGED", self, self.PLAYERBANKSLOTS_CHANGED)
-	self:RegisterEvent("UNIT_QUEST_LOG_CHANGED", self, self.UNIT_QUEST_LOG_CHANGED)
-	self:RegisterEvent("BAG_CLOSED", self, self.BAG_CLOSED)
+	if(not self.source) then
+		self:SetFirstSource("Default")
+		if(not self.source) then
+			error(("cargBags: Implementation '%s' has no data source!"):format(self.name))
+		end
+	end
 end
 
 --[[!
@@ -289,14 +329,8 @@ function Implementation:GetItemInfo(bagID, slotID, i)
 	i.bagID = bagID
 	i.slotID = slotID
 
-	i.clink = GetContainerItemLink(bagID, slotID)
+	self:LoadItemInfo(i)
 
-	if(i.clink) then
-		i.texture, i.count, i.locked, i.quality, i.readable = GetContainerItemInfo(bagID, slotID)
-		i.cdStart, i.cdFinish, i.cdEnable = GetContainerItemCooldown(bagID, slotID)
-		i.isQuestItem, i.questID, i.questActive = GetContainerItemQuestInfo(bagID, slotID)
-		i.name, i.link, i.rarity, i.level, i.minLevel, i.type, i.subType, i.stackCount, i.equipLoc, i.texture = GetItemInfo(i.clink)
-	end
 	return i
 end
 
@@ -344,7 +378,7 @@ function Implementation:UpdateBag(bagID)
 	if(closed) then
 		numSlots, closed = 0
 	else
-		numSlots = GetContainerNumSlots(bagID)
+		numSlots = self:GetContainerNumSlots(bagID)
 	end
 	local lastSlots = self.bags.numSlots or 0
 	self.bags.numSlots = numSlots
@@ -395,7 +429,7 @@ end
 ]]
 function Implementation:BAG_UPDATE_COOLDOWN(event, bagID)
 	if(bagID) then
-		for slotID=1, GetContainerNumSlots(bagID) do
+		for slotID=1, self:GetContainerNumSlots(bagID) do
 			local button = self:GetButton(bagID, slotID)
 			if(button) then
 				local item = self:GetItemInfo(bagID, slotID)
@@ -445,7 +479,7 @@ end
 ]]
 function Implementation:UNIT_QUEST_LOG_CHANGED(event)
 	for bagID = -2, 11 do
-		for slotID=1, GetContainerNumSlots(bagID) do
+		for slotID=1, self:GetContainerNumSlots(bagID) do
 			local button = self:GetButton(bagID, slotID)
 			if(button) then
 				local item = self:GetItemInfo(bagID, slotID)

@@ -25,6 +25,13 @@
 	<Script file='base\itembutton.lua' />
 
 	<!--
+		Sources
+		They wrap around the Blizz API and get the item info
+		You need to choose one
+	-->
+	<Script file='base-add\default.source.lua' />
+
+	<!--
 		Sieves
 		They provide different approaches of sorting items into the right container
 		You need to choose one
