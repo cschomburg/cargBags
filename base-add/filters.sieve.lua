@@ -20,7 +20,7 @@ LICENSE
 
 DESCRIPTION
 	This file implements the filtering system for categories into cargBags.
-	It is not compatible with other container-choosing extensions, especially not
+	It is not compatible with other container sieves, especially not
 	with the ones using Implementation:GetContainerForItem()
 ]]
 local _, ns = ...
@@ -28,6 +28,11 @@ local cargBags = ns.cargBags
 
 local Implementation = cargBags.classes.Implementation
 
+--[[!
+	Returns the right container for a specific item
+	@param item <ItemTable>
+	@return container <Container>
+]]
 function Implementation:GetContainerForItem(item)
 	for i, container in ipairs(self.contByID) do
 		if(container:CheckFilters(item)) then
@@ -38,6 +43,12 @@ end
 
 local Container = cargBags.classes.Container
 
+--[[!
+	Checks if an item passes the container's filters
+	@param item <ItemTable>
+	@param filters <FilterTable> check against other filters [optional]
+	@return passed <bool>
+]]
 function Container:CheckFilters(item, filters)
 	for filter, flag in pairs(filters or self.filters) do
 		local result = filter(item, self)
@@ -48,10 +59,20 @@ function Container:CheckFilters(item, filters)
 	return true
 end
 
+--[[!
+	Sets a filter and its flag for the container
+	@param filter <function>
+	@param flag <bool> whether the filter is enabled (-1: inverted)
+]]
 function Container:SetFilter(filter, flag)
 	self.filters[filter] = flag
 end
 
+--[[!
+	Sets multiple filters for a container
+	@param flag <bool> whether the filters are enabled (-1: inverted)
+	@param ... <function> a list of filters
+]]
 function Container:SetFilters(flag, ...)
 	for i=1, select("#", ...) do
 		local filter = select(i, ...)
@@ -59,6 +80,11 @@ function Container:SetFilters(flag, ...)
 	end
 end
 
+--[[!
+	Calls a function(button, result) with the result of the filters on all child-itembuttons
+	@param filters <FilterTable> check against other filters [optional]
+	@param func <function>
+]]
 function Container:FilterForFunction(filters, func)
 	for i, button in pairs(self.buttons) do
 		local result = self:CheckFilters(button:GetItemInfo(), filters)

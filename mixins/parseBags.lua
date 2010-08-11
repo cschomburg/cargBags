@@ -45,7 +45,11 @@ local bagStrings = {
 }
 cargBags.BagStrings = bagStrings
 
--- Some helper function for standardized bag-strings
+--[[!
+	Parses a range of bags and outputs a table of indexed bagIDs
+	@param bags <BagType>
+	@return bags <table>
+]]
 function cargBags:ParseBags(bags)
 	if(type(bags) == "table") then return bags end
 	if(bagStrings[bags]) then return bagStrings[bags] end

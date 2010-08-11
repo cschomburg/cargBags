@@ -19,28 +19,42 @@ LICENSE
 	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 DESCRIPTION
-	Base functions for the plugin-system
+	The bag sieve just places items in the right containers based on their bagID
+
+DEPENDENCIES
+	mixins\parseBags.lua (optional)
 ]]
 local _, ns = ...
 local cargBags = ns.cargBags
 
 local Implementation = cargBags.classes.Implementation
+
+--[[!
+	Returns a container for a specific item [replaces virtual function]
+	@param item <ItemTable>
+	@returns container <Container>
+]]
+function Implementation:GetContainerForItem(item)
+	return item.bagID and self.bagToContainer and self.bagToContainer[item.bagID]
+end
+
 local Container = cargBags.classes.Container
 
-local plugins = {}
-
-function Implementation:SpawnPlugin(name, ...)
-	if(plugins[name]) then
-		local plugin = plugins[name](self, ...)
-		if(plugin) then
-			self[name] = plugin
-			plugin.parent = self
-		end
-		return plugin
+--[[!
+	Sets the handled bags for a container
+	@param bags <BagType>
+]]
+function Container:SetBags(bags)
+	if(cargBags.ParseBags) then
+		bags = cargBags.ParseBags(bags)
 	end
-end
-Container.SpawnPlugin = Implementation.SpawnPlugin
 
-function cargBags:RegisterPlugin(name, func)
-	plugins[name] = func
+	if(not bags) then return end
+
+	self.implementation.bagToContainer = self.implementation.bagToContainer or {}
+	local b2c = self.implementation.bagToContainer
+
+	for i, bagID in pairs(bags) do
+		b2c[bagID] = self
+	end
 end

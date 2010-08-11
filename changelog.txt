@@ -1,4 +1,15 @@
 cargBags Changelog
+2.1-beta
+* Sieves! Replace the filters with another system
+* Scaffolds! Provide your own templates for item buttons
+
+- File structure overhaul
+- new Sieve: by bagID - lightweight enthusiasts, get rid of this filter
+clutter :P
+- Moved the ItemButton-UpdateX functions to their own scaffold, "Default"
+- Callbacks are now correctly named events (RegisterCallback -> RegisterEvent,
+HasCallback -> IsEventRegistered)
+
 2.0-beta
 * COMPLETE REWRITE
 * Don't ever think about fixing your old layout, build a new one =)

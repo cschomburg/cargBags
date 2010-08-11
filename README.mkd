@@ -1,4 +1,4 @@
-# cargBags 2.0 #
+# cargBags 2 #
 
 cargBags is an inventory framework for the popular MMORPG 'World of Warcraft'. It aims to include most of the core logic for creating a bag addon, so that you can start right-away with your layout. You don't have to care anymore about item data fetching, updating on the right time or creating a sophisticated filtering system.
 

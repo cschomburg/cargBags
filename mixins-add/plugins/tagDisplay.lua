@@ -32,8 +32,10 @@ DESCRIPTION
 
 	The space-tag still needs .bags defined in the plugin!
 	e.g. tagDisplay.bags = cargBags:ParseBags("backpack+bags")
+
 DEPENDENCIES
-	mixins/plugins
+	mixins/api-common.lua
+
 CALLBACKS
 	:OnTagUpdate(event) - When the tag is updated
 ]]
@@ -56,7 +58,7 @@ local function setTagString(self, tagString)
 	for tag in tagString:gmatch("%[([^%]:]+):?.-]") do
 		if(self.tagEvents[tag]) then
 			for k, event in pairs(self.tagEvents[tag]) do
-				self.implementation:RegisterCallback(event, self, updater)
+				self.implementation:RegisterEvent(event, self, updater)
 			end
 		end
 	end
@@ -75,7 +77,7 @@ cargBags:RegisterPlugin("TagDisplay", function(self, tagString, parent)
 
 	setTagString(plugin, tagString)
 
-	self.implementation:RegisterCallback("BAG_UPDATE", plugin, updater)
+	self.implementation:RegisterEvent("BAG_UPDATE", plugin, updater)
 	return plugin
 end)
 

@@ -32,6 +32,10 @@ local cargBags = ns.cargBags
 
 local L
 
+--[[!
+	Fetches/creates a table of localized type names
+	@return locale <table>
+]]
 function cargBags:GetLocalizedTypes()
 	if(L) then return L end
 

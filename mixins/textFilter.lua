@@ -21,6 +21,9 @@ LICENSE
 DESCRIPTION
 	Provides a text-based filtering approach, e.g. for searchbars or GUIs
 	Only one text filter per container can be active at any time!
+
+DEPENDENCIES:
+	base-add/filters.sieve.lua
 ]]
 local _, ns = ...
 local cargBags = ns.cargBags
@@ -37,6 +40,11 @@ local textFilters = {
 	quest = function(i, self) return i.isQuestItem end,
 }
 
+--[[!
+	Applies a text filter to the container
+	@param text <string> the text filter
+	@param filters <table> a table of filters to parse from [optional]
+]]
 function Container:SetTextFilter(text, filters)
 	self.textFilter = self.textFilter or {}
 	filters = filters or self.filters

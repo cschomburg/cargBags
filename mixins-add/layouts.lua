@@ -1,5 +1,4 @@
 --[[
-LICENSE
 	cargBags: An inventory framework addon for World of Warcraft
 
 	Copyright (C) 2010  Constantin "Cargor" Schomburg <xconstruct@gmail.com>
@@ -18,22 +17,16 @@ LICENSE
 	along with cargBags; if not, write to the Free Software
 	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-DESCRIPTION:
+DESCRIPTION
 	This file holds a list of default layouts
+
+DEPENDENCIES
+	mixins/api-common.lua
 ]]
-local _, ns = ...
-local cargBags = ns.cargBags
+local addon, ns = ...
+local layouts = ns.cargBags.classes.Container.layouts
 
-local Container = cargBags.classes.Container
-Container.layouts = {}
-local layouts = Container.layouts
-
-function Container:LayoutButtons(layout, ...)
-	return self.layouts[layout](self, ...)
-end
-
-
-function layouts:grid(columns, spacing, xOffset, yOffset)
+function layouts.grid(self, columns, spacing, xOffset, yOffset)
 	columns, spacing = columns or 8, spacing or 5
 	xOffset, yOffset = xOffset or 0, yOffset or 0
 
@@ -60,7 +53,13 @@ function layouts:grid(columns, spacing, xOffset, yOffset)
 	return columns * (width+spacing)-spacing, row * (height+spacing)-spacing
 end
 
-function layouts:circle(radius, xOffset, yOffset)
+--[[!
+	Places the buttons in a circle [experimental]
+	@param radius <number> radius of the circle [optional]
+	@param xOffset <number> x-offset of the whole layout [default: 0]
+	@param yOffset <number> y-offset of the whole layout [default: 0]
+]]
+function layouts.circle(self, radius, xOffset, yOffset)
 	radius = radius or (#self.buttons*50)/math.pi/2
 	xOffset, yOffset = xOffset or 0, yOffset or 0
 

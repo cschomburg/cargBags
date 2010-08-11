@@ -54,7 +54,7 @@ function Implementation:New(name)
 	impl.contByName = {} --!@ property contByName <table> Holds all child-Containers by name
 	impl.buttons = {} -- @property buttons <table> Holds all ItemButtons by bagSlot
 	impl.bags = {} -- @property bags <table> Holds all bag-information by bagID
-	impl.callbacks = {} -- @property callbacks <table> Holds all callbacks
+	impl.events = {} -- @property events <table> Holds all event callbacks
 	impl.notInited = true -- @property notInited <bool>
 
 	tinsert(UISpecialFrames, name)
@@ -180,45 +180,46 @@ function Implementation:RegisterBlizzard()
 	cargBags:RegisterBlizzard(self)
 end
 
+local _registerEvent = UIParent.RegisterEvent
+local _isEventRegistered = UIParent.IsEventRegistered
+
 --[[!
 	Registers an event callback - these are only called if the Implementation is currently shown
+	The events do not have to be 'blizz events' - they can also be internal messages
 	@param event <string> The event to register for
 	@param key Something passed to the callback as arg #1, also serves as identification
 	@param func <function> The function to call on the event
 ]]
-function Implementation:RegisterCallback(event, key, func)
-	local callbacks = self.callbacks
+function Implementation:RegisterEvent(event, key, func)
+	local events = self.events
 	
-	if(not callbacks[event]) then
-		callbacks[event] = {}
+	if(not events[event]) then
+		events[event] = {}
 	end
 
-	callbacks[event][key] = func
-	if(not self:IsEventRegistered(event)) then
-		self:RegisterEvent(event)
+	events[event][key] = func
+	if(event:upper() == event and not _isEventRegistered(self, event)) then
+		_registerEvent(self, event)
 	end
 end
 
 --[[!
-	Returns whether the Implementation has the specified callback
+	Returns whether the Implementation has the specified event callback
 	@param event <string> The event of the callback
-	@aram key The identification of the callback
+	@param key The identification of the callback [optional]
 ]]
-function Implementation:HasCallback(event, key)
-	return self.callbacks[event] and self.callbacks[event][key]
+function Implementation:IsEventRegistered(event, key)
+	return self.events[event] and (not key or self.events[event][key])
 end
 
 --[[!
 	Script handler, dispatches the events
 ]]
 function Implementation:OnEvent(event, ...)
-	if(not self:IsShown()) then return end
-	if(self[event]) then self[event](self, ...) end
+	if(not (self.events[event] and self:IsShown())) then return end
 
-	if(self.callbacks[event]) then
-		for key, func in pairs(self.callbacks[event]) do
-			func(key, event, ...)
-		end
+	for key, func in pairs(self.events[event]) do
+		func(key, event, ...)
 	end
 end
 
@@ -236,12 +237,12 @@ function Implementation:Init()
 		self:SetDefaultItemButtonClass()
 	end
 
-	self:RegisterEvent("BAG_UPDATE")
-	self:RegisterEvent("BAG_UPDATE_COOLDOWN")
-	self:RegisterEvent("ITEM_LOCK_CHANGED")
-	self:RegisterEvent("PLAYERBANKSLOTS_CHANGED")
-	self:RegisterEvent("UNIT_QUEST_LOG_CHANGED")
-	self:RegisterEvent("BAG_CLOSED")
+	self:RegisterEvent("BAG_UPDATE", self, self.BAG_UPDATE)
+	self:RegisterEvent("BAG_UPDATE_COOLDOWN", self, self.BAG_UPDATE_COOLDOWN)
+	self:RegisterEvent("ITEM_LOCK_CHANGED", self, self.ITEM_LOCK_CHANGED)
+	self:RegisterEvent("PLAYERBANKSLOTS_CHANGED", self, self.PLAYERBANKSLOTS_CHANGED)
+	self:RegisterEvent("UNIT_QUEST_LOG_CHANGED", self, self.UNIT_QUEST_LOG_CHANGED)
+	self:RegisterEvent("BAG_CLOSED", self, self.BAG_CLOSED)
 end
 
 --[[!
@@ -362,12 +363,12 @@ function Implementation:UpdateBag(bagID)
 end
 
 --[[!
-	Updates a bag or slot and fires callbacks to Containers
+	Updates a set of items
 	@param bagID <number> [optional]
 	@param slotID <number> [optional]
 	@callback Container:OnBagUpdate(bagID, slotID)
 ]]
-function Implementation:BAG_UPDATE(bagID, slotID)
+function Implementation:BAG_UPDATE(event, bagID, slotID)
 	if(bagID and slotID) then
 		self:UpdateSlot(bagID, slotID)
 	elseif(bagID) then
@@ -377,19 +378,13 @@ function Implementation:BAG_UPDATE(bagID, slotID)
 			self:UpdateBag(bagID)
 		end
 	end
-
-	for name, container in pairs(self.contByName) do
-		if(container.OnBagUpdate) then
-			container:OnBagUpdate(bagID, slotID)
-		end
-	end
 end
 
 --[[!
 	Updates a bag of the implementation (fired when it is removed)
 	@param bagID <number>
 ]]
-function Implementation:BAG_CLOSED(bagID)
+function Implementation:BAG_CLOSED(event, bagID)
 	closed = bagID
 	self:BAG_UPDATE(bagID)
 end
@@ -398,7 +393,7 @@ end
 	Fired when the item cooldowns need to be updated
 	@param bagID <number> [optional]
 ]]
-function Implementation:BAG_UPDATE_COOLDOWN(bagID)
+function Implementation:BAG_UPDATE_COOLDOWN(event, bagID)
 	if(bagID) then
 		for slotID=1, GetContainerNumSlots(bagID) do
 			local button = self:GetButton(bagID, slotID)
@@ -419,7 +414,7 @@ end
 	@param bagID <number>
 	@param slotID <number> [optional]
 ]]
-function Implementation:ITEM_LOCK_CHANGED(bagID, slotID)
+function Implementation:ITEM_LOCK_CHANGED(event, bagID, slotID)
 	if(not slotID) then return end
 
 	local button = self:GetButton(bagID, slotID)
@@ -434,7 +429,7 @@ end
 	@param bagID <number>
 	@param slotID <number> [optional]
 ]]
-function Implementation:PLAYERBANKSLOTS_CHANGED(bagID, slotID)
+function Implementation:PLAYERBANKSLOTS_CHANGED(event, bagID, slotID)
 	if(bagID <= NUM_BANKGENERIC_SLOTS) then
 		slotID = bagID
 		bagID = -1
@@ -448,7 +443,7 @@ end
 --[[
 	Fired when the quest log of a unit changes
 ]]
-function Implementation:UNIT_QUEST_LOG_CHANGED()
+function Implementation:UNIT_QUEST_LOG_CHANGED(event)
 	for bagID = -2, 11 do
 		for slotID=1, GetContainerNumSlots(bagID) do
 			local button = self:GetButton(bagID, slotID)

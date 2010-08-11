@@ -1,5 +1,4 @@
 --[[
-LICENSE
 	cargBags: An inventory framework addon for World of Warcraft
 
 	Copyright (C) 2010  Constantin "Cargor" Schomburg <xconstruct@gmail.com>
@@ -18,25 +17,23 @@ LICENSE
 	along with cargBags; if not, write to the Free Software
 	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-DESCRIPTION:
-	Spawns a Blizzard Money-Frame
+DESCRIPTION
+	This file provides default sort-functions for your Containers.
 
-	Currently very small and unnecessary as a plugin, until I figure out
-	how to implement the Handler-API in the new system.
-	Then we can expect events here.
-	
-	attributes:
-		.CopperText - Copper fontstring
-		.SilverText - Silver fontstring
-		.GoldText - Gold fontstring
+DEPENDENCIES
+	mixins/api-common.lua
 ]]
 
-cargBags:RegisterPlugin("Money", function(self, parent)
-	local money = CreateFrame("Frame", self:GetName().."Money", parent or self, "SmallMoneyFrameTemplate")
-	
-	money.CopperText = _G[money:GetName() .. "CopperButtonText"]
-	money.SilverText = _G[money:GetName() .. "SilverButtonText"]
-	money.GoldText = _G[money:GetName() .. "GoldButtonText"]
-	
-	return money
-end)
+local addon, ns = ...
+local sorts = ns.cargBags.classes.Container.sorts
+
+--[[!
+	Sorts the buttons depending on their bagSlot
+]]
+function sorts.bagSlot(a, b)
+	if(a.bagID == b.bagID) then
+		return a.slotID < b.slotID
+	else
+		return a.bagID < b.bagID
+	end
+end
