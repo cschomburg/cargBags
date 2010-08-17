@@ -2,6 +2,7 @@ cargBags Changelog
 2.1-beta
 * Sieves! Replace the filters with another system
 * Scaffolds! Provide your own templates for item buttons
+* Localization tables for auction house item classes
 
 - File structure overhaul
 - new Sieve: by bagID - lightweight enthusiasts, get rid of this filter
