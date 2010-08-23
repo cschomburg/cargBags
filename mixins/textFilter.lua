@@ -25,43 +25,59 @@ DESCRIPTION
 DEPENDENCIES:
 	base-add/filters.sieve.lua
 ]]
-local _, ns = ...
+
+local addon, ns = ...
 local cargBags = ns.cargBags
-
 local Container = cargBags.classes.Container
+local Implementation = cargBags.classes.Implementation
 
-local sText = {}
-local textFilters = {
-	n = function(i, self) return i.name and i.name:lower():match(self.textFilter.n) end,
-	t = function(i, self) return (i.type and i.type:lower():match(self.textFilter.t)) or (i.subType and i.subType:lower():match(self.textFilter.t)) or (i.equipLoc and i.equipLoc:lower():match(self.textFilter.t)) end,
-	b = function(i, self) return i.bindOn and i.bindOn:match(self.textFilter.b) end,
-	q = function(i, self) return i.rarity == tonumber(self.textFilter.q) end,
-	bag = function(i, self) return i.bagID == tonumber(self.textFilter.bag) end,
-	quest = function(i, self) return i.isQuestItem end,
+local defaultFilters = {
+	n = function(i, arg) return i.name and i.name:lower():match(arg) end,
+	t = function(i, info) return (i.type and i.type:lower():match(arg)) or (i.subType and i.subType:lower():match(arg)) or (i.equipLoc and i.equipLoc:lower():match(arg)) end,
+	b = function(i, info) return i.bindOn and i.bindOn:match(arg) end,
+	q = function(i, info) return i.rarity == tonumber(arg) end,
+	bag = function(i, info) return i.bagID == tonumber(arg) end,
+	quest = function(i, info) return i.isQuestItem end,
+
+	_default = "n",
 }
 
---[[!
-	Applies a text filter to the container
+--[[
+	Parses a text for filters and stores them in a filterTable
 	@param text <string> the text filter
-	@param filters <table> a table of filters to parse from [optional]
-]]
-function Container:SetTextFilter(text, filters)
-	self.textFilter = self.textFilter or {}
-	filters = filters or self.filters
+	@param filters <FilterSet> table to store resulting filters in [optional]
+	@param textFilters <table> table of text filters to parse from [optional]
 
-	for k,v in pairs(textFilters) do filters[v] = nil end
+	@note Basically works like this: text ----textFilters----> filters,filterInfo	
+]]
+function Implementation:ParseTextFilter(text, filters, textFilters)
+	filters = filters or cargBags.classes.FilterSet:New()
+	textFilters = textFilters or defaultFilters
 
 	for match in text:gmatch("[^,;&]+") do
 		local mod, type, value = match:trim():match("^(!?)(.-)[:=]?([^:=]*)$")
-		mod = (mod == "!" and -1 or true)
+		mod = (mod == "!" and -1) or true
 		if(value and type ~= "" and textFilters[type]) then
-			self.textFilter[type] = value:lower()
-			filters[textFilters[type]] = mod
-		elseif(value and type == "") then
-			self.textFilter.n = value:lower()
-			filters[textFilters.n] = mod
+			params[type] = value:lower()
+			filters:Set(textFilters[type], mod)
+		elseif(value and type == "" and textFilters._default) then
+			local name = textFilters._default
+			filters:SetExtended(textFilters[name], value:lower(), mod)
 		end
 	end
+
+	return filters
 end
 
-cargBags.TextFilters = textFilters
+Container.ParseTextFilter = Implementation.ParseTextFilter
+
+--[[!
+	Applies a text filter to the container, for convenience
+	@param text <string> the text filter
+	@param textFilters <table> a table of textFilters to parse from [optional]
+]]
+function Container:SetTextFilter(text, textFilters)
+	self.filters = self:ParseTextFilter(text, self.filters, textFilters)
+end
+
+cargBags.textFilters = defaultFilters

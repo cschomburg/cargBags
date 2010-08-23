@@ -1,5 +1,4 @@
 --[[
-LICENSE
 	cargBags: An inventory framework addon for World of Warcraft
 
 	Copyright (C) 2010  Constantin "Cargor" Schomburg <xconstruct@gmail.com>
@@ -23,16 +22,17 @@ DESCRIPTION
 
 	The buttons are not positioned automatically, use the standard-
 	function :LayoutButtons() for this
+
 DEPENDENCIES
-	mixins/plugins
-	mixins/layout (optional)
+	mixins/api-common
 	mixins/parseBags (optional)
-	mixins/filters (optional)
+	base-add/filters.sieve.lua (optional)
+
 CALLBACKS
 	BagButton:OnCreate(bagID)
-
 ]]
-local _, ns = ...
+
+local addon, ns = ...
 local cargBags = ns.cargBags
 
 local BagButton = cargBags:NewClass("BagButton", nil, "CheckButton")

@@ -25,8 +25,102 @@ DESCRIPTION
 ]]
 local _, ns = ...
 local cargBags = ns.cargBags
-
 local Implementation = cargBags.classes.Implementation
+local Container = cargBags.classes.Container
+
+local FilterSet = cargBags:NewClass("FilterSet")
+
+--[[!
+	Returns a new FilterSet
+	@return set <FilterSet>
+]]
+function FilterSet:New()
+	return setmetatable({
+		funcs = {},
+		params = {},
+		chained = {},
+	}, self.__index)
+end
+
+--[[!
+	Empties the filter table
+]]
+function FilterSet:Empty()
+	for k in pairs(self.funcs) do self.funcs[k] = nil end
+	for k in pairs(self.params) do self.params[k] = nil end
+	for k in pairs(self.chained) do self.chained[k] = nil end
+end
+
+--[[!
+	Sets a filter function and its flag
+	@param filter <function>
+	@param flag <bool> whether the filter is enabled (-1: inverted)
+]]
+function FilterSet:Set(filter, flag)
+	self.funcs[filter] = flag
+end
+
+--[[!
+	Sets a filter and its parameter
+	@param filter <function>
+	@param param <any>
+	@param flag <bool> whether the filter is enabled (-1: inverted) [optional]
+]]
+function FilterSet:SetExtended(filter, param, flag)
+	if(not flag and param) then
+		flag = true
+	end
+
+	self:Set(filter, flag)
+	self.params[filter] = info
+end
+
+--[[!
+	Sets multiple filters
+	@param flag <bool> whether the filters are enabled (-1: inverted)
+	@param ... <function> a list of filters
+]]
+function FilterSet:SetMultiple(flag, ...)
+	for i=1, select("#", ...) do
+		local filter = select(i, ...)
+		self:Set(filter, flag)
+	end
+end
+
+--[[!
+	chains / unchains an additional filter set
+	@param set <FilterSet>
+	@param flag <bool> enabled or not
+]]
+function FilterSet:Chain(set, flag)
+	self.chained[set] = flag
+end
+
+--[[!
+	Checks if an item passes this filter table
+	@param item <ItemTable>
+	@return passed <bool>
+]]
+function FilterSet:Check(item)
+	local funcs, params = self.funcs, self.params
+
+	-- check own filters
+	for filter, flag in pairs(funcs) do
+		local result = filter(item, params[filter])
+		if((flag == true and not result) or (flag == -1 and result)) then
+			return nil
+		end
+	end
+
+	-- check filters of chained sets
+	for table in pairs(self.chained) do
+		if(not table:Check(item)) then
+			return nil
+		end
+	end
+
+	return true
+end
 
 --[[!
 	Returns the right container for a specific item
@@ -35,49 +129,25 @@ local Implementation = cargBags.classes.Implementation
 ]]
 function Implementation:GetContainerForItem(item)
 	for i, container in ipairs(self.contByID) do
-		if(container:CheckFilters(item)) then
+		if(not container.filters or container.filters:Check(item)) then
 			return container
 		end
 	end
 end
 
-local Container = cargBags.classes.Container
-
---[[!
-	Checks if an item passes the container's filters
-	@param item <ItemTable>
-	@param filters <FilterTable> check against other filters [optional]
-	@param filterInfo <table> parameters for filters [optional]
-	@return passed <bool>
+--[[
+	Simple function shortcuts for Containers
 ]]
-function Container:CheckFilters(item, filters, filterInfo)
-	for filter, flag in pairs(filters or self.filters) do
-		local result = filter(item, self, filterInfo or self.filterInfo)
-		if((flag == true and not result) or (flag == -1 and result)) then
-			return nil
-		end
-	end
-	return true
-end
-
---[[!
-	Sets a filter and its flag for the container
-	@param filter <function>
-	@param flag <bool> whether the filter is enabled (-1: inverted)
-]]
-function Container:SetFilter(filter, flag)
-	self.filters[filter] = flag
-end
-
---[[!
-	Sets multiple filters for a container
-	@param flag <bool> whether the filters are enabled (-1: inverted)
-	@param ... <function> a list of filters
-]]
-function Container:SetFilters(flag, ...)
-	for i=1, select("#", ...) do
-		local filter = select(i, ...)
-		self:SetFilter(filter, flag)
+for name, func in pairs{
+	["SetFilter"] = "Set",
+	["SetExtendedFilter"] = "SetExtended",
+	["SetMultipleFilters"] = "SetMultiple",
+	["ChainFilters"] = "Chain",
+	["CheckFilters"]= "Check",
+} do
+	Container[name] = function(self, ...)
+		self.filters = self.filters or FilterSet:New()
+		self.filters[func](self.filters, ...)
 	end
 end
 
@@ -85,11 +155,12 @@ end
 	Calls a function(button, result) with the result of the filters on all child-itembuttons
 	@param func <function>
 	@param filters <FilterTable> check against other filters [optional]
-	@param filterInfo <table> parameters for filters [optional]
 ]]
-function Container:FilterForFunction(func, filters, filterInfo)
+function Container:FilterForFunction(func, filters)
+	filters = filters or self.filters
+
 	for i, button in pairs(self.buttons) do
-		local result = self:CheckFilters(button:GetItemInfo(), filters)
+		local result = filters:Check(button:GetItemInfo())
 		func(button, result)
 	end
 end

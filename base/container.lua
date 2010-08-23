@@ -45,7 +45,6 @@ function Container:New(name, ...)
 
 	container.name = name
 	container.buttons = {}
-	container.filters = {}
 	container.bags = setmetatable({container = container}, mt_bags)
 	container:ScheduleContentCallback()
 

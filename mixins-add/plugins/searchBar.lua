@@ -21,22 +21,19 @@ LICENSE
 DESCRIPTION:
 	Provides a searchbar for your containers.
 	If you specify a frame as arg #2, it will serve as a clickable placeholder to open it
+
+DEPENDENCIES
+	mixins/textFilter.lua
 ]]
-local _, ns = ...
+
+local addon, ns = ...
 local cargBags = ns.cargBags
 
-local tmpFilters = {}
-
 local function apply(self, container, text, mode)
-	if(self.HighlightFunction) then
-		if((text == "" or not text) and self.ResetFunction) then
-			container:ApplyToButtons(self.ResetFunction)
-		else
-			container:SetTextFilter(text, tmpFilters)
-			container:FilterForFunction(self.HighlightFunction, tmpFilters)
-		end
+	if((text == "" or not text) and self.ResetFunction) then
+		container:ApplyToButtons(self.ResetFunction)
 	else
-		container:SetTextFilter(text)
+		container:FilterForFunction(self.HighlightFunction, self.currFilters)
 	end
 end
 
@@ -46,6 +43,12 @@ local function doSearch(self, text)
 	else
 		text = self:GetText()
 	end
+
+	if(self.currFilters) then
+		self.currFilters:Empty()
+	end
+
+	self.currFilters = self.parent.implementation:ParseTextFilter(text, self.currFilters, self.textFilters)
 
 	if(self.isGlobal) then
 		for name, container in pairs(self.parent.implementation.contByName) do
