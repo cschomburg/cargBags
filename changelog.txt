@@ -2,6 +2,7 @@ cargBags Changelog
 2.1-beta
 * Sieves! Replace the filters with another system
 * Scaffolds! Provide your own templates for item buttons
+* Extended filters: pass arguments to them!
 * Localization tables for auction house item classes
 
 - File structure overhaul
@@ -10,6 +11,7 @@ clutter :P
 - Moved the ItemButton-UpdateX functions to their own scaffold, "Default"
 - Callbacks are now correctly named events (RegisterCallback -> RegisterEvent,
 HasCallback -> IsEventRegistered)
+- the SearchBar now needs a .HighlightFunction to work
 
 2.0-beta
 * COMPLETE REWRITE
