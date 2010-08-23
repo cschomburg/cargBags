@@ -33,7 +33,7 @@ local function apply(self, container, text, mode)
 			container:ApplyToButtons(self.ResetFunction)
 		else
 			container:SetTextFilter(text, tmpFilters)
-			container:FilterForFunction(tmpFilters, self.HighlightFunction)
+			container:FilterForFunction(self.HighlightFunction, tmpFilters)
 		end
 	else
 		container:SetTextFilter(text)

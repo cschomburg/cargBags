@@ -47,11 +47,12 @@ local Container = cargBags.classes.Container
 	Checks if an item passes the container's filters
 	@param item <ItemTable>
 	@param filters <FilterTable> check against other filters [optional]
+	@param filterInfo <table> parameters for filters [optional]
 	@return passed <bool>
 ]]
-function Container:CheckFilters(item, filters)
+function Container:CheckFilters(item, filters, filterInfo)
 	for filter, flag in pairs(filters or self.filters) do
-		local result = filter(item, self)
+		local result = filter(item, self, filterInfo or self.filterInfo)
 		if((flag == true and not result) or (flag == -1 and result)) then
 			return nil
 		end
@@ -82,10 +83,11 @@ end
 
 --[[!
 	Calls a function(button, result) with the result of the filters on all child-itembuttons
-	@param filters <FilterTable> check against other filters [optional]
 	@param func <function>
+	@param filters <FilterTable> check against other filters [optional]
+	@param filterInfo <table> parameters for filters [optional]
 ]]
-function Container:FilterForFunction(filters, func)
+function Container:FilterForFunction(func, filters, filterInfo)
 	for i, button in pairs(self.buttons) do
 		local result = self:CheckFilters(button:GetItemInfo(), filters)
 		func(button, result)
