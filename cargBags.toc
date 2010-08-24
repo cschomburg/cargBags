@@ -4,7 +4,8 @@
 ## Version: 2.1
 ## X-eMail: me@xconstruct.net
 ## X-Website: http://xconstruct.net
-## x-cargBags: cargBags
+## X-cargBags: cargBags
+## X-License: GPL 2
 ## Notes: Inventory framework
 
 ## For embedding purposes
