@@ -1,5 +1,7 @@
 cargBags Changelog
-2.1-beta
+
+2.1
+* The wiki was updated! http://github.com/xconstruct/cargBags/wiki
 * Sieves! Replace the filters with another system
 * Scaffolds! Provide your own templates for item buttons
 * Extended filters: pass arguments to them!
