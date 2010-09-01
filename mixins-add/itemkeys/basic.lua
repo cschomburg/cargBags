@@ -21,7 +21,7 @@ LICENSE
 DESCRIPTION:
 	A few simple item keys, mostly ones resulting through pattern matching
 ]]
-local _, ns = ...
+local parent, ns = ...
 local cargBags = ns.cargBags
 
 -- Returns the numeric item id (12345)
@@ -37,4 +37,11 @@ end
 -- Returns the item string (12345:0:0:0)
 cargBags.itemKeys["string"] = function(i)
 	return i.link and i.link:match("item:(%d+:%d+:%d+:%d+)")
+end
+
+cargBags.itemKeys["stats"] = function(i)
+	if(not i.link or not GetItemStats) then return end
+	local stats = GetItemStats(i.link)
+	i.stats = stats
+	return stats
 end
