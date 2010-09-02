@@ -46,7 +46,7 @@ end
 	@param item <table> The itemTable holding information, see Implementation:GetItemInfo()
 	@callback OnUpdate(item)
 ]]
-function ItemButton_Update(self, item)
+local function ItemButton_Update(self, item)
 	self.Icon:SetTexture(item.texture or self.bgTex)
 
 	if(item.count and item.count > 1) then
@@ -69,7 +69,7 @@ end
 	@param item <table> The itemTable holding information, see Implementation:GetItemInfo()
 	@callback OnUpdateCooldown(item)
 ]]
-function ItemButton_UpdateCooldown(self, item)
+local function ItemButton_UpdateCooldown(self, item)
 	if(item.cdEnable == 1 and item.cdStart and item.cdStart > 0) then
 		self.Cooldown:SetCooldown(item.cdStart, item.cdFinish)
 		self.Cooldown:Show()
@@ -85,7 +85,7 @@ end
 	@param item <table> The itemTable holding information, see Implementation:GetItemInfo()
 	@callback OnUpdateLock(item)
 ]]
-function ItemButton_UpdateLock(self, item)
+local function ItemButton_UpdateLock(self, item)
 	self.Icon:SetDesaturated(item.locked)
 
 	if(self.OnUpdateLock) then self:OnUpdateLock(item) end
@@ -96,7 +96,7 @@ end
 	@param item <table> The itemTable holding information, see Implementation:GetItemInfo()
 	@callback OnUpdateQuest(item)
 ]]
-function ItemButton_UpdateQuest(self, item)
+local function ItemButton_UpdateQuest(self, item)
 	local r,g,b,a = 1,1,1,1
 	local tL,tR,tT,tB = 0,1, 0,1
 	local blend = "BLEND"
