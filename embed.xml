@@ -29,7 +29,7 @@
 		They provide different approaches of sorting items into the right container
 		You need to choose one
 	-->
-	<!-- <Script file='base-add\bags.sieve.lua' \> -->
+	<!--<Script file='base-add\bags.sieve.lua' />-->
 	<Script file='base-add\filters.sieve.lua' />
 
 	<!--

@@ -46,7 +46,7 @@ local Container = cargBags.classes.Container
 ]]
 function Container:SetBags(bags)
 	if(cargBags.ParseBags) then
-		bags = cargBags.ParseBags(bags)
+		bags = cargBags:ParseBags(bags)
 	end
 
 	if(not bags) then return end
