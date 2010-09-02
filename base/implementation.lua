@@ -288,13 +288,13 @@ function Implementation:GetItemInfo(bagID, slotID, i)
 	i.bagID = bagID
 	i.slotID = slotID
 
-	i.clink = GetContainerItemLink(bagID, slotID)
+	local clink = GetContainerItemLink(bagID, slotID)
 
-	if(i.clink) then
+	if(clink) then
 		i.texture, i.count, i.locked, i.quality, i.readable = GetContainerItemInfo(bagID, slotID)
 		i.cdStart, i.cdFinish, i.cdEnable = GetContainerItemCooldown(bagID, slotID)
 		i.isQuestItem, i.questID, i.questActive = GetContainerItemQuestInfo(bagID, slotID)
-		i.name, i.link, i.rarity, i.level, i.minLevel, i.type, i.subType, i.stackCount, i.equipLoc, i.texture = GetItemInfo(i.clink)
+		i.name, i.link, i.rarity, i.level, i.minLevel, i.type, i.subType, i.stackCount, i.equipLoc, i.texture = GetItemInfo(clink)
 	end
 	return i
 end
