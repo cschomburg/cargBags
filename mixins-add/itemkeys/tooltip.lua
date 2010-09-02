@@ -24,8 +24,11 @@ DESCRIPTION:
 local parent, ns = ...
 local cargBags = ns.cargBags
 
+local tipName = parent.."Tooltip"
+local tooltip
+
 local function generateTooltip()
-	local tooltip = CreateFrame("GameTooltip", parent.."Tooltip")
+	tooltip = CreateFrame("GameTooltip", tipName)
 	tooltip:SetOwner(WorldFrame, "ANCHOR_NONE") 
 	tooltip:AddFontStrings( 
 		tooltip:CreateFontString("$parentTextLeft1", nil, "GameTooltipText"), 
@@ -35,18 +38,21 @@ end
 
 cargBags.itemKeys["bindOn"] = function(i)
 	if(not i.link) then return end
-	if(not cargBagsTooltip) then generateTooltip() end
-	cargBagsTooltip:ClearLines()
-	cargBagsTooltip:SetHyperlink(i.link)
-	local bound = cargBagsTooltipTextLeft2 and cargBagsTooltipTextLeft2:GetText()
+
+	if(not tooltip) then generateTooltip() end
+	tooltip:ClearLines()
+	tooltip:SetBagItem(i.bagID, i.slotID)
+	local bound = _G[tipName.."TextLeft2"] and _G[tipName.."TextLeft2"]:GetText()
 	if(not bound) then return end
 
 	local bindOn
 	if(bound:match(ITEM_BIND_ON_EQUIP)) then bindOn = "equip"
+	elseif(bound:match(ITEM_SOULBOUND)) then bindOn = "soul"
 	elseif(bound:match(ITEM_BIND_QUEST)) then bindOn = "quest"
 	elseif(bound:match(ITEM_BIND_TO_ACCOUNT)) then bindOn = "account"
 	elseif(bound:match(ITEM_BIND_ON_PICKUP)) then bindOn = "pickup"
 	elseif(bound:match(ITEM_BIND_ON_USE)) then bindOn = "use" end
+
 	i.bindOn = bindOn
 	return bindOn
 end
