@@ -1,5 +1,14 @@
 cargBags Changelog
 
+2.1.1
+* bugfix update, you need this if you have 2.1!
+* fixed searchbar, extended filters and bags-sieve
+
+- item.bindOn now supports soulbound items ("soul")
+- new itemKey: item.bagType
+- removed item.clink
+- .toc bumped to Cataclysm
+
 2.1
 * The wiki was updated! http://github.com/xconstruct/cargBags/wiki
 * Sieves! Replace the filters with another system
