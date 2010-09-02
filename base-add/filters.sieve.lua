@@ -72,7 +72,7 @@ function FilterSet:SetExtended(filter, param, flag)
 	end
 
 	self:Set(filter, flag)
-	self.params[filter] = info
+	self.params[filter] = param
 end
 
 --[[!
