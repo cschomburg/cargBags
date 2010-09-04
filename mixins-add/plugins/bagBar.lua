@@ -45,7 +45,7 @@ BagButton.itemFadeAlpha = 0.1
 local buttonNum = 0
 function BagButton:Create(bagID)
 	buttonNum = buttonNum+1
-	local name = "cargBagsBagButton"..buttonNum
+	local name = addon.."BagButton"..buttonNum
 
 	local button = setmetatable(CreateFrame("CheckButton", name, nil, "ItemButtonTemplate"), self.__index)
 
@@ -93,24 +93,24 @@ function BagButton:Update()
 	if(self.OnUpdate) then self:OnUpdate() end
 end
 
-function BagButton.HighlightFunction(button, bagID, fadeAlpha)
-	if(not bagID or bagID == button.bagID) then
-		button:SetAlpha(1)
-	else
-		button:SetAlpha(fadeAlpha)
-	end
+function BagButton.HighlightFunction(button, match)
+	button:SetAlpha(match and 1 or 0.3)
+end
+
+local function highlight(button, func, bagID)
+	func(button, not bagID or button.bagID == bagID)
 end
 
 function BagButton:OnEnter()
 	if(self.HighlightFunction) then
-		self.bar.container:ApplyToButtons(self.HighlightFunction, self.bagID, self.itemFadeAlpha)
+		self.bar.container:ApplyToButtons(highlight, self.HighlightFunction, self.bagID)
 	end
 	BagSlotButton_OnEnter(self)
 end
 
 function BagButton:OnLeave()
 	if(self.HighlightFunction) then
-		self.bar.container:ApplyToButtons(self.HighlightFunction, nil, self.itemFadeAlpha)
+		self.bar.container:ApplyToButtons(highlight, self.HighlightFunction)
 	end
 	GameTooltip:Hide()
 end
