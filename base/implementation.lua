@@ -382,7 +382,7 @@ end
 ]]
 function Implementation:BAG_CLOSED(event, bagID)
 	closed = bagID
-	self:BAG_UPDATE(bagID)
+	self:BAG_UPDATE(event, bagID)
 end
 
 --[[!
@@ -436,7 +436,7 @@ function Implementation:PLAYERBANKSLOTS_CHANGED(event, bagID, slotID)
 		bagID = bagID - NUM_BANKGENERIC_SLOTS
 	end
 
-	self:BAG_UPDATE(bagID, slotID)
+	self:BAG_UPDATE(event, bagID, slotID)
 end
 
 --[[
