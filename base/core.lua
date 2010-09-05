@@ -104,6 +104,18 @@ function cargBags:RegisterBlizzard(implementation)
 	end
 end
 
+--- Fires an event for all implementations
+--  @param force <bool> even update hidden ones [optional]
+--  @param event <string> the name of the event [default: "BAG_UPDATE"]
+--  @param ... arguments of the event [optional]
+function cargBags:FireEvent(force, event, ...)
+	for name, impl in pairs(self.classes.Implementation.instances) do
+		if(force or impl:IsShown()) then
+			impl:OnEvent(event or "BAG_UPDATE", ...)
+		end
+	end
+end
+
 cargBags:RegisterEvent("BANKFRAME_OPENED")
 cargBags:RegisterEvent("BANKFRAME_CLOSED")
 

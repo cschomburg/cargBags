@@ -32,9 +32,6 @@ local ItemKeys = cargBags.itemKeys
 local setItems
 
 local function initUpdater()
-	local updater = CreateFrame("Frame")
-	updater:RegisterEvent("EQUIPMENT_SETS_CHANGED")
-
 	local function updateSets()
 		setItems = setItems or {}
 		for k in pairs(setItems) do setItems[k] = nil end
@@ -49,7 +46,13 @@ local function initUpdater()
 		end
 	end
 
-	updater:SetScript("OnEvent", updateSets)
+	local updater = CreateFrame("Frame")
+	updater:RegisterEvent("EQUIPMENT_SETS_CHANGED")
+	updater:SetScript("OnEvent", function()
+		updateSets()
+		cargBags:FireEvent("BAG_UPDATE")
+	end)
+
 	updateSets()
 end
 
