@@ -1,5 +1,4 @@
 --[[
-LICENSE
 	cargBags: An inventory framework addon for World of Warcraft
 
 	Copyright (C) 2010  Constantin "Cargor" Schomburg <xconstruct@gmail.com>
@@ -18,10 +17,14 @@ LICENSE
 	along with cargBags; if not, write to the Free Software
 	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-DESCRIPTION:
+DESCRIPTION
 	Item keys for the Blizz equipment sets
+
+DEPENDENCIES
+	mixins-add/itemkeys/basic.lua
 ]]
-local _, ns = ...
+
+local parent, ns = ...
 local cargBags = ns.cargBags
 
 local ItemKeys = cargBags.itemKeys
@@ -52,7 +55,7 @@ end
 
 ItemKeys["setID"] = function(i)
 	if(not setItems) then initUpdater() end
-	return setItems[item.id]
+	return setItems[i.id]
 end
 
 ItemKeys["set"] = function(i)
