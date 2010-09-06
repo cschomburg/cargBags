@@ -30,10 +30,10 @@ local addon, ns = ...
 local cargBags = ns.cargBags
 
 local function apply(self, container, text, mode)
-	if((text == "" or not text) and self.ResetFunction) then
-		container:ApplyToButtons(self.ResetFunction)
+	if(text == "" or not text) then
+		container:ApplyToButtons(self.highlightFunction, true)
 	else
-		container:FilterForFunction(self.HighlightFunction, self.currFilters)
+		container:FilterForFunction(self.highlightFunction, self.currFilters)
 	end
 end
 

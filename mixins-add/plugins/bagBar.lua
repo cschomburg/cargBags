@@ -34,6 +34,11 @@ CALLBACKS
 
 local addon, ns = ...
 local cargBags = ns.cargBags
+local Implementation = cargBags.classes.Implementation
+
+function Implementation:GetBagButtonClass()
+	return self:GetClass("BagButton", true, "BagButton")
+end
 
 local BagButton = cargBags:NewClass("BagButton", nil, "CheckButton")
 
@@ -93,25 +98,39 @@ function BagButton:Update()
 	if(self.OnUpdate) then self:OnUpdate() end
 end
 
-function BagButton.HighlightFunction(button, match)
-	button:SetAlpha(match and 1 or 0.3)
-end
-
 local function highlight(button, func, bagID)
 	func(button, not bagID or button.bagID == bagID)
 end
 
 function BagButton:OnEnter()
-	if(self.HighlightFunction) then
-		self.bar.container:ApplyToButtons(highlight, self.HighlightFunction, self.bagID)
+	local hlFunction = self.bar.highlightFunction
+
+	if(hlFunction) then
+		if(self.bar.isGlobal) then
+			for i, container in pairs(self.implementation.contByID) do
+				container:ApplyToButtons(highlight, hlFunction, self.bagID)
+			end
+		else
+			self.bar.container:ApplyToButtons(highlight, hlFunction, self.bagID)
+		end
 	end
+
 	BagSlotButton_OnEnter(self)
 end
 
 function BagButton:OnLeave()
-	if(self.HighlightFunction) then
-		self.bar.container:ApplyToButtons(highlight, self.HighlightFunction)
+	local hlFunction = self.bar.highlightFunction
+
+	if(hlFunction) then
+		if(self.bar.isGlobal) then
+			for i, container in pairs(self.implementation.contByID) do
+				container:ApplyToButtons(highlight, hlFunction)
+			end
+		else
+			self.bar.container:ApplyToButtons(highlight, hlFunction)
+		end
 	end
+
 	GameTooltip:Hide()
 end
 
@@ -131,7 +150,7 @@ function BagButton:OnClick()
 			self.filter = function(i) return i.bagID ~= bagID end
 		end
 		self.hidden = not self.hidden
-		container.filters[self.filter] = not container.filters[self.filter]
+		container:SetFilter(self.filter, self.hidden)
 		container.implementation:OnEvent("BAG_UPDATE", self.bagID)
 	end
 end
@@ -180,7 +199,7 @@ cargBags:RegisterPlugin("BagBar", function(self, bags)
 	bar.layouts = cargBags.classes.Container.layouts
 	bar.LayoutButtons = cargBags.classes.Container.LayoutButtons
 
-	local buttonClass = self.implementation:GetClass("BagButton", true, "BagButton")
+	local buttonClass = self.implementation:GetBagButtonClass()
 	bar.buttons = {}
 	for i=1, #bags do
 		if(not disabled[bags[i]]) then -- Temporary until I include fake buttons for backpack, bankframe and keyring
