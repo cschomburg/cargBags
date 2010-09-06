@@ -1,4 +1,18 @@
 cargBags Changelog
+Releases are not backwards-compatible!
+
+2.1.2
+* bank now updates correctly again (sorry for that!)
+* mostly bagBar changes and equipSets bugfixes
+
+- .HighlightFunction changed to .highlightFunction (small 'H', consistency FTW)
+- bagBar now supports highlightFunctions
+- bagBar can be global for all containers (.isGlobal = true)
+- new function: Implementation:GetBagButton()
+- fixed bagButton onClick not toggling its bag
+- fixed typo in equipSets-itemkey
+- equipSets now update all open bags when changed
+- introducing cargBags:FireEvent(force, event, ...)
 
 2.1.1
 * bugfix update, you need this if you have 2.1!
