@@ -1,5 +1,9 @@
 cargBags Changelog
-Releases are not backwards-compatible!
+==================
+
+Releases are normally not backwards-compatible, although changes are kept to a
+minimum!
+In most cases the version tagging follows the scheme Rewrite.Feature.Bugfix
 
 2.1.2
 * bank now updates correctly again (sorry for that!)
