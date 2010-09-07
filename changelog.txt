@@ -12,7 +12,7 @@ In most cases the version tagging follows the scheme Rewrite.Feature.Bugfix
 - .HighlightFunction changed to .highlightFunction (small 'H', consistency FTW)
 - bagBar now supports highlightFunctions
 - bagBar can be global for all containers (.isGlobal = true)
-- new function: Implementation:GetBagButton()
+- new function: Implementation:GetBagButtonClass()
 - fixed bagButton onClick not toggling its bag
 - fixed typo in equipSets-itemkey
 - equipSets now update all open bags when changed
