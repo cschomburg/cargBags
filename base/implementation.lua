@@ -73,7 +73,7 @@ function Implementation:OnShow()
 	end
 
 	if(self.OnOpen) then self:OnOpen() end
-	self:OnEvent("BAG_UPDATE")
+	self:UpdateAll()
 end
 
 --[[!
