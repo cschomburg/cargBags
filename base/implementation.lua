@@ -274,6 +274,24 @@ end
 
 local defaultItem = cargBags:NewItemTable()
 
+local scheduler, scheduled = CreateFrame("Frame"), {}
+scheduler:Hide()
+scheduler:SetScript("OnUpdate", function(self)
+	self:Hide()
+	for impl in pairs(scheduled) do
+		scheduled[impl] = nil
+		impl:OnEvent("BAG_UPDATE")
+	end
+end)
+
+--[[
+	Fires a complete BAG_UPDATE on the next update
+]]
+function Implementation:UpdateAll()
+	scheduled[self] = true
+	scheduler:Show()
+end
+
 --[[!
 	Fetches the itemInfo of the item in bagID/slotID into the table
 	@param bagID <number>
