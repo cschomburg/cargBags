@@ -46,9 +46,11 @@ local function doSearch(self, text)
 
 	if(self.currFilters) then
 		self.currFilters:Empty()
+	else
+		self.currFilters = cargBags.classes.FilterSet:New()
 	end
 
-	self.currFilters = self.parent.implementation:ParseTextFilter(text, self.currFilters, self.textFilters)
+	self.currFilters:SetTextFilter(text, self.textFilters)
 
 	if(self.isGlobal) then
 		for name, container in pairs(self.parent.implementation.contByName) do
