@@ -143,15 +143,24 @@ function BagButton:OnClick()
 
 	if(PutItemInBag(self.invID)) then return end
 
+	-- Somehow we need to disconnect this from the filter-sieve
 	local container = self.bar.container
-	if(container and container.filters) then
+	if(container and container.SetFilter) then
 		if(not self.filter) then
 			local bagID = self.bagID
 			self.filter = function(i) return i.bagID ~= bagID end
 		end
 		self.hidden = not self.hidden
-		container:SetFilter(self.filter, self.hidden)
-		container.implementation:OnEvent("BAG_UPDATE", self.bagID)
+
+		if(self.bar.isGlobal) then
+			for i, container in pairs(container.implementation.contByID) do
+				container:SetFilter(self.filter, self.hidden)
+				container.implementation:OnEvent("BAG_UPDATE", self.bagID)
+			end
+		else
+			container:SetFilter(self.filter, self.hidden)
+			container.implementation:OnEvent("BAG_UPDATE", self.bagID)
+		end
 	end
 end
 BagButton.OnReceiveDrag = BagButton.OnClick
