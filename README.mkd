@@ -1,5 +1,5 @@
-cargBags 2
-==========
+cargBags 2.1.2
+==============
 
 cargBags is a modular inventory framework for the popular MMORPG 'World of Warcraft'. It was created with one simple thing in mind: Taking the boring work away for you, so that you can start right-away with the important things: Layout and categories! You don't have to care anymore about fetchting item-data, updating at the right time or creating a sophisticated filtering system - cargBags does this all for you!
 

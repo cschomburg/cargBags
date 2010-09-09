@@ -20,7 +20,8 @@
 		Can't live without it!
 	-->
 	<Script file='base\core.lua' />
-	<Script file='base\implementation.lua' />
+	<Script file='base\class.lua' />>
+	<Script file='base\updates.lua' />
 	<Script file='base\container.lua' />
 	<Script file='base\itembutton.lua' />
 

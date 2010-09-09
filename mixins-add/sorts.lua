@@ -25,7 +25,7 @@ DEPENDENCIES
 ]]
 
 local addon, ns = ...
-local sorts = ns.cargBags.classes.Container.sorts
+local sorts = ns.cargBags.Class:Get("Container").sorts
 
 --[[!
 	Sorts the buttons depending on their bagSlot

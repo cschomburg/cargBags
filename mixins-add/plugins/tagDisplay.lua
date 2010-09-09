@@ -58,7 +58,7 @@ local function setTagString(self, tagString)
 	for tag in tagString:gmatch("%[([^%]:]+):?.-]") do
 		if(self.tagEvents[tag]) then
 			for k, event in pairs(self.tagEvents[tag]) do
-				self.implementation:RegisterEvent(event, self, updater)
+				cargBags:RegisterEvent(event, self, updater)
 			end
 		end
 	end
@@ -69,7 +69,6 @@ cargBags:RegisterPlugin("TagDisplay", function(self, tagString, parent)
 	tagString = tagString or ""
 
 	local plugin = parent:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
-	plugin.implementation = self.implementation
 	plugin.SetTagString = setTagString
 	plugin.tags = tagPool
 	plugin.tagEvents = tagEvents
@@ -77,7 +76,7 @@ cargBags:RegisterPlugin("TagDisplay", function(self, tagString, parent)
 
 	setTagString(plugin, tagString)
 
-	self.implementation:RegisterEvent("BAG_UPDATE", plugin, updater)
+	cargBags:RegisterEvent("BAG_UPDATE", plugin, updater)
 	return plugin
 end)
 

@@ -17,14 +17,14 @@
 	along with cargBags; if not, write to the Free Software
 	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 ]]
-local _, ns = ...
+local addon, ns = ...
 local cargBags = ns.cargBags
 
 --[[!
 	@class Container
 		The container class provides the virtual bags for cargBags
 ]]
-local Container = cargBags:NewClass("Container", nil, "Button")
+local Container = cargBags.Class:New("Container", nil, "Button")
 
 local mt_bags = {__index=function(self, bagID)
 	self[bagID] = CreateFrame("Frame", nil, self.container)
@@ -40,18 +40,17 @@ end}
 	@callback container:OnCreate(name, ...)
 ]]
 function Container:New(name, ...)
-	local implName = self.implementation.name
-	local container = setmetatable(CreateFrame("Button", implName..name), self.__index)
+	local container = self:NewInstance(cargBags.name..name)
 
 	container.name = name
 	container.buttons = {}
 	container.bags = setmetatable({container = container}, mt_bags)
 	container:ScheduleContentCallback()
 
-	container.implementation.contByName[name] = container -- Make this into pretty function?
-	table.insert(container.implementation.contByID, container)
+	cargBags.contByName[name] = container -- Make this into pretty function?
+	table.insert(cargBags.contByID, container)
 
-	container:SetParent(self.implementation)
+	container:SetParent(cargBags)
 
 	if(container.OnCreate) then container:OnCreate(name, ...) end
 

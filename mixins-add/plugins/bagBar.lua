@@ -34,13 +34,8 @@ CALLBACKS
 
 local addon, ns = ...
 local cargBags = ns.cargBags
-local Implementation = cargBags.classes.Implementation
 
-function Implementation:GetBagButtonClass()
-	return self:GetClass("BagButton", true, "BagButton")
-end
-
-local BagButton = cargBags:NewClass("BagButton", nil, "CheckButton")
+local BagButton = cargBags.Class:New("BagButton", nil, "CheckButton")
 
 -- Default attributes
 BagButton.checkedTex = [[Interface\Buttons\CheckButtonHilight]]
@@ -71,7 +66,7 @@ function BagButton:Create(bagID)
 	button.Quest = 		_G[name.."IconQuestTexture"]
 	button.Border =		_G[name.."NormalTexture"]
 
-	cargBags.SetScriptHandlers(button, "OnClick", "OnReceiveDrag", "OnEnter", "OnLeave", "OnDragStart")
+	button:SetScriptHandlers("OnClick", "OnReceiveDrag", "OnEnter", "OnLeave", "OnDragStart")
 
 	if(button.OnCreate) then button:OnCreate(bagID) end
 
@@ -107,7 +102,7 @@ function BagButton:OnEnter()
 
 	if(hlFunction) then
 		if(self.bar.isGlobal) then
-			for i, container in pairs(self.implementation.contByID) do
+			for i, container in pairs(cargBags.contByID) do
 				container:ApplyToButtons(highlight, hlFunction, self.bagID)
 			end
 		else
@@ -123,7 +118,7 @@ function BagButton:OnLeave()
 
 	if(hlFunction) then
 		if(self.bar.isGlobal) then
-			for i, container in pairs(self.implementation.contByID) do
+			for i, container in pairs(cargBags.contByID) do
 				container:ApplyToButtons(highlight, hlFunction)
 			end
 		else
@@ -153,13 +148,13 @@ function BagButton:OnClick()
 		self.hidden = not self.hidden
 
 		if(self.bar.isGlobal) then
-			for i, container in pairs(container.implementation.contByID) do
+			for i, container in pairs(cargBags.contByID) do
 				container:SetFilter(self.filter, self.hidden)
-				container.implementation:OnEvent("BAG_UPDATE", self.bagID)
+				cargBags:OnEvent("BAG_UPDATE", self.bagID)
 			end
 		else
 			container:SetFilter(self.filter, self.hidden)
-			container.implementation:OnEvent("BAG_UPDATE", self.bagID)
+			cargBags:OnEvent("BAG_UPDATE", self.bagID)
 		end
 	end
 end
@@ -205,10 +200,10 @@ cargBags:RegisterPlugin("BagBar", function(self, bags)
 	local bar = CreateFrame("Frame",  nil, self)
 	bar.container = self
 
-	bar.layouts = cargBags.classes.Container.layouts
-	bar.LayoutButtons = cargBags.classes.Container.LayoutButtons
+	bar.layouts = cargBags.Class:Get("Container").layouts
+	bar.LayoutButtons = cargBags.Class:Get("Container").LayoutButtons
 
-	local buttonClass = self.implementation:GetBagButtonClass()
+	local buttonClass = cargBags:GetClass("BagButton")
 	bar.buttons = {}
 	for i=1, #bags do
 		if(not disabled[bags[i]]) then -- Temporary until I include fake buttons for backpack, bankframe and keyring
@@ -219,9 +214,9 @@ cargBags:RegisterPlugin("BagBar", function(self, bags)
 		end
 	end
 
-	self.implementation:RegisterEvent("BAG_UPDATE", bar, updater)
-	self.implementation:RegisterEvent("PLAYERBANKBAGSLOTS_CHANGED", bar, updater)
-	self.implementation:RegisterEvent("ITEM_LOCK_CHANGED", bar, onLock)
+	cargBags:RegisterEvent("BAG_UPDATE", bar, updater)
+	cargBags:RegisterEvent("PLAYERBANKBAGSLOTS_CHANGED", bar, updater)
+	cargBags:RegisterEvent("ITEM_LOCK_CHANGED", bar, onLock)
 
 	return bar
 end)

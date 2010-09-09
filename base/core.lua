@@ -19,68 +19,50 @@
 	class-generation, helper-functions and the Blizzard-replacement.
 ]]
 
-local parent, ns = ...
-local global = GetAddOnMetadata(parent, 'X-cargBags')
-
---- @class table
---  @name cargBags
---  This class provides the underlying fundamental functions, such as
---  class-generation, helper-functions and the Blizzard-replacement
-local cargBags = CreateFrame("Button")
-
+local addon, ns = ...
+local cargBags = CreateFrame("Button", nil, UIParent)
 ns.cargBags = cargBags
-if(global) then
-	_G[global] = cargBags
-end
+cargBags.Version = "2.1.2"
 
-cargBags.classes = {} --- <table> Holds all classes by their name
 cargBags.itemKeys = {} --- <table> Holds all ItemKeys by their name
-
-local widgets = setmetatable({}, {__index = function(self, widget)
-	self[widget] = getmetatable(CreateFrame(widget))
-	return self[widget]
-end})
-
---- Creates a new class
---  @param name <string> The name of the class
---  @param parent <string> The class which should be inherited [optional]
---  @param widget <string> The widget type of the class
---  @return class <table> The prototype of the class
-function cargBags:NewClass(name, parent, widget)
-	if(self.classes[name]) then return end
-	parent = parent and self.classes[parent]
-	local class = setmetatable({}, parent or (widget and widgets[widget]))
-	class.__index = class
-	class._parent = parent
-	self.classes[name] = class
-	return class
-end
 
 --- Creates a new instance of the class 'Implementation'
 --  @param name <string> The name of the implementation
 --  @return instance <Implementation> The new instance
-function cargBags:NewImplementation(name)
-	return self.classes.Implementation:New(name)
+function cargBags:Setup(name)
+	if(_G[name]) then return error(("cargBags: Global '%s' is already used!"):format(name)) end
+	_G[name] = self
+
+	self.name = name
+
+	self:SetAllPoints()
+	self:EnableMouse(nil)
+	self:Hide()
+
+	self.Class.Prototype.SetScriptHandlers(self, "OnEvent", "OnShow", "OnHide")
+
+	self.contByID = {} --! @property contByID <table> Holds all child-Containers by index
+	self.contByName = {} --!@ property contByName <table> Holds all child-Containers by name
+	self.buttons = {} -- @property buttons <table> Holds all ItemButtons by bagSlot
+	self.bagSizes = {} -- @property bagSizes <table> Holds the size of all bags
+	self.events = {} -- @property events <table> Holds all event callbacks
+	self.notInited = true -- @property notInited <bool>
+
+	table.insert(UISpecialFrames, name)
+
+	return self
 end
 
---- Fetches an existing Implementation
---  @param name <string> The name of the implementation
---  @return instance <Implementation> The instance (or 'nil' if not found)
-function cargBags:GetImplementation(name)
-	return self.classes.Implementation:Get(name)
-end
+local function toggleBag(forceopen)	cargBags:Toggle(forceopen)	end
+local function toggleNoForce()		cargBags:Toggle()			end
+local function openBag()			cargBags:Show()				end
+local function closeBag()			cargBags:Hide()				end
 
-local function toggleBag(forceopen)	cargBags.blizzard:Toggle(forceopen)	end
-local function toggleNoForce()		cargBags.blizzard:Toggle()			end
-local function openBag()			cargBags.blizzard:Show()			end
-local function closeBag()			cargBags.blizzard:Hide()			end
+local bankHandler = CreateFrame"Frame"
 
---- Overwrites Blizzards Bag-Toggle-Functions with the implementation's ones
---  @param name <string> The name of the implementation [optional]
-function cargBags:ReplaceBlizzard(name)
-	local impl = arg1 and cargBags:GetImplementation(name) or self.blizzard
-	self.blizzard = impl
-
+--- Overwrites Blizzards Bag-Toggle-Functions with the implementations ones
+--  @param bank <bool> also handle the bank
+function cargBags:ReplaceBlizzard(bank)
 	-- Can we maybe live without hooking ToggleBag(id)?
 	ToggleBag = toggleNoForce
 	ToggleBackpack = toggleNoForce
@@ -89,82 +71,119 @@ function cargBags:ReplaceBlizzard(name)
 	CloseAllBags = closeBag
 	CloseBackpack = closeBag
 
-	BankFrame:UnregisterAllEvents()
-end
-
---- Flags the implementation to handle Blizzards Bag-Toggle-Functions
---  @param implementation <Implementation>
-function cargBags:RegisterBlizzard(implementation)
-	self.blizzard = implementation
-
-	if(IsLoggedIn()) then
-		self:ReplaceBlizzard(self.blizzard)
-	else
-		self:RegisterEvent("PLAYER_LOGIN")
+	if(bank) then
+		BankFrame:UnregisterAllEvents()
+		bankHandler:RegisterEvent("BANKFRAME_OPENED")
+		bankHandler:RegisterEvent("BANKFRAME_CLOSED")
 	end
 end
 
---- Fires an event for all implementations
---  @param force <bool> even update hidden ones [optional]
---  @param event <string> the name of the event [default: "BAG_UPDATE"]
---  @param ... arguments of the event [optional]
-function cargBags:FireEvent(force, event, ...)
-	for name, impl in pairs(self.classes.Implementation.instances) do
-		if(force or impl:IsShown()) then
-			impl:OnEvent(event or "BAG_UPDATE", ...)
-		end
-	end
-end
+bankHandler:SetScript("OnEvent", function(self, event)
+	if(event == "BANKFRAME_OPENED") then
+		cargBags.atBank = true
 
-cargBags:RegisterEvent("BANKFRAME_OPENED")
-cargBags:RegisterEvent("BANKFRAME_CLOSED")
-
-cargBags:SetScript("OnEvent", function(self, event)
-	if(not self.blizzard) then return end
-
-	local impl = self.blizzard
-
-	if(event == "PLAYER_LOGIN") then
-		self:ReplaceBlizzard(impl)
-	elseif(event == "BANKFRAME_OPENED") then
-		self.atBank = true
-
-		if(impl:IsShown()) then
-			impl:UpdateAll()
+		if(cargBags:IsShown()) then
+			cargBags:UpdateAll()
 		else
-			impl:Show()
+			cargBags:Show()
 		end
 
-		if(impl.OnBankOpened) then
-			impl:OnBankOpened()
+		if(cargBags.OnBankOpened) then
+			cargBags:OnBankOpened()
 		end
 	elseif(event == "BANKFRAME_CLOSED") then
-		self.atBank = nil
+		cargBags.atBank = nil
 
-		if(impl:IsShown()) then
-			impl:Hide()
+		if(cargBags:IsShown()) then
+			cargBags:Hide()
 		end
 
-		if(impl.OnBankClosed) then
-			impl:OnBankClosed()
+		if(cargBags.OnBankClosed) then
+			cargBags:OnBankClosed()
 		end
 	end
 end)
 
-local handlerFuncs = setmetatable({}, {__index=function(self, handler)
-	self[handler] = function(self, ...) return self[handler] and self[handler](self, ...) end
-	return self[handler]
-end})
+--[[!
+	Returns whether the user is currently at the bank
+	@return atBank <bool>
+]]
+function cargBags:AtBank()
+	return self.atBank
+end
 
---- Sets a number of script handlers by redirecting them to the members function, e.g. self:OnEvent(self, ...)
---  @param self <frame>
---  @param ... <string> A number of script handlers
-function cargBags.SetScriptHandlers(self, ...)
-	for i=1, select("#", ...) do
-		local handler = select(i, ...)
-		self:SetScript(handler, handlerFuncs[handler])
+--[[!
+	Script handler, inits and updates the Implementation when shown
+	@callback OnOpen
+]]
+function cargBags:OnShow()
+	if(self.notInited) then
+		self:Init()
+	end
+
+	if(self.OnOpen) then self:OnOpen() end
+	self:UpdateAll()
+end
+
+--[[!
+	Script handler, closes the Implementation when hidden
+	@callback OnClose
+]]
+function cargBags:OnHide()
+	if(self.notInited) then return end
+
+	if(self.OnClose) then self:OnClose() end
+	if(self:AtBank()) then CloseBankFrame() end
+end
+
+--[[!
+	Toggles the implementation
+	@param forceopen <bool> Only open it
+]]
+function cargBags:Toggle(forceopen)
+	if(not forceopen and self:IsShown()) then
+		self:Hide()
+	else
+		self:Show()
 	end
 end
+
+--[[!
+	Fetches a child-Container by name
+	@param name <string>
+	@return container <Container>
+]]
+function cargBags:GetContainer(name)
+	return self.contByName[name]
+end
+
+function cargBags:GetClass(name, variant)
+	variant = variant or ""
+	return self.Class:Get(variant..name, true, name)
+end
+
+--[[!
+	Inits the implementation by registering events
+	@callback OnInit
+]]
+function cargBags:Init()
+	if(not self.notInited) then return end
+	self.notInited = nil
+
+	if(self.OnInit) then self:OnInit() end
+
+	if(not self.buttonClass) then
+		self.buttonClass = self:GetClass("ItemButton")
+	end
+
+	self:RegisterEvent("BAG_UPDATE", self, self.BAG_UPDATE)
+	self:RegisterEvent("BAG_UPDATE_COOLDOWN", self, self.BAG_UPDATE_COOLDOWN)
+	self:RegisterEvent("ITEM_LOCK_CHANGED", self, self.ITEM_LOCK_CHANGED)
+	self:RegisterEvent("PLAYERBANKSLOTS_CHANGED", self, self.PLAYERBANKSLOTS_CHANGED)
+	self:RegisterEvent("UNIT_QUEST_LOG_CHANGED", self, self.UNIT_QUEST_LOG_CHANGED)
+	self:RegisterEvent("BAG_CLOSED", self, self.BAG_CLOSED)
+end
+
 
 --- Gets the bagSlot-index of a bagID-slotID-pair
 --  @param bagID <number>
@@ -182,11 +201,23 @@ end
 function cargBags.FromBagSlot(bagSlot)
 	return floor(bagSlot/100), bagSlot % 100
 end
+--[[
+	Fetches a button by bagID-slotID-pair
+	@param bagID <number>
+	@param slotID <number>
+	@return button <ItemButton>
+]]
+function cargBags:GetButton(bagID, slotID)
+	return self.buttons[self.ToBagSlot(bagID, slotID)]
+end
 
---- Creates a new item table which has access to ItemKeys
---  @return itemTable <table>
-local m_item = {__index = function(i,k) return cargBags.itemKeys[k] and cargBags.itemKeys[k](i,k) end}
-function cargBags:NewItemTable()
-	return setmetatable({}, m_item)
+--[[!
+	Stores a button by bagID-slotID-pair
+	@param bagID <number>
+	@param slotID <number>
+	@param button <ItemButton> [optional]
+]]
+function cargBags:SetButton(bagID, slotID, button)
+	self.buttons[self.ToBagSlot(bagID, slotID)] = button
 end
 

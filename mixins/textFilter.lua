@@ -28,9 +28,8 @@ DEPENDENCIES:
 
 local addon, ns = ...
 local cargBags = ns.cargBags
-local Container = cargBags.classes.Container
-local Implementation = cargBags.classes.Implementation
-local FilterSet = cargBags.classes.FilterSet
+local Container = cargBags.Class:Get("Container")
+local FilterSet = cargBags.Class:Get("FilterSet")
 
 local defaultFilters = {
 	n = function(i, arg) return i.name and i.name:lower():match(arg) end,

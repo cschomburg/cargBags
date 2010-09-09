@@ -24,7 +24,7 @@ local cargBags = ns.cargBags
 	@class ItemButton
 		This class serves as the basis for all itemSlots in a container
 ]]
-local ItemButton = cargBags:NewClass("ItemButton", nil, "Button")
+local ItemButton = cargBags.Class:New("ItemButton", nil, "Button")
 
 --[[!
 	Gets a template name for the bagID
@@ -65,11 +65,10 @@ end
 	@callback button:OnCreate(tpl)
 ]]
 function ItemButton:Create(tpl)
-	local impl = self.implementation
-	impl.numSlots = (impl.numSlots or 0) + 1
-	local name = ("%sSlot%d"):format(impl.name, impl.numSlots)
+	cargBags.numSlots = (cargBags.numSlots or 0) + 1
+	local name = ("%sSlot%d"):format(cargBags.name, cargBags.numSlots)
 
-	local button = setmetatable(CreateFrame("Button", name, nil, tpl), self.__index)
+	local button = self:NewInstance(name, nil, tpl)
 
 	if(button.Scaffold) then button:Scaffold(tpl) end
 	if(button.OnCreate) then button:OnCreate(tpl) end
@@ -91,6 +90,6 @@ end
 	@return item <table>
 ]]
 function ItemButton:GetItemInfo(item)
-	return self.implementation:GetItemInfo(self.bagID, self.slotID, item)
+	return cargBags:GetItemInfo(self.bagID, self.slotID, item)
 end
 

@@ -30,9 +30,7 @@ DESCRIPTION
 ]]
 local _, ns = ...
 local cargBags = ns.cargBags
-
-local Implementation = cargBags.classes.Implementation
-local Container = cargBags.classes.Container
+local Container = cargBags.Class:Get("Container")
 
 local bagStrings = {
 	["backpack"]		= { 0 },
@@ -43,7 +41,7 @@ local bagStrings = {
 	["bankframe+bank"]	= { -1, 5, 6, 7, 8, 9, 10, 11 },
 	["keyring"]			= { -2 },
 }
-cargBags.BagStrings = bagStrings
+cargBags.bagStrings = bagStrings
 
 --[[!
 	Parses a range of bags and outputs a table of indexed bagIDs

@@ -25,9 +25,8 @@ DESCRIPTION
 
 local addon, ns = ...
 local cargBags = ns.cargBags
-local Implementation = cargBags.classes.Implementation
-local Container = cargBags.classes.Container
-local ItemButton = cargBags.classes.ItemButton
+local Container = cargBags.Class:Get("Container")
+local ItemButton = cargBags.Class:Get("ItemButton")
 
 --[[################################
 	Layouts
@@ -48,19 +47,15 @@ end
 
 cargBags.plugins = {}
 
-function Implementation:SpawnPlugin(name, ...)
+function cargBags:SpawnPlugin(name, ...)
 	if(cargBags.plugins[name]) then
-		local plugin = cargBags.plugins[name](self, ...)
-		if(plugin) then
-			plugin.parent = self
-		end
-		return plugin
+		return cargBags.plugins[name](self, ...)
 	end
 end
-Container.SpawnPlugin = Implementation.SpawnPlugin
+Container.SpawnPlugin = cargBags.SpawnPlugin
 
 function cargBags:RegisterPlugin(name, func)
-	cargBags.plugins[name] = func
+	self.plugins[name] = func
 end
 
 

@@ -23,23 +23,22 @@ DESCRIPTION
 	It is not compatible with other container sieves, especially not
 	with the ones using Implementation:GetContainerForItem()
 ]]
-local _, ns = ...
+local addon, ns = ...
 local cargBags = ns.cargBags
-local Implementation = cargBags.classes.Implementation
-local Container = cargBags.classes.Container
+local Container = cargBags.Class:Get("Container")
 
-local FilterSet = cargBags:NewClass("FilterSet")
+local FilterSet = cargBags.Class:New("FilterSet")
 
 --[[!
 	Returns a new FilterSet
 	@return set <FilterSet>
 ]]
 function FilterSet:New()
-	return setmetatable({
-		funcs = {},
-		params = {},
-		chained = {},
-	}, self.__index)
+	local set = self:NewInstance()
+	set.funcs = {}
+	set.params = {}
+	set.chained = {}
+	return set
 end
 
 --[[!
@@ -127,7 +126,7 @@ end
 	@param item <ItemTable>
 	@return container <Container>
 ]]
-function Implementation:GetContainerForItem(item)
+function cargBags:GetContainerForItem(item)
 	for i, container in ipairs(self.contByID) do
 		if(not container.filters or container.filters:Check(item)) then
 			return container

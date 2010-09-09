@@ -57,5 +57,3 @@ function cargBags:GetLocalizedTypes()
 
 	return L
 end
-
-cargBags.classes.Implementation.GetLocalizedNames = cargBags.GetLocalizedNames

@@ -47,20 +47,20 @@ local function doSearch(self, text)
 	if(self.currFilters) then
 		self.currFilters:Empty()
 	else
-		self.currFilters = cargBags.classes.FilterSet:New()
+		self.currFilters = cargBags.Class:Get("FilterSet"):New()
 	end
 
 	self.currFilters:SetTextFilter(text, self.textFilters)
 
 	if(self.isGlobal) then
-		for name, container in pairs(self.parent.implementation.contByName) do
+		for name, container in pairs(cargBags.contByName) do
 			apply(self, container, text)
 		end
 	else
 		apply(self, self.parent, text)
 	end
 
-	self.parent.implementation:OnEvent("BAG_UPDATE")
+	cargBags:OnEvent("BAG_UPDATE")
 end
 
 local function target_openSearch(target)
@@ -87,7 +87,7 @@ end
 cargBags:RegisterPlugin("SearchBar", function(self, target)
 	local search = CreateFrame("EditBox", nil, self)
 	search:SetFontObject(GameFontHighlight)
-	self.Search = search
+	search.parent = self 
 
 	search.Clear = onEscape
 	search.DoSearch = search.doSearch
