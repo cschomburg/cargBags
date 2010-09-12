@@ -20,10 +20,9 @@
 		Can't live without it!
 	-->
 	<Script file='base\core.lua' />
-	<Script file='base\class.lua' />>
-	<Script file='base\updates.lua' />
-	<Script file='base\container.lua' />
-	<Script file='base\itembutton.lua' />
+	<Script file='base\core-classes.lua' />
+	<Script file='base\container.class.lua' />
+	<Script file='base\itembutton.class.lua' />
 
 	<!--
 		Sieves

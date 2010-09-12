@@ -59,8 +59,6 @@ local function doSearch(self, text)
 	else
 		apply(self, self.parent, text)
 	end
-
-	cargBags:OnEvent("BAG_UPDATE")
 end
 
 local function target_openSearch(target)

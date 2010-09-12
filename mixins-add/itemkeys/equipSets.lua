@@ -21,7 +21,7 @@ DESCRIPTION
 	Item keys for the Blizz equipment sets
 
 DEPENDENCIES
-	mixins-add/itemkeys/basic.lua
+	mixins-add/itemkeys/basic.lua (for item.id)
 ]]
 
 local parent, ns = ...
@@ -29,19 +29,27 @@ local cargBags = ns.cargBags
 
 local ItemKeys = cargBags.itemKeys
 
-local setItems
+local setItems, setNames
+local emptyResult = {}
 
 local function initUpdater()
+
 	local function updateSets()
 		setItems = setItems or {}
+		setNames = setNames or {}
+
 		for k in pairs(setItems) do setItems[k] = nil end
+		for k in pairs(setNames) do setNames[k] = nil end
 
 		for setID = 1, GetNumEquipmentSets() do
 			local name = GetEquipmentSetInfo(setID)
 			local items = GetEquipmentSetItemIDs(name)
 
+			setNames[name] = setID
+
 			for slot, id in pairs(items) do
-				setItems[id] = setID
+				setItems[id] = setItems[id] or {}
+				setItems[id][setID] = true
 			end
 		end
 	end
@@ -56,13 +64,20 @@ local function initUpdater()
 	updateSets()
 end
 
-ItemKeys["setID"] = function(i)
+local currentID
+local function hasSet(specific)
 	if(not setItems) then initUpdater() end
-	return setItems[i.id]
+
+	local sets = setItems[currentID]
+	if(not sets) then return nil end
+	if(not specific) then return true end
+
+	specific = specific and setNames[specific] or specific
+	return sets[specific]
 end
 
-ItemKeys["set"] = function(i)
-	local setID = i.setID
-	return setID and GetEquipmentSetInfo(setID)
+-- I know that's a hack ...
+ItemKeys['set'] = function(i)
+	currentID = item.id
+	return hasSet
 end
-

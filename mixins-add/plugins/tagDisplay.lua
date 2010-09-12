@@ -76,7 +76,9 @@ cargBags:RegisterPlugin("TagDisplay", function(self, tagString, parent)
 
 	setTagString(plugin, tagString)
 
+	cargBags:RegisterEvent("Complete_Update", plugin, updater)
 	cargBags:RegisterEvent("BAG_UPDATE", plugin, updater)
+
 	return plugin
 end)
 

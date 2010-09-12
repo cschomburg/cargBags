@@ -150,11 +150,11 @@ function BagButton:OnClick()
 		if(self.bar.isGlobal) then
 			for i, container in pairs(cargBags.contByID) do
 				container:SetFilter(self.filter, self.hidden)
-				cargBags:OnEvent("BAG_UPDATE", self.bagID)
+				cargBags:Update(self.bagID)
 			end
 		else
 			container:SetFilter(self.filter, self.hidden)
-			cargBags:OnEvent("BAG_UPDATE", self.bagID)
+			cargBags:Update(self.bagID)
 		end
 	end
 end
@@ -214,6 +214,7 @@ cargBags:RegisterPlugin("BagBar", function(self, bags)
 		end
 	end
 
+	cargBags:RegisterEvent("Complete_Update", bar, updater)
 	cargBags:RegisterEvent("BAG_UPDATE", bar, updater)
 	cargBags:RegisterEvent("PLAYERBANKBAGSLOTS_CHANGED", bar, updater)
 	cargBags:RegisterEvent("ITEM_LOCK_CHANGED", bar, onLock)
