@@ -20,9 +20,6 @@ LICENSE
 
 DESCRIPTION
 	Provides a Scaffold that generates a default Blizz' ContainerButton
-
-DEPENDENCIES
-	mixins/api-common.lua
 ]]
 
 local addon, ns = ...
@@ -126,7 +123,7 @@ local function ItemButton_UpdateQuest(self, item)
 	if(self.OnUpdateQuest) then self:OnUpdateQuest(item) end
 end
 
-cargBags:RegisterScaffold("Default", function(self)
+cargBags:Register("scaffold", "Default", function(self)
 	self.glowTex = "Interface\\Buttons\\UI-ActionButton-Border" --! @property glowTex <string> The textures used for the glow
 	self.glowAlpha = 0.8 --! @property glowAlpha <number> The alpha of the glow texture
 	self.glowBlend = "ADD" --! @property glowBlend <string> The blendMode of the glow texture

@@ -24,11 +24,13 @@ DESCRIPTION
 DEPENDENCIES
 	mixins\parseBags.lua (optional)
 ]]
-local _, ns = ...
+
+local addon, ns = ...
 local cargBags = ns.cargBags
+cargBags:Provides("Sieve")
+cargBags:Provides("Bags Sieve")
 
-local Implementation = cargBags.classes.Implementation
-
+local Implementation = cargBags.Class:Get("Implementation")
 --[[!
 	Returns a container for a specific item [replaces virtual function]
 	@param item <ItemTable>
@@ -38,7 +40,7 @@ function Implementation:GetContainerForItem(item)
 	return item.bagID and self.bagToContainer and self.bagToContainer[item.bagID]
 end
 
-local Container = cargBags.classes.Container
+local Container = cargBags.Class:Get("Container")
 
 --[[!
 	Sets the handled bags for a container
@@ -51,8 +53,8 @@ function Container:SetBags(bags)
 
 	if(not bags) then return end
 
-	self.implementation.bagToContainer = self.implementation.bagToContainer or {}
-	local b2c = self.implementation.bagToContainer
+	cargBags.implementation.bagToContainer = cargBags.implementation.bagToContainer or {}
+	local b2c = cargBags.implementation.bagToContainer
 
 	for i, bagID in pairs(bags) do
 		b2c[bagID] = self

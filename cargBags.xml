@@ -1,0 +1,44 @@
+<Ui>
+	<!--
+	!	Core
+	!	The heart of the framework
+	-->
+
+		<Script file='core\cargBags.lua' />
+		<Script file='core\class.lua' />
+		<Script file='core\implementation.class.lua' />
+		<Script file='core\container.class.lua' />
+		<Script file='core\itemButton.class.lua' />
+
+	<!--
+	!	Extensions
+	!	Everything optional, but probably useful
+	!	More info and dependency lists in the files or on the Wiki
+	!	You can comment things you don't need, experiment!
+	-->
+
+		<!-- Sives -->
+		<!--<Script file='extensions\sieves\bags.sieve.lua' />-->
+		<Script file='extensions\sieves\filters.sieve.lua' />
+
+		<!-- Different stuff -->
+		<Script file='extensions\locale.lua' />
+		<Script file='extensions\parseBags.lua' />
+		<Script file='extensions\textFilter.lua' />
+
+		<!-- Defaults -->
+		<Script file='extensions\defaults\default.source.lua' />
+		<Script file='extensions\defaults\default.scaffold.lua' />
+		<Script file='extensions\defaults\default.sort.lua' />
+		<Script file='extensions\defaults\default.layout.lua' />
+
+		<!-- Itemkeys -->
+		<Script file='extensions\itemkeys\basic.itemkey.lua' />
+		<Script file='extensions\itemkeys\equipSets.itemkey.lua' />
+		<Script file='extensions\itemkeys\tooltip.itemkey.lua' />
+
+		<!-- Plugins -->
+		<Script file='extensions\plugins\bagBar.plugin.lua' />
+		<Script file='extensions\plugins\searchBar.plugin.lua' />
+		<Script file='extensions\plugins\tagDisplay.plugin.lua' />
+</Ui>

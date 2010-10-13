@@ -24,10 +24,9 @@ DEPENDENCIES
 	mixins-add/itemkeys/basic.lua
 ]]
 
-local parent, ns = ...
+local addon, ns = ...
 local cargBags = ns.cargBags
-
-local ItemKeys = cargBags.itemKeys
+cargBags:Provides("EquipSets Itemkey")
 
 local setItems
 
@@ -56,13 +55,12 @@ local function initUpdater()
 	updateSets()
 end
 
-ItemKeys["setID"] = function(i)
+cargBags:Register("itemkey", "setID", function(i)
 	if(not setItems) then initUpdater() end
 	return setItems[i.id]
-end
+end)
 
-ItemKeys["set"] = function(i)
+cargBags:Register("itemkey", "set", function(i)
 	local setID = i.setID
 	return setID and GetEquipmentSetInfo(setID)
-end
-
+end)

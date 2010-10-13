@@ -19,21 +19,18 @@
 
 DESCRIPTION
 	This file provides default sort-functions for your Containers.
-
-DEPENDENCIES
-	mixins/api-common.lua
 ]]
 
 local addon, ns = ...
-local sorts = ns.cargBags.classes.Container.sorts
+local cargBags = ns.cargBags
 
 --[[!
 	Sorts the buttons depending on their bagSlot
 ]]
-function sorts.bagSlot(a, b)
+cargBags:Register("sort", "bagSlot", function(a, b)
 	if(a.bagID == b.bagID) then
 		return a.slotID < b.slotID
 	else
 		return a.bagID < b.bagID
 	end
-end
+end)

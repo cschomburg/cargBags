@@ -23,12 +23,17 @@ DESCRIPTION
 	It is not compatible with other container sieves, especially not
 	with the ones using Implementation:GetContainerForItem()
 ]]
-local _, ns = ...
+local addon, ns = ...
 local cargBags = ns.cargBags
-local Implementation = cargBags.classes.Implementation
-local Container = cargBags.classes.Container
 
-local FilterSet = cargBags:NewClass("FilterSet")
+cargBags:Provides("Sieve")
+cargBags:Provides("FilterSet")
+cargBags:Provides("Filter Sieve")
+
+local Implementation = cargBags.Class:Get("Implementation")
+local Container = cargBags.Class:Get("Container")
+
+local FilterSet = cargBags.Class:New("FilterSet")
 
 --[[!
 	Returns a new FilterSet

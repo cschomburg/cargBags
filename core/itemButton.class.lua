@@ -24,16 +24,18 @@ local cargBags = ns.cargBags
 	@class ItemButton
 		This class serves as the basis for all itemSlots in a container
 ]]
-local ItemButton = cargBags:NewClass("ItemButton", nil, "Button")
+local ItemButton = cargBags.Class:New("ItemButton", nil, "Button")
 
 --[[!
 	Gets a template name for the bagID
 	@param bagID <number> [optional]
 	@return tpl <string>
 ]]
-function ItemButton:GetTemplate(bagID)
+function ItemButton:GetTemplate(bagID, slotID)
 	bagID = bagID or self.bagID
-	return (bagID == -1 and "BankItemButtonGenericTemplate") or (bagID and "ContainerFrameItemButtonTemplate") or "ItemButtonTemplate"
+	slotID = slotID or self.slotID
+
+	return cargBags.implementation.source:GetButtonTemplate(bagID, slotID)
 end
 
 local mt_gen_key = {__index = function(self,k) self[k] = {}; return self[k]; end}
@@ -47,7 +49,7 @@ local mt_gen_key = {__index = function(self,k) self[k] = {}; return self[k]; end
 function ItemButton:New(bagID, slotID)
 	self.recycled = self.recycled or setmetatable({}, mt_gen_key)
 
-	local tpl = self:GetTemplate(bagID)
+	local tpl = self:GetTemplate(bagID, slotID)
 	local button = table.remove(self.recycled[tpl]) or self:Create(tpl)
 
 	button.bagID = bagID
@@ -65,11 +67,12 @@ end
 	@callback button:OnCreate(tpl)
 ]]
 function ItemButton:Create(tpl)
-	local impl = self.implementation
+	local impl = cargBags.implementation
 	impl.numSlots = (impl.numSlots or 0) + 1
 	local name = ("%sSlot%d"):format(impl.name, impl.numSlots)
 
-	local button = setmetatable(CreateFrame("Button", name, nil, tpl), self.__index)
+	local button = self:NewInstance(name, nil, tpl)
+	if(impl.source.OnButtonCreate) then impl.source:OnButtonCreate(button) end
 
 	if(button.Scaffold) then button:Scaffold(tpl) end
 	if(button.OnCreate) then button:OnCreate(tpl) end
@@ -91,6 +94,9 @@ end
 	@return item <table>
 ]]
 function ItemButton:GetItemInfo(item)
-	return self.implementation:GetItemInfo(self.bagID, self.slotID, item)
+	return cargBags.implementation:GetItemInfo(self.bagID, self.slotID, item)
 end
 
+function ItemButton:Scaffold(name, ...)
+	return cargBags:Get("scaffold", name)(self, ...)
+end

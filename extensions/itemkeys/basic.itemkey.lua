@@ -22,27 +22,28 @@ DESCRIPTION:
 	A few simple item keys, mostly ones resulting through pattern matching
 ]]
 
-local parent, ns = ...
+local addon, ns = ...
 local cargBags = ns.cargBags
+cargBags:Provides("Basic Itemkey")
 
 -- Returns the numeric item id (12345)
-cargBags.itemKeys["id"] = function(i)
+cargBags:Register("itemkey", "id", function(i)
 	return i.link and tonumber(i.link:match("item:(%d+)"))
-end
+end)
 
 --	Returns the type of the parent bag
-cargBags.itemKeys["bagType"] = function(i)
+cargBags:Register("itemkey", "bagType", function(i)
 	return select(2, GetContainerNumFreeSlots(i.bagID))
-end
+end)
 
 -- Returns the item string (12345:0:0:0)
-cargBags.itemKeys["string"] = function(i)
+cargBags:Register("itemkey", "string", function(i)
 	return i.link and i.link:match("item:(%d+:%d+:%d+:%d+)")
-end
+end)
 
-cargBags.itemKeys["stats"] = function(i)
+cargBags:Register("itemkey", "stats", function(i)
 	if(not i.link or not GetItemStats) then return end
 	local stats = GetItemStats(i.link)
 	i.stats = stats
 	return stats
-end
+end)

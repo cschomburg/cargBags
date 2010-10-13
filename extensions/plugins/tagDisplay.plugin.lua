@@ -39,8 +39,10 @@ DEPENDENCIES
 CALLBACKS
 	:OnTagUpdate(event) - When the tag is updated
 ]]
-local _, ns = ...
+
+local addon, ns = ...
 local cargBags = ns.cargBags
+cargBags:Provides("TagDisplay")
 
 local tagPool, tagEvents, object = {}, {}
 local function tagger(tag, ...) return object.tags[tag] and object.tags[tag](object, ...) or "" end
@@ -64,7 +66,7 @@ local function setTagString(self, tagString)
 	end
 end
 
-cargBags:RegisterPlugin("TagDisplay", function(self, tagString, parent)
+cargBags:Register("plugin", "TagDisplay", function(self, tagString, parent)
 	parent = parent or self
 	tagString = tagString or ""
 
@@ -75,9 +77,9 @@ cargBags:RegisterPlugin("TagDisplay", function(self, tagString, parent)
 	plugin.tagEvents = tagEvents
 	plugin.iconValues = "16:16:0:0"
 
-	setTagString(plugin, tagString)
+	--setTagString(plugin, tagString)
 
-	self.implementation:RegisterEvent("BAG_UPDATE", plugin, updater)
+	--self.implementation:RegisterEvent("BAG_UPDATE", plugin, updater)
 	return plugin
 end)
 
@@ -94,9 +96,9 @@ end
 tagPool["space"] = function(self, str)
 	local free,max = 0, 0
 	if(self.bags) then
-		for _,id in pairs(self.bags) do
-			free = free + GetContainerNumFreeSlots(id)
-			max = max + GetContainerNumSlots(id)
+		for _, id in pairs(self.bags) do
+			free = free + self.source.GetContainerNumFreeSlots(id)
+			max = max + self.source.GetContainerNumSlots(id)
 		end
 	end
 	str = str or "free/max"

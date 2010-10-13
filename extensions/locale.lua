@@ -27,8 +27,9 @@ USAGE:
 
 	L[englishName] returns localized name
 ]]
-local _, ns = ...
+local addon, ns = ...
 local cargBags = ns.cargBags
+cargBags:Provides("Locale")
 
 local L
 
@@ -58,4 +59,4 @@ function cargBags:GetLocalizedTypes()
 	return L
 end
 
-cargBags.classes.Implementation.GetLocalizedNames = cargBags.GetLocalizedNames
+cargBags.Class:Get("Implementation").GetLocalizedNames = cargBags.GetLocalizedNames

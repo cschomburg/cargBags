@@ -17,14 +17,14 @@
 	along with cargBags; if not, write to the Free Software
 	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 ]]
-local _, ns = ...
+local addon, ns = ...
 local cargBags = ns.cargBags
 
 --[[!
 	@class Container
 		The container class provides the virtual bags for cargBags
 ]]
-local Container = cargBags:NewClass("Container", nil, "Button")
+local Container = cargBags.Class:New("Container", nil, "Button")
 
 local mt_bags = {__index=function(self, bagID)
 	self[bagID] = CreateFrame("Frame", nil, self.container)
@@ -40,18 +40,18 @@ end}
 	@callback container:OnCreate(name, ...)
 ]]
 function Container:New(name, ...)
-	local implName = self.implementation.name
-	local container = setmetatable(CreateFrame("Button", implName..name), self.__index)
+	local impl = cargBags.implementation
+	local container = self:NewInstance(impl.name..name)
 
 	container.name = name
 	container.buttons = {}
 	container.bags = setmetatable({container = container}, mt_bags)
 	container:ScheduleContentCallback()
 
-	container.implementation.contByName[name] = container -- Make this into pretty function?
-	table.insert(container.implementation.contByID, container)
+	impl.contByName[name] = container -- Make this into pretty function?
+	table.insert(impl.contByID, container)
 
-	container:SetParent(self.implementation)
+	container:SetParent(impl)
 
 	if(container.OnCreate) then container:OnCreate(name, ...) end
 
@@ -112,6 +112,23 @@ function Container:ScheduleContentCallback()
 	updater:Show()
 end
 
+
+function Container:LayoutButtons(layout, ...)
+	if(type(layout) == "function") then
+		return layout(self, ...)
+	else
+		return cargBags:Get("layout", layout)(self, ...)
+	end
+end
+
+function Container:SortButtons(sort, ...)
+	if(type(sort) == "function") then
+		table.sort(self.buttons, sort)
+	else
+		table.sort(self.buttons, cargBags:Get("sort", sort))
+	end
+end
+
 --[[
 	Applies a function to the contained buttons
 	@param func <function>
@@ -122,3 +139,5 @@ function Container:ApplyToButtons(func, ...)
 		func(button, ...)
 	end
 end
+
+Container.SpawnPlugin = cargBags.SpawnPlugin

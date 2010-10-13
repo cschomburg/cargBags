@@ -24,7 +24,6 @@ DESCRIPTION
 	function :LayoutButtons() for this
 
 DEPENDENCIES
-	mixins/api-common
 	mixins/parseBags (optional)
 	base-add/filters.sieve.lua (optional)
 
@@ -34,13 +33,10 @@ CALLBACKS
 
 local addon, ns = ...
 local cargBags = ns.cargBags
-local Implementation = cargBags.classes.Implementation
+cargBags:Provides("BagBar")
 
-function Implementation:GetBagButtonClass()
-	return self:GetClass("BagButton", true, "BagButton")
-end
-
-local BagButton = cargBags:NewClass("BagButton", nil, "CheckButton")
+local Implementation = cargBags.Class:Get("Implementation")
+local BagButton = cargBags.Class:New("BagButton", nil, "CheckButton")
 
 -- Default attributes
 BagButton.checkedTex = [[Interface\Buttons\CheckButtonHilight]]
@@ -52,7 +48,7 @@ function BagButton:Create(bagID)
 	buttonNum = buttonNum+1
 	local name = addon.."BagButton"..buttonNum
 
-	local button = setmetatable(CreateFrame("CheckButton", name, nil, "ItemButtonTemplate"), self.__index)
+	local button = self:NewInstance(name, nil, "ItemButtonTemplate")
 
 	local invID = ContainerIDToInventoryID(bagID)
 	button.invID = invID
@@ -71,7 +67,7 @@ function BagButton:Create(bagID)
 	button.Quest = 		_G[name.."IconQuestTexture"]
 	button.Border =		_G[name.."NormalTexture"]
 
-	cargBags.SetScriptHandlers(button, "OnClick", "OnReceiveDrag", "OnEnter", "OnLeave", "OnDragStart")
+	button:SetScriptHandlers("OnClick", "OnReceiveDrag", "OnEnter", "OnLeave", "OnDragStart")
 
 	if(button.OnCreate) then button:OnCreate(bagID) end
 
@@ -197,7 +193,7 @@ local disabled = {
 }
 
 -- Register the plugin
-cargBags:RegisterPlugin("BagBar", function(self, bags)
+cargBags:Register("plugin", "BagBar", function(self, bags)
 	if(cargBags.ParseBags) then
 		bags = cargBags:ParseBags(bags)
 	end
@@ -205,10 +201,9 @@ cargBags:RegisterPlugin("BagBar", function(self, bags)
 	local bar = CreateFrame("Frame",  nil, self)
 	bar.container = self
 
-	bar.layouts = cargBags.classes.Container.layouts
-	bar.LayoutButtons = cargBags.classes.Container.LayoutButtons
+	bar.LayoutButtons = cargBags.Class:Get("Container").LayoutButtons
 
-	local buttonClass = self.implementation:GetBagButtonClass()
+	local buttonClass = cargBags.implementation:GetClass("BagButton")
 	bar.buttons = {}
 	for i=1, #bags do
 		if(not disabled[bags[i]]) then -- Temporary until I include fake buttons for backpack, bankframe and keyring
@@ -219,9 +214,9 @@ cargBags:RegisterPlugin("BagBar", function(self, bags)
 		end
 	end
 
-	self.implementation:RegisterEvent("BAG_UPDATE", bar, updater)
-	self.implementation:RegisterEvent("PLAYERBANKBAGSLOTS_CHANGED", bar, updater)
-	self.implementation:RegisterEvent("ITEM_LOCK_CHANGED", bar, onLock)
+	--self.implementation:RegisterEvent("BAG_UPDATE", bar, updater)
+	--self.implementation:RegisterEvent("PLAYERBANKBAGSLOTS_CHANGED", bar, updater)
+	--self.implementation:RegisterEvent("ITEM_LOCK_CHANGED", bar, onLock)
 
 	return bar
 end)

@@ -24,9 +24,9 @@ DEPENDENCIES
 	mixins/api-common.lua
 ]]
 local addon, ns = ...
-local layouts = ns.cargBags.classes.Container.layouts
+local cargBags = ns.cargBags
 
-function layouts.grid(self, columns, spacing, xOffset, yOffset)
+cargBags:Register("layout", "grid", function(self, columns, spacing, xOffset, yOffset)
 	columns, spacing = columns or 8, spacing or 5
 	xOffset, yOffset = xOffset or 0, yOffset or 0
 
@@ -51,7 +51,7 @@ function layouts.grid(self, columns, spacing, xOffset, yOffset)
 	end
 
 	return columns * (width+spacing)-spacing, row * (height+spacing)-spacing
-end
+end)
 
 --[[!
 	Places the buttons in a circle [experimental]
@@ -59,7 +59,7 @@ end
 	@param xOffset <number> x-offset of the whole layout [default: 0]
 	@param yOffset <number> y-offset of the whole layout [default: 0]
 ]]
-function layouts.circle(self, radius, xOffset, yOffset)
+cargBags:Register("layout", "circle", function(self, radius, xOffset, yOffset)
 	radius = radius or (#self.buttons*50)/math.pi/2
 	xOffset, yOffset = xOffset or 0, yOffset or 0
 
@@ -73,4 +73,4 @@ function layouts.circle(self, radius, xOffset, yOffset)
 		button:SetPoint("TOPLEFT", self, "TOPLEFT", radius+x+xOffset, y-radius+yOffset)
 	end
 	return radius*2, radius*2
-end
+end)

@@ -28,6 +28,8 @@ DEPENDENCIES
 
 local addon, ns = ...
 local cargBags = ns.cargBags
+cargBags:Needs("TextFilter")
+cargBags:Provides("SearchBar")
 
 local function apply(self, container, text, mode)
 	if(text == "" or not text) then
@@ -47,7 +49,7 @@ local function doSearch(self, text)
 	if(self.currFilters) then
 		self.currFilters:Empty()
 	else
-		self.currFilters = cargBags.classes.FilterSet:New()
+		self.currFilters = cargBags.Class:Get("FilterSet"):New()
 	end
 
 	self.currFilters:SetTextFilter(text, self.textFilters)
@@ -84,7 +86,7 @@ local function onEnter(search)
 	if(search.OnEnterPressed) then search:OnEnterPressed() end
 end
 
-cargBags:RegisterPlugin("SearchBar", function(self, target)
+cargBags:Register("plugin", "SearchBar", function(self, target)
 	local search = CreateFrame("EditBox", nil, self)
 	search:SetFontObject(GameFontHighlight)
 	self.Search = search

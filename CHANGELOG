@@ -5,6 +5,18 @@ Releases are normally not backwards-compatible, although changes are kept to a
 minimum!
 In most cases the version tagging follows the scheme Rewrite.Feature.Bugfix
 
+2.2
+* cargBags forces embedding, no standalone framework anymore
+* more intelligent updating -> greatly reduced cpu usage
+* file structure- and API-overhaul for more simplicity
+* Data Sources: a small, important step towards Anywhere bags, guild bank and/or stack compression
+* simple dependency tracking (for extensions and your bag addon)
+
+- embeds.xml is now cargBags.xml
+- cargBags:NewImplementation(name) became cargBags:CreateImplementation(name)
+- GetContainerClass(variant), GetItemButtonClass, ... to GetClass("Container", variant) etc
+- Implementation:RegisterBlizzard() became Implementation:ReplaceBlizzard(replaceBank)
+
 2.1.2
 * bank now updates correctly again (sorry for that!)
 * mostly bagBar changes and equipSets bugfixes
