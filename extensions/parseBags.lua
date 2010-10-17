@@ -49,7 +49,7 @@ Implementation:Register("bagString", "keyring",			{ -2 })
 ]]
 function Implementation:ParseBags(bags)
 	if(type(bags) == "table") then return bags end
-	if(Implementation:Has("bagString", bags)) then return Implementation:Has("bagString", bags) end
+	if(Implementation:Get("bagString", bags)) then return Implementation:Get("bagString", bags) end
 	local min, max = bags and bags:match("(%d+)-(%d+)")
 	if(min) then
 		local t = {}

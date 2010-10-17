@@ -25,13 +25,10 @@ DESCRIPTION
 ]]
 local addon, ns = ...
 local Implementation = ns.cargBags
-
-Implementation:Provides("Sieve")
 Implementation:Provides("FilterSet")
 Implementation:Provides("Filter Sieve")
 
 local Container = Implementation.Class:Get("Container")
-
 local FilterSet = Implementation.Class:New("FilterSet")
 
 --[[!
@@ -126,22 +123,6 @@ function FilterSet:Check(item)
 	return true
 end
 
---[[!
-	Returns the right container for a specific item
-	@param item <ItemTable>
-	@return container <Container>
-]]
-function Implementation:GetContainerForItem(item)
-	for i, container in ipairs(self.containers) do
-		if(not container.filters or container.filters:Check(item)) then
-			return container
-		end
-	end
-end
-
---[[
-	Simple function shortcuts for Containers
-]]
 for name, func in pairs{
 	["SetFilter"] = "Set",
 	["SetExtendedFilter"] = "SetExtended",
@@ -149,17 +130,14 @@ for name, func in pairs{
 	["ChainFilters"] = "Chain",
 	["CheckFilters"]= "Check",
 } do
-	Container[name] = function(self, ...)
-		self.filters = self.filters or FilterSet:New()
-		self.filters[func](self.filters, ...)
+	if(not Container[name]) then
+		Container[name] = function(self, ...)
+			self.filters = self.filters or FilterSet:New()
+			self.filters[func](self.filters, ...)
+		end
 	end
 end
 
---[[!
-	Calls a function(button, result) with the result of the filters on all child-itembuttons
-	@param func <function>
-	@param filters <FilterTable> check against other filters [optional]
-]]
 function Container:FilterForFunction(func, filters)
 	filters = filters or self.filters
 
@@ -169,3 +147,10 @@ function Container:FilterForFunction(func, filters)
 	end
 end
 
+Implementation:Register("sieve", "Filters", function(self, item)
+	for i, container in ipairs(Implementation.containers) do
+		if(not container.filters or container.filters:Check(item)) then
+			return container
+		end
+	end
+end)

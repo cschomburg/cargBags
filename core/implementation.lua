@@ -37,27 +37,24 @@ function Implementation:Register(type, name, value)
 	if(not ext[type]) then ext[type] = {} end
 
 	if(ext[type][name]) then
-		error("Extension '%s' of type '%s' already registered!", type, name)
+		error("Extension '%s' of type '%s' already registered!", name, type)
 	end
 
 	ext[type][name] = value
 end
 
-function Implementation:Has(type, name)
+function Implementation:Get(type, name, verbose)
 	type = type:lower()
-	return self.extensions[type] and self.extensions[type][name]
-end
-
-function Implementation:Get(type, name)
-	local extension = self:Has(type, name)
-	if(not extension) then
-		error("Missing Extension '%s' of type '%s'!", type, name)
+	local extension = self.extensions[type] and self.extensions[type][name]
+	if(verbose and not extension) then
+		error("Missing Extension '%s' of type '%s'!", name, type)
 	end
 	return extension
 end
 
 function Implementation:Provides(extension) self:Register("extension", extension, true) end
-function Implementation:Needs(extension) return self:Get("extension", extension) end
+function Implementation:Has(extension) return self:Get("extension", extension) end
+function Implementation:Needs(extension) return self:Get("extension", extension, true) end
 
 function Implementation.toBagSlot(bagID, slotID)
 	return bagID*100+slotID
@@ -68,7 +65,7 @@ function Implementation.fromBagSlot(bagSlot)
 end
 
 function Implementation:SpawnPlugin(name, ...)
-	return Implementation:Get("plugin", name)(self, ...)
+	return Implementation:Get("plugin", name, true)(self, ...)
 end
 
 function Implementation:Setup(name)
@@ -162,9 +159,16 @@ end
 
 function Implementation:SetSource(source)
 	if(type(source) == "string") then
-		source = self:Get("source", source)
+		source = self:Get("source", source, true)
 	end
 	self.source = source
+end
+
+function Implementation:SetSieve(sieve)
+	if(type(sieve) == "string") then
+		sieve = self:Get("sieve", sieve, true)
+	end
+	self.sieve = sieve
 end
 
 --[[!
@@ -177,9 +181,8 @@ function Implementation:Init()
 
 	if(self.OnInit) then self:OnInit() end
 
-	if(not self.source) then
-		error("Needs a Data Source!")
-	end
+	if(not self.source) then error("Needs a Data Source!") end
+	if(not self.sieve) then error("Needs a Sieve!") end
 	self.source:Enable()
 	self.source:ForceUpdate()
 end
@@ -196,7 +199,7 @@ function Implementation:SetButton(bagID, slotID, button)
 	self.buttons[self.toBagSlot(bagID, slotID)] = button
 end
 
-local defaultItem = setmetatable({}, {__index = function(i,k) return Implementation:Has("itemkey", k) and Implementation:Has("itemkey", k)(i, k) end})
+local defaultItem = setmetatable({}, {__index = function(i,k) return Implementation:Get("itemkey", k) and Implementation:Get("itemkey", k)(i, k) end})
 
 function Implementation:LoadItemInfo(bagID, slotID, i)
 	i = i or defaultItem
@@ -244,7 +247,7 @@ function Implementation:Item_Update(bagID, slotID, message)
 	local button = self:GetButton(bagID, slotID)
 
 	if(self.itemChecks[message]) then
-		local container = self:GetContainerForItem(item, button)
+		local container = self:sieve(item, button)
 		if(not container) then
 			if(button) then
 				button.container:RemoveButton(button)

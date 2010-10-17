@@ -26,37 +26,30 @@ DEPENDENCIES
 ]]
 
 local addon, ns = ...
-local cargBags = ns.cargBags
-cargBags:Provides("Sieve")
-cargBags:Provides("Bags Sieve")
+local Implementation = ns.cargBags
+Implementation:Provides("Bags Sieve")
 
-local Implementation = cargBags.Class:Get("Implementation")
---[[!
-	Returns a container for a specific item [replaces virtual function]
-	@param item <ItemTable>
-	@returns container <Container>
-]]
-function Implementation:GetContainerForItem(item)
-	return item.bagID and self.bagToContainer and self.bagToContainer[item.bagID]
-end
+local Container = Implementation:GetClass("Container")
 
-local Container = cargBags.Class:Get("Container")
+local bagToContainer = {}
+Implementation.bagToContainer = bagToContainer
 
 --[[!
 	Sets the handled bags for a container
 	@param bags <BagType>
 ]]
 function Container:SetBags(bags)
-	if(cargBags.ParseBags) then
-		bags = cargBags:ParseBags(bags)
+	if(Implementation.ParseBags) then
+		bags = Implementation:ParseBags(bags)
 	end
 
 	if(not bags) then return end
 
-	cargBags.implementation.bagToContainer = cargBags.implementation.bagToContainer or {}
-	local b2c = cargBags.implementation.bagToContainer
-
 	for i, bagID in pairs(bags) do
-		b2c[bagID] = self
+		bagToContainer[bagID] = self
 	end
 end
+
+Implementation:Register("sieve", "Bags", function(self, item)
+	return bagToContainer[item.bagID]
+end)

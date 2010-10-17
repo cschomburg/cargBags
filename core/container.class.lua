@@ -114,7 +114,7 @@ function Container:LayoutButtons(layout, ...)
 	if(type(layout) == "function") then
 		return layout(self, ...)
 	else
-		return Implementation:Get("layout", layout)(self, ...)
+		return Implementation:Get("layout", layout, true)(self, ...)
 	end
 end
 
@@ -122,7 +122,7 @@ function Container:SortButtons(sort, ...)
 	if(type(sort) == "function") then
 		table.sort(self.buttons, sort)
 	else
-		table.sort(self.buttons, Implementation:Get("sort", sort))
+		table.sort(self.buttons, Implementation:Get("sort", sort, true))
 	end
 end
 

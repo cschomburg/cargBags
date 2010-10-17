@@ -107,5 +107,5 @@ function ItemButton:GetItemInfo(item)
 end
 
 function ItemButton:Scaffold(name, ...)
-	return Implementation:Get("scaffold", name)(self, ...)
+	return Implementation:Get("scaffold", name, true)(self, ...)
 end
