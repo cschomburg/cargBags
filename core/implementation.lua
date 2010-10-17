@@ -272,13 +272,7 @@ function Implementation:Item_Update(bagID, slotID, message)
 end
 
 function Implementation:Source_Update(name, state)
-	if(name ~= "bank") then return end
-
-	if(state) then
-		self:Open()
-		if(self.OnBankOpened) then self:OnBankOpened() end
-	else
-		self:Close()
-		if(self.OnBankClosed) then self:OnBankClosed() end
+	if(self.OnSourceUpdate) then
+		self:OnSourceUpdate(name, state)
 	end
 end
