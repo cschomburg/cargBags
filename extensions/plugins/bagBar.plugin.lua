@@ -153,11 +153,11 @@ function BagButton:OnClick()
 		if(self.bar.isGlobal) then
 			for i, container in pairs(Implementation.containers) do
 				container:SetFilter(self.filter, self.hidden)
-				Implementation:ForceUpdate()
 			end
+			Implementation:ForceUpdate(self.bagID)
 		else
 			container:SetFilter(self.filter, self.hidden)
-			Implementation:ForceUpdate()
+			Implementation:ForceUpdate(self.bagID)
 		end
 	end
 end

@@ -2,7 +2,7 @@ local addon, ns = ...
 local Implementation = ns.cargBags
 
 local itemLinks, itemCounts, numBagSlots = {}, {}, {}
-local hardUpdate
+local forcedUpdate
 
 local toBagSlot = Implementation.toBagSlot
 
@@ -40,7 +40,7 @@ local function checkSlot(bagID, slotID, newSlotCount, oldSlotCount)
 	if(oLink == nLink) then
 		if(oLink and nCount-oCount ~= 0) then
 			fire("Item_Update", bagID, slotID, "count", oLink, nCount-oCount, nCount)
-		elseif(hardUpdate) then
+		elseif(forcedUpdate) then
 			fire("Slot_Update", bagID, slotID, "forced", nLink, nCount)
 		end
 	elseif(oLink and nLink) then
@@ -133,7 +133,7 @@ updater:SetScript("OnUpdate", function(self)
 		end
 	end
 
-	hardUpdate = nil
+	forcedUpdate = nil
 end)
 
 local DefaultSource = {}
@@ -153,10 +153,18 @@ function DefaultSource:Disable()
 	updater:Hide()
 end
 
-function DefaultSource:ForceUpdate()
-	hardUpdate = true
-	for bagID=-2, 11 do
+function DefaultSource:ForceUpdate(bagID, slotID)
+	forcedUpdate = true
+
+	if(bagID and slotID) then
+		checkSlot(bagID, slotID)
+		forcedUpdate = nil
+	elseif(bagID) then
 		updater:BAG_UPDATE("BAG_UPDATE", bagID)
+	else
+		for bagID=-2, 11 do
+			updater:BAG_UPDATE("BAG_UPDATE", bagID)
+		end
 	end
 end
 
