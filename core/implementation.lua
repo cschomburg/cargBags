@@ -243,10 +243,6 @@ function Implementation:Item_Update(bagID, slotID, message)
 	local item = self:LoadItemInfo(bagID, slotID)
 	local button = self:GetButton(bagID, slotID)
 
-	if(message == "forced") then
-		print("forced", bagID, slotID)
-	end
-
 	if(self.itemChecks[message]) then
 		local container = self:GetContainerForItem(item, button)
 		if(not container) then
