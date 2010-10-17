@@ -27,9 +27,9 @@ DEPENDENCIES
 ]]
 
 local addon, ns = ...
-local cargBags = ns.cargBags
-cargBags:Needs("TextFilter")
-cargBags:Provides("SearchBar")
+local Implementation = ns.cargBags
+Implementation:Needs("TextFilter")
+Implementation:Provides("SearchBar")
 
 local function apply(self, container, text, mode)
 	if(text == "" or not text) then
@@ -39,7 +39,7 @@ local function apply(self, container, text, mode)
 	end
 end
 
-local function doSearch(self, text)
+local function SearchBar_DoSearch(self, text)
 	if(type(text) == "string") then
 		self:SetText(text)
 	else
@@ -49,50 +49,50 @@ local function doSearch(self, text)
 	if(self.currFilters) then
 		self.currFilters:Empty()
 	else
-		self.currFilters = cargBags.Class:Get("FilterSet"):New()
+		self.currFilters = Implementation.Class:Get("FilterSet"):New()
 	end
 
 	self.currFilters:SetTextFilter(text, self.textFilters)
 
 	if(self.isGlobal) then
-		for name, container in pairs(self.parent.implementation.contByName) do
+		for id, container in pairs(Implementation.containers) do
 			apply(self, container, text)
 		end
 	else
 		apply(self, self.parent, text)
 	end
 
-	self.parent.implementation:OnEvent("BAG_UPDATE")
+	Implementation:ForceUpdate()
 end
 
-local function target_openSearch(target)
-	target:Hide()
-	target.search:Show()
+local function Target_OpenSearch(self)
+	self:Hide()
+	self.search:Show()
 end
 
-local function target_closeSearch(search)
-	search.target:Show()
-	search:Hide()
+local function SearchBar_CloseSearch(self)
+	self.target:Show()
+	self:Hide()
 end
 
-local function onEscape(search)
-	doSearch(search, "")
-	search:ClearFocus()
-	if(search.OnEscapePressed) then search:OnEscapePressed() end
+local function SearchBar_OnEscape(self)
+	self:DoSearch("")
+	self:ClearFocus()
+	if(self.OnEscapePressed) then self:OnEscapePressed() end
 end
 
-local function onEnter(search)
-	search:ClearFocus()
-	if(search.OnEnterPressed) then search:OnEnterPressed() end
+local function SearchBar_OnEnter(self)
+	self:ClearFocus()
+	if(self.OnEnterPressed) then self:OnEnterPressed() end
 end
 
-cargBags:Register("plugin", "SearchBar", function(self, target)
+Implementation:Register("plugin", "SearchBar", function(self, target)
 	local search = CreateFrame("EditBox", nil, self)
 	search:SetFontObject(GameFontHighlight)
-	self.Search = search
+	search.parent = self
 
-	search.Clear = onEscape
-	search.DoSearch = search.doSearch
+	search.Clear = SearchBar_OnEscape
+	search.DoSearch = SearchBar_DoSearch
 
 	local left = search:CreateTexture(nil, "BACKGROUND")
 	left:SetTexture("Interface\\Common\\Common-Input-Border")
@@ -118,9 +118,9 @@ cargBags:Register("plugin", "SearchBar", function(self, target)
 	center:SetPoint("LEFT", left, "RIGHT", 0, 0)
 	search.Center = center
 
-	search:SetScript("OnTextChanged", doSearch)
-	search:SetScript("OnEscapePressed", onEscape)
-	search:SetScript("OnEnterPressed", onEnter)
+	search:SetScript("OnTextChanged", SearchBar_DoSearch)
+	search:SetScript("OnEscapePressed", SearchBar_OnEscape)
+	search:SetScript("OnEnterPressed", SearchBar_OnEnter)
 
 	if(target) then
 		search:SetAutoFocus(true)
@@ -129,8 +129,8 @@ cargBags:Register("plugin", "SearchBar", function(self, target)
 
 		target.search, search.target = search, target
 		target:RegisterForClicks("anyUp")
-		target:SetScript("OnClick", target_openSearch)
-		search:SetScript("OnEditFocusLost", target_closeSearch)
+		target:SetScript("OnClick", Target_OpenSearch)
+		search:SetScript("OnEditFocusLost", SearchBar_CloseSearch)
 	end
 
 	return search

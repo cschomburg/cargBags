@@ -102,8 +102,8 @@ end
 	@param item <table> [optional]
 	@return item <table>
 ]]
-function ItemButton:GetItemInfo(item)
-	return Implementation:GetItemInfo(self.bagID, self.slotID, item)
+function ItemButton:LoadItemInfo(item)
+	return Implementation:LoadItemInfo(self.bagID, self.slotID, item)
 end
 
 function ItemButton:Scaffold(name, ...)
