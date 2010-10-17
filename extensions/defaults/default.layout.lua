@@ -19,14 +19,11 @@
 
 DESCRIPTION
 	This file holds a list of default layouts
-
-DEPENDENCIES
-	mixins/api-common.lua
 ]]
 local addon, ns = ...
-local cargBags = ns.cargBags
+local Implementation = ns.cargBags
 
-cargBags:Register("layout", "grid", function(self, columns, spacing, xOffset, yOffset)
+Implementation:Register("layout", "grid", function(self, columns, spacing, xOffset, yOffset)
 	columns, spacing = columns or 8, spacing or 5
 	xOffset, yOffset = xOffset or 0, yOffset or 0
 
@@ -51,26 +48,4 @@ cargBags:Register("layout", "grid", function(self, columns, spacing, xOffset, yO
 	end
 
 	return columns * (width+spacing)-spacing, row * (height+spacing)-spacing
-end)
-
---[[!
-	Places the buttons in a circle [experimental]
-	@param radius <number> radius of the circle [optional]
-	@param xOffset <number> x-offset of the whole layout [default: 0]
-	@param yOffset <number> y-offset of the whole layout [default: 0]
-]]
-cargBags:Register("layout", "circle", function(self, radius, xOffset, yOffset)
-	radius = radius or (#self.buttons*50)/math.pi/2
-	xOffset, yOffset = xOffset or 0, yOffset or 0
-
-	local a = 360/#self.buttons
-
-	for i, button in ipairs(self.buttons) do
-		local x = radius*cos(a*i)
-		local y = -radius*sin(a*i)
-
-		button:ClearAllPoints()
-		button:SetPoint("TOPLEFT", self, "TOPLEFT", radius+x+xOffset, y-radius+yOffset)
-	end
-	return radius*2, radius*2
 end)

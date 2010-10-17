@@ -32,11 +32,10 @@ CALLBACKS
 ]]
 
 local addon, ns = ...
-local cargBags = ns.cargBags
-cargBags:Provides("BagBar")
+local Implementation = ns.cargBags
+Implementation:Provides("BagBar")
 
-local Implementation = cargBags.Class:Get("Implementation")
-local BagButton = cargBags.Class:New("BagButton", nil, "CheckButton")
+local BagButton = Implementation.Class:New("BagButton", nil, "CheckButton")
 
 -- Default attributes
 BagButton.checkedTex = [[Interface\Buttons\CheckButtonHilight]]
@@ -50,9 +49,6 @@ function BagButton:Create(bagID)
 
 	local button = self:NewInstance(name, nil, "ItemButtonTemplate")
 
-	local invID = ContainerIDToInventoryID(bagID)
-	button.invID = invID
-	button:SetID(invID)
 	button.bagID = bagID
 
 	button:RegisterForDrag("LeftButton", "RightButton")
@@ -75,18 +71,17 @@ function BagButton:Create(bagID)
 end
 
 function BagButton:Update()
-	local icon = GetInventoryItemTexture("player", self.invID)
+	local source = Implementation.source
+	local icon, link, locked, enabled = source:GetBagSlotInfo(self.bagID)
 	self.Icon:SetTexture(icon or self.bgTex)
-	self.Icon:SetDesaturated(IsInventoryItemLocked(self.invID))
+	self.Icon:SetDesaturated(locked)
 
-	if(self.bagID > NUM_BAG_SLOTS) then
-		if(self.bagID-NUM_BAG_SLOTS <= GetNumBankSlots()) then
-			self.Icon:SetVertexColor(1, 1, 1)
-			self.notBought = nil
-		else
-			self.notBought = true
-			self.Icon:SetVertexColor(1, 0, 0)
-		end
+	if(source:GetBagSlotInfo(self.bagID, "purchased")) then
+		self.Icon:SetVertexColor(1, 1, 1)
+		self.notBought = nil
+	else
+		self.notBought = true
+		self.Icon:SetVertexColor(1, 0, 0)
 	end
 
 	self:SetChecked(not self.hidden and not self.notBought)
@@ -103,7 +98,7 @@ function BagButton:OnEnter()
 
 	if(hlFunction) then
 		if(self.bar.isGlobal) then
-			for i, container in pairs(self.implementation.contByID) do
+			for i, container in pairs(Implementation.containers) do
 				container:ApplyToButtons(highlight, hlFunction, self.bagID)
 			end
 		else
@@ -111,7 +106,14 @@ function BagButton:OnEnter()
 		end
 	end
 
-	BagSlotButton_OnEnter(self)
+	local icon, link, locked = Implementation.source:GetBagSlotInfo(self.bagID)
+
+	GameTooltip:SetOwner(self, "ANCHOR_LEFT")
+	if(link) then
+		GameTooltip:SetHyperlink(link)
+	else
+		GameTooltip:SetText(EQUIP_CONTAINER, 1, 1, 1)
+	end
 end
 
 function BagButton:OnLeave()
@@ -119,7 +121,7 @@ function BagButton:OnLeave()
 
 	if(hlFunction) then
 		if(self.bar.isGlobal) then
-			for i, container in pairs(self.implementation.contByID) do
+			for i, container in pairs(Implementation.contByID) do
 				container:ApplyToButtons(highlight, hlFunction)
 			end
 		else
@@ -137,7 +139,7 @@ function BagButton:OnClick()
 		return StaticPopup_Show("CONFIRM_BUY_BANK_SLOT")
 	end
 
-	if(PutItemInBag(self.invID)) then return end
+	if(Implementation.source:PutItemInBag(self.bagID)) then return end
 
 	-- Somehow we need to disconnect this from the filter-sieve
 	local container = self.bar.container
@@ -149,41 +151,20 @@ function BagButton:OnClick()
 		self.hidden = not self.hidden
 
 		if(self.bar.isGlobal) then
-			for i, container in pairs(container.implementation.contByID) do
+			for i, container in pairs(Implementation.containers) do
 				container:SetFilter(self.filter, self.hidden)
-				container.implementation:OnEvent("BAG_UPDATE", self.bagID)
+				Implementation:ForceUpdate()
 			end
 		else
 			container:SetFilter(self.filter, self.hidden)
-			container.implementation:OnEvent("BAG_UPDATE", self.bagID)
+			Implementation:ForceUpdate()
 		end
 	end
 end
 BagButton.OnReceiveDrag = BagButton.OnClick
 
 function BagButton:OnDragStart()
-	PickupBagFromSlot(self.invID)
-end
-
--- Updating the icons
-local function updater(self, event)
-	for i, button in pairs(self.buttons) do
-		button:Update()
-	end
-end
-
-local function onLock(self, event, bagID, slotID)
-	if(bagID == -1 and slotID > NUM_BANKGENERIC_SLOTS) then
-		bagID, slotID = ContainerIDToInventoryID(slotID-NUM_BANKGENERIC_SLOTS+NUM_BAG_SLOTS)
-	end
-	
-	if(slotID) then return end
-
-	for i, button in pairs(self.buttons) do
-		if(button.invID == bagID) then
-			return button:Update()
-		end
-	end
+	Implementation.source:PickupBag(self.bagID)
 end
 
 local disabled = {
@@ -193,30 +174,28 @@ local disabled = {
 }
 
 -- Register the plugin
-cargBags:Register("plugin", "BagBar", function(self, bags)
-	if(cargBags.ParseBags) then
-		bags = cargBags:ParseBags(bags)
+Implementation:Register("plugin", "BagBar", function(self, bags, bagButtonClass)
+	if(Implementation.ParseBags) then
+		bags = Implementation:ParseBags(bags)
 	end
 
 	local bar = CreateFrame("Frame",  nil, self)
 	bar.container = self
 
-	bar.LayoutButtons = cargBags.Class:Get("Container").LayoutButtons
+	bar.LayoutButtons = Implementation.Class:Get("Container").LayoutButtons
 
-	local buttonClass = cargBags.implementation:GetClass("BagButton")
+	local buttonClass = Implementation:GetClass("BagButton", bagButtonClass)
 	bar.buttons = {}
 	for i=1, #bags do
 		if(not disabled[bags[i]]) then -- Temporary until I include fake buttons for backpack, bankframe and keyring
 			local button = buttonClass:Create(bags[i])
 			button:SetParent(bar)
 			button.bar = bar
+			Implementation:RegisterCallback("Refresh", button, button.Update)
+			Implementation:RegisterCallback("Inventory_Lock_Changed", button, button.Update)
 			table.insert(bar.buttons, button)
 		end
 	end
-
-	--self.implementation:RegisterEvent("BAG_UPDATE", bar, updater)
-	--self.implementation:RegisterEvent("PLAYERBANKBAGSLOTS_CHANGED", bar, updater)
-	--self.implementation:RegisterEvent("ITEM_LOCK_CHANGED", bar, onLock)
 
 	return bar
 end)

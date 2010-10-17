@@ -29,28 +29,27 @@ DESCRIPTION
 	and returns an indexed table of all bagIDs
 ]]
 local addon, ns = ...
-local cargBags = ns.cargBags
-cargBags:Provides("ParseBags")
+local Implementation = ns.cargBags
+Implementation:Provides("ParseBags")
 
-local Implementation = cargBags.Class:Get("Implementation")
-local Container = cargBags.Class:Get("Container")
+local Container = Implementation.Class:Get("Container")
 
-cargBags:Register("bagString", "backpack",			{ 0 })
-cargBags:Register("bagString", "bags",				{ 1, 2, 3, 4 })
-cargBags:Register("bagString", "backpack+bags",		{ 0, 1, 2, 3, 4, })
-cargBags:Register("bagString", "bankframe",			{ -1 })
-cargBags:Register("bagString", "bank",				{ 5, 6, 7, 8, 9, 10, 11 })
-cargBags:Register("bagString", "bankframe+bank",	{ -1, 5, 6, 7, 8, 9, 10, 11 })
-cargBags:Register("bagString", "keyring",			{ -2 })
+Implementation:Register("bagString", "backpack",			{ 0 })
+Implementation:Register("bagString", "bags",				{ 1, 2, 3, 4 })
+Implementation:Register("bagString", "backpack+bags",		{ 0, 1, 2, 3, 4, })
+Implementation:Register("bagString", "bankframe",			{ -1 })
+Implementation:Register("bagString", "bank",				{ 5, 6, 7, 8, 9, 10, 11 })
+Implementation:Register("bagString", "bankframe+bank",	{ -1, 5, 6, 7, 8, 9, 10, 11 })
+Implementation:Register("bagString", "keyring",			{ -2 })
 
 --[[!
 	Parses a range of bags and outputs a table of indexed bagIDs
 	@param bags <BagType>
 	@return bags <table>
 ]]
-function cargBags:ParseBags(bags)
+function Implementation:ParseBags(bags)
 	if(type(bags) == "table") then return bags end
-	if(cargBags:Has("bagString", bags)) then return cargBags:Has("bagString", bags) end
+	if(Implementation:Has("bagString", bags)) then return Implementation:Has("bagString", bags) end
 	local min, max = bags and bags:match("(%d+)-(%d+)")
 	if(min) then
 		local t = {}
@@ -65,5 +64,3 @@ function cargBags:ParseBags(bags)
 		return t
 	end
 end
-
-Implementation.ParseBags = cargBags.ParseBags

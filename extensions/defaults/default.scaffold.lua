@@ -23,7 +23,7 @@ DESCRIPTION
 ]]
 
 local addon, ns = ...
-local cargBags = ns.cargBags
+local Implementation = ns.cargBags
 
 local function noop() end
 
@@ -123,7 +123,7 @@ local function ItemButton_UpdateQuest(self, item)
 	if(self.OnUpdateQuest) then self:OnUpdateQuest(item) end
 end
 
-cargBags:Register("scaffold", "Default", function(self)
+Implementation:Register("scaffold", "Default", function(self)
 	self.glowTex = "Interface\\Buttons\\UI-ActionButton-Border" --! @property glowTex <string> The textures used for the glow
 	self.glowAlpha = 0.8 --! @property glowAlpha <number> The alpha of the glow texture
 	self.glowBlend = "ADD" --! @property glowBlend <string> The blendMode of the glow texture
@@ -137,6 +137,14 @@ cargBags:Register("scaffold", "Default", function(self)
 	self.UpdateCooldown = ItemButton_UpdateCooldown
 	self.UpdateLock = ItemButton_UpdateLock
 	self.UpdateQuest = ItemButton_UpdateQuest
+
+	self.handlers['added'] = "Update"
+	self.handlers['removed'] = "Update"
+	self.handlers['changed'] = "Update"
+	self.handlers['count'] = "Update"
+	self.handlers['lock'] = "UpdateLock"
+	self.handlers['cooldown'] = "UpdateCooldown"
+	self.handlers['quest'] = "UpdateQuest"
 
 	self.OnEnter = ItemButton_OnEnter
 	self.OnLeave = ItemButton_OnLeave

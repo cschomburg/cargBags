@@ -18,13 +18,14 @@
 	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 ]]
 local addon, ns = ...
-local cargBags = ns.cargBags
+local Implementation = ns.cargBags
 
 --[[!
 	@class ItemButton
 		This class serves as the basis for all itemSlots in a container
 ]]
-local ItemButton = cargBags.Class:New("ItemButton", nil, "Button")
+local ItemButton = Implementation.Class:New("ItemButton", nil, "Button")
+ItemButton.handlers = {}
 
 --[[!
 	Gets a template name for the bagID
@@ -35,7 +36,7 @@ function ItemButton:GetTemplate(bagID, slotID)
 	bagID = bagID or self.bagID
 	slotID = slotID or self.slotID
 
-	return cargBags.implementation.source:GetButtonTemplate(bagID, slotID)
+	return Implementation.source:GetButtonTemplate(bagID, slotID)
 end
 
 local mt_gen_key = {__index = function(self,k) self[k] = {}; return self[k]; end}
@@ -66,13 +67,14 @@ end
 	@return button <ItemButton>
 	@callback button:OnCreate(tpl)
 ]]
+
+local numSlots = 0
 function ItemButton:Create(tpl)
-	local impl = cargBags.implementation
-	impl.numSlots = (impl.numSlots or 0) + 1
-	local name = ("%sSlot%d"):format(impl.name, impl.numSlots)
+	numSlots = numSlots + 1
+	local name = ("%sSlot%d"):format(Implementation.name, numSlots)
 
 	local button = self:NewInstance(name, nil, tpl)
-	if(impl.source.OnButtonCreate) then impl.source:OnButtonCreate(button) end
+	if(Implementation.source.OnButtonCreate) then Implementation.source:OnButtonCreate(button) end
 
 	if(button.Scaffold) then button:Scaffold(tpl) end
 	if(button.OnCreate) then button:OnCreate(tpl) end
@@ -88,15 +90,22 @@ function ItemButton:Free()
 	table.insert(self.recycled[self:GetTemplate()], self)
 end
 
+function ItemButton:Handle(message, item)
+	local funcName = self.handlers[message]
+	if(funcName) then
+		self[funcName](self, item)
+	end
+end
+
 --[[!
 	Fetches the item-info of the button, just a small wrapper for comfort
 	@param item <table> [optional]
 	@return item <table>
 ]]
 function ItemButton:GetItemInfo(item)
-	return cargBags.implementation:GetItemInfo(self.bagID, self.slotID, item)
+	return Implementation:GetItemInfo(self.bagID, self.slotID, item)
 end
 
 function ItemButton:Scaffold(name, ...)
-	return cargBags:Get("scaffold", name)(self, ...)
+	return Implementation:Get("scaffold", name)(self, ...)
 end

@@ -23,25 +23,25 @@ DESCRIPTION:
 ]]
 
 local addon, ns = ...
-local cargBags = ns.cargBags
-cargBags:Provides("Basic Itemkey")
+local Implementation = ns.cargBags
+Implementation:Provides("Basic Itemkey")
 
 -- Returns the numeric item id (12345)
-cargBags:Register("itemkey", "id", function(i)
+Implementation:Register("itemkey", "id", function(i)
 	return i.link and tonumber(i.link:match("item:(%d+)"))
 end)
 
 --	Returns the type of the parent bag
-cargBags:Register("itemkey", "bagType", function(i)
+Implementation:Register("itemkey", "bagType", function(i)
 	return select(2, GetContainerNumFreeSlots(i.bagID))
 end)
 
 -- Returns the item string (12345:0:0:0)
-cargBags:Register("itemkey", "string", function(i)
+Implementation:Register("itemkey", "string", function(i)
 	return i.link and i.link:match("item:(%d+:%d+:%d+:%d+)")
 end)
 
-cargBags:Register("itemkey", "stats", function(i)
+Implementation:Register("itemkey", "stats", function(i)
 	if(not i.link or not GetItemStats) then return end
 	local stats = GetItemStats(i.link)
 	i.stats = stats

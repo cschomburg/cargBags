@@ -1,10 +1,10 @@
 local addon, ns = ...
-local cargBags = ns.cargBags
+local Implementation = ns.cargBags
 
 local itemLinks, itemCounts, numBagSlots = {}, {}, {}
 local hardUpdate
 
-local toBagSlot = cargBags.toBagSlot
+local toBagSlot = Implementation.toBagSlot
 
 local function getDB(bagID, slotID)
 	local bagSlot = toBagSlot(bagID, slotID)
@@ -23,7 +23,7 @@ local function setDB(bagID, slotID, link, count)
 end
 
 local function fire(event, ...)
-	cargBags.implementation:Handle(event, ...)
+	Implementation:Handle(event, ...)
 end
 
 local function checkSlot(bagID, slotID, newSlotCount, oldSlotCount)
@@ -32,31 +32,30 @@ local function checkSlot(bagID, slotID, newSlotCount, oldSlotCount)
 	setDB(bagID, slotID, nLink, nCount)
 
 	if(oldSlotCount and slotID > oldSlotCount) then
-		fire("Slot_Added", bagID, slotID)
+		fire("Slot_Update", bagID, slotID, "added")
 	elseif(newSlotCount and slotID > newSlotCount) then
-		fire("Slot_Removed", bagID, slotID)
+		return fire("Slot_Update", bagID, slotID, "removed")
 	end
 
 	if(oLink == nLink) then
 		if(oLink and nCount-oCount ~= 0) then
-			fire("Item_Count_Changed", bagID, slotID, oLink, nCount-oCount, nCount)
+			fire("Item_Update", bagID, slotID, "count", oLink, nCount-oCount, nCount)
 		elseif(hardUpdate) then
-			fire("Slot_Update_Forced", bagID, slotID, nLink, nCount)
+			fire("Slot_Update", bagID, slotID, "forced", nLink, nCount)
 		end
 	elseif(oLink and nLink) then
-		fire("Item_Changed", bagID, slotID, nLink, oLink, nCount, oCount)
+		fire("Item_Update", bagID, slotID, "changed", nLink, oLink, nCount, oCount)
 	elseif(oLink) then
-		fire("Item_Removed", bagID, slotID, oLink, oCount)
+		fire("Item_Update", bagID, slotID, "removed", oLink, oCount)
 	else
-		fire("Item_Added", bagID, slotID, nLink, nCount)
+		fire("Item_Update", bagID, slotID, "added", nLink, nCount)
 	end
 end
 
 local bagUpdates = {}
 local hasSource = {}
 
--- I should integrate this into cargBags, somehow
-local updater = CreateFrame("Frame", nil, cargBags)
+local updater = CreateFrame("Frame", nil, Implementation)
 updater:Hide()
 updater:SetScript("OnEvent", function(self, event, ...) self[event](self, event, ...) end)
 
@@ -93,16 +92,29 @@ function updater:BANKFRAME_CLOSED(event)
 end
 
 function updater:BAG_UPDATE_COOLDOWN(event, bagID)
+	if(not bagID) then
+		for bagID=-1, 11 do
+			self:BAG_UPDATE(event, bagID)
+		end
+		return
+	end
+
 	for slotID=1, GetContainerNumSlots(bagID) do
 		if(getDB(bagID, slotID)) then
-			fire("Item_Cooldown_Changed", bagID, slotID)
+			fire("Item_Update", bagID, slotID, "cooldown")
 		end
 	end
 end
 
 function updater:ITEM_LOCK_CHANGED(event, bagID, slotID)
+	if(bagID == -1 and slotID > 28) then
+		bagID, slotID = ContainerIDToInventoryID(slotID-28)
+	end
+
 	if(bagID and slotID) then
-		fire("Item_Lock_Changed", bagID, slotID)
+		fire("Item_Update", bagID, slotID, "lock")
+	elseif(bagID) then
+		fire("Inventory_Lock_Changed", bagID)
 	end
 end
 
@@ -120,17 +132,11 @@ updater:SetScript("OnUpdate", function(self)
 			checkSlot(bagID, slotID, newSlotCount, oldSlotCount)
 		end
 	end
+
+	hardUpdate = nil
 end)
 
 local DefaultSource = {}
-
-DefaultSource.pipes = {
-	["GetContainerItemInfo"] = GetContainerItemInfo,
-	["GetContainerItemLink"] = GetContainerItemLink,
-	["GetContainerItemCooldown"] = GetContainerItemCooldown,
-	["GetContainerNumSlots"] = GetContainerNumSlots,
-	["GetContainerNumFreeSlots"] = GetContainerNumFreeSlots,
-}
 
 function DefaultSource:Enable()
 	updater:RegisterEvent("BAG_UPDATE")
@@ -147,12 +153,11 @@ function DefaultSource:Disable()
 	updater:Hide()
 end
 
-function DefaultSource:Update()
+function DefaultSource:ForceUpdate()
 	hardUpdate = true
 	for bagID=-2, 11 do
 		updater:BAG_UPDATE("BAG_UPDATE", bagID)
 	end
-	hardUpdate = nil
 end
 
 function DefaultSource:LoadItemInfo(i)
@@ -167,6 +172,52 @@ function DefaultSource:LoadItemInfo(i)
 	end
 end
 
+function DefaultSource:GetItemSlotInfo(bagID, slotID, type)
+	if(not type) then
+		return GetContainerItemInfo(bagID, slotID)
+	elseif(type == "link") then
+		return GetContainerItemLink(bagID, slotID)
+	elseif(type == "cooldown") then
+		return GetContainerItemCooldown(bagID, slotID)
+	elseif(type == "quest") then
+		return GetContainerItemQuestInfo(bagID, slotID)
+	end
+end
+
+function DefaultSource:GetBagSlotInfo(bagID, type)
+	if(type == "slots") then
+		return GetContainerNumSlots(bagID), GetContainerNumFreeSlots(bagID)
+	elseif(not type) then
+		local invID = ContainerIDToInventoryID(bagID)
+		local texture = GetInventoryItemTexture("player", invID)
+		local link = GetInventoryItemLink("player", invID)
+		local locked = IsInventoryItemLocked(invID)
+		return texture, link, locked
+	elseif(type == "purchased") then
+		if(bagID >= 5 and bagID <= 11) then
+			return bagID-4 <= GetNumBankSlots()
+		else
+			return true
+		end
+	end
+end
+
+function DefaultSource:PutItemInBag(bagID)
+	return PutItemInBag(ContainerIDToInventoryID(bagID))
+end
+
+function DefaultSource:PickupBag(bagID)
+	return PickupBagFromSlot(ContainerIDToInventoryID(bagID))
+end
+
+function DefaultSource:CanInteract(bagID)
+	if(bagID == -1 or (bagID >= 5 and bagID <= 11)) then
+		return has['bank']
+	else
+		return true
+	end
+end
+
 function DefaultSource:Has(source)
 	return has[source]
 end
@@ -175,4 +226,4 @@ function DefaultSource:GetButtonTemplate(bagID, slotID)
 	return (bagID == -1 and "BankItemButtonGenericTemplate") or (bagID and "ContainerFrameItemButtonTemplate") or "ItemButtonTemplate"
 end
 
-cargBags:Register("source", "Default", DefaultSource)
+Implementation:Register("source", "Default", DefaultSource)

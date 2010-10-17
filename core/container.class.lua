@@ -18,13 +18,13 @@
 	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 ]]
 local addon, ns = ...
-local cargBags = ns.cargBags
+local Implementation = ns.cargBags
 
 --[[!
 	@class Container
 		The container class provides the virtual bags for cargBags
 ]]
-local Container = cargBags.Class:New("Container", nil, "Button")
+local Container = Implementation.Class:New("Container", nil, "Button")
 
 local mt_bags = {__index=function(self, bagID)
 	self[bagID] = CreateFrame("Frame", nil, self.container)
@@ -40,18 +40,15 @@ end}
 	@callback container:OnCreate(name, ...)
 ]]
 function Container:New(name, ...)
-	local impl = cargBags.implementation
-	local container = self:NewInstance(impl.name..name)
+	local container = self:NewInstance(Implementation.name..name)
 
 	container.name = name
 	container.buttons = {}
 	container.bags = setmetatable({container = container}, mt_bags)
 	container:ScheduleContentCallback()
 
-	impl.contByName[name] = container -- Make this into pretty function?
-	table.insert(impl.contByID, container)
-
-	container:SetParent(impl)
+	table.insert(Implementation.containers, container)
+	container:SetParent(Implementation)
 
 	if(container.OnCreate) then container:OnCreate(name, ...) end
 
@@ -117,7 +114,7 @@ function Container:LayoutButtons(layout, ...)
 	if(type(layout) == "function") then
 		return layout(self, ...)
 	else
-		return cargBags:Get("layout", layout)(self, ...)
+		return Implementation:Get("layout", layout)(self, ...)
 	end
 end
 
@@ -125,7 +122,7 @@ function Container:SortButtons(sort, ...)
 	if(type(sort) == "function") then
 		table.sort(self.buttons, sort)
 	else
-		table.sort(self.buttons, cargBags:Get("sort", sort))
+		table.sort(self.buttons, Implementation:Get("sort", sort))
 	end
 end
 
@@ -140,4 +137,4 @@ function Container:ApplyToButtons(func, ...)
 	end
 end
 
-Container.SpawnPlugin = cargBags.SpawnPlugin
+Container.SpawnPlugin = Implementation.SpawnPlugin

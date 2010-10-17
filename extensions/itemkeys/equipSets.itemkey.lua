@@ -25,8 +25,8 @@ DEPENDENCIES
 ]]
 
 local addon, ns = ...
-local cargBags = ns.cargBags
-cargBags:Provides("EquipSets Itemkey")
+local Implementation = ns.cargBags
+Implementation:Provides("EquipSets Itemkey")
 
 local setItems
 
@@ -49,18 +49,18 @@ local function initUpdater()
 	updater:RegisterEvent("EQUIPMENT_SETS_CHANGED")
 	updater:SetScript("OnEvent", function()
 		updateSets()
-		cargBags:FireEvent("BAG_UPDATE")
+		Implementation:ForceUpdate()
 	end)
 
 	updateSets()
 end
 
-cargBags:Register("itemkey", "setID", function(i)
+Implementation:Register("itemkey", "setID", function(i)
 	if(not setItems) then initUpdater() end
 	return setItems[i.id]
 end)
 
-cargBags:Register("itemkey", "set", function(i)
+Implementation:Register("itemkey", "set", function(i)
 	local setID = i.setID
 	return setID and GetEquipmentSetInfo(setID)
 end)

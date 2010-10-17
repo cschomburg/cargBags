@@ -21,9 +21,10 @@ LICENSE
 DESCRIPTION:
 	Item keys which require tooltip parsing to work
 ]]
+
 local addon, ns = ...
-local cargBags = ns.cargBags
-cargBags:Provides("Tooltip Itemkey")
+local Implementation = ns.cargBags
+Implementation:Provides("Tooltip Itemkey")
 
 local tipName = math.random(1, 1e3).."Tooltip"
 local tooltip
@@ -37,7 +38,7 @@ local function generateTooltip()
 	)
 end
 
-cargBags:Register("itemkey", "bindOn", function(i)
+Implementation:Register("itemkey", "bindOn", function(i)
 	if(not i.link) then return end
 
 	if(not tooltip) then generateTooltip() end

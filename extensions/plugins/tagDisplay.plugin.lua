@@ -77,9 +77,9 @@ cargBags:Register("plugin", "TagDisplay", function(self, tagString, parent)
 	plugin.tagEvents = tagEvents
 	plugin.iconValues = "16:16:0:0"
 
-	--setTagString(plugin, tagString)
+	setTagString(plugin, tagString)
 
-	--self.implementation:RegisterEvent("BAG_UPDATE", plugin, updater)
+	self.implementation:RegisterEvent("BAG_UPDATE", plugin, updater)
 	return plugin
 end)
 

@@ -4,9 +4,8 @@
 	!	The heart of the framework
 	-->
 
-		<Script file='core\cargBags.lua' />
-		<Script file='core\class.lua' />
-		<Script file='core\implementation.class.lua' />
+		<Script file='core\simpleOOP.lua' />
+		<Script file='core\implementation.lua' />
 		<Script file='core\container.class.lua' />
 		<Script file='core\itemButton.class.lua' />
 
@@ -39,6 +38,6 @@
 
 		<!-- Plugins -->
 		<Script file='extensions\plugins\bagBar.plugin.lua' />
-		<Script file='extensions\plugins\searchBar.plugin.lua' />
-		<Script file='extensions\plugins\tagDisplay.plugin.lua' />
+		<!--<Script file='extensions\plugins\searchBar.plugin.lua' />-->
+		<!--<Script file='extensions\plugins\tagDisplay.plugin.lua' />-->
 </Ui>

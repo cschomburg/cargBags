@@ -27,23 +27,21 @@ DEPENDENCIES:
 ]]
 
 local addon, ns = ...
-local cargBags = ns.cargBags
-cargBags:Needs("FilterSet")
-cargBags:Provides("TextFilter")
+local Implementation = ns.cargBags
+Implementation:Needs("FilterSet")
+Implementation:Provides("TextFilter")
 
-local Container = cargBags.Class:Get("Container")
-local Implementation = cargBags.Class:Get("Implementation")
-local FilterSet = cargBags.Class:Get("FilterSet")
+local Container = Implementation.Class:Get("Container")
+local FilterSet = Implementation.Class:Get("FilterSet")
 
-local defaultFilters = {
+FilterSet.defaultTextFilter = "n"
+FilterSet.textFilters = {
 	n = function(i, arg) return i.name and i.name:lower():match(arg) end,
 	t = function(i, arg) return (i.type and i.type:lower():match(arg)) or (i.subType and i.subType:lower():match(arg)) or (i.equipLoc and i.equipLoc:lower():match(arg)) end,
 	b = function(i, arg) return i.bindOn and i.bindOn:match(arg) end,
 	q = function(i, arg) return i.rarity == tonumber(arg) end,
 	bag = function(i, arg) return i.bagID == tonumber(arg) end,
 	quest = function(i, arg) return i.isQuestItem end,
-
-	_default = "n",
 }
 
 --[[
@@ -53,17 +51,31 @@ local defaultFilters = {
 
 	@note Basically works like this: text ----textFilters----> FilterSet	
 ]]
-function FilterSet:SetTextFilter(text, textFilters)
-	textFilters = textFilters or defaultFilters
+
+
+function FilterSet:SetTextFilter(text, caseSensitive)
+	local filters = self.textFilters
 
 	for match in text:gmatch("[^,;&]+") do
 		local mod, type, value = match:trim():match("^(!?)(.-)[:=]?([^:=]*)$")
-		mod = (mod == "!" and -1) or true
-		if(value and type ~= "" and textFilters[type]) then
-			self:SetExtended(textFilters[type], value:lower(), mod)
-		elseif(value and type == "" and textFilters._default) then
-			local name = textFilters._default
-			self:SetExtended(textFilters[name], value:lower(), mod)
+
+		if(value) then
+			mod = (mod == "!" and -1) or true
+
+			if(value and caseSensitive) then
+				value = value:lower()
+			end
+
+			local filter
+			if(type ~= "" and filters[type]) then
+				filter = filters[type]
+			elseif(type == "" and self.defaultTextFilter) then
+				filter = filters[self.defaultTextFilter]
+			end
+
+			if(filter) then
+				self:SetExtended(filter, value, mod)
+			end
 		end
 	end
 end
@@ -77,5 +89,3 @@ function Container:SetTextFilter(text, textFilters)
 	self.filters = self.filters or FilterSet:New()
 	self.filters:SetTextFilter(text, textFilters)
 end
-
-cargBags.textFilters = defaultFilters

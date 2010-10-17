@@ -24,16 +24,15 @@ DESCRIPTION
 	with the ones using Implementation:GetContainerForItem()
 ]]
 local addon, ns = ...
-local cargBags = ns.cargBags
+local Implementation = ns.cargBags
 
-cargBags:Provides("Sieve")
-cargBags:Provides("FilterSet")
-cargBags:Provides("Filter Sieve")
+Implementation:Provides("Sieve")
+Implementation:Provides("FilterSet")
+Implementation:Provides("Filter Sieve")
 
-local Implementation = cargBags.Class:Get("Implementation")
-local Container = cargBags.Class:Get("Container")
+local Container = Implementation.Class:Get("Container")
 
-local FilterSet = cargBags.Class:New("FilterSet")
+local FilterSet = Implementation.Class:New("FilterSet")
 
 --[[!
 	Returns a new FilterSet
@@ -133,7 +132,7 @@ end
 	@return container <Container>
 ]]
 function Implementation:GetContainerForItem(item)
-	for i, container in ipairs(self.contByID) do
+	for i, container in ipairs(self.containers) do
 		if(not container.filters or container.filters:Check(item)) then
 			return container
 		end

@@ -22,12 +22,12 @@ DESCRIPTION
 ]]
 
 local addon, ns = ...
-local cargBags = ns.cargBags
+local Implementation = ns.cargBags
 
 --[[!
 	Sorts the buttons depending on their bagSlot
 ]]
-cargBags:Register("sort", "bagSlot", function(a, b)
+Implementation:Register("sort", "bagSlot", function(a, b)
 	if(a.bagID == b.bagID) then
 		return a.slotID < b.slotID
 	else

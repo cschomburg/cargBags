@@ -28,8 +28,8 @@ USAGE:
 	L[englishName] returns localized name
 ]]
 local addon, ns = ...
-local cargBags = ns.cargBags
-cargBags:Provides("Locale")
+local Implementation = ns.cargBags
+Implementation:Provides("Locale")
 
 local L
 
@@ -37,7 +37,7 @@ local L
 	Fetches/creates a table of localized type names
 	@return locale <table>
 ]]
-function cargBags:GetLocalizedTypes()
+function Implementation:GetLocalizedTypes()
 	if(L) then return L end
 
 	L = {}
@@ -58,5 +58,3 @@ function cargBags:GetLocalizedTypes()
 
 	return L
 end
-
-cargBags.Class:Get("Implementation").GetLocalizedNames = cargBags.GetLocalizedNames
