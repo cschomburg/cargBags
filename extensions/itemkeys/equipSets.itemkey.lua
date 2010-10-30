@@ -40,7 +40,9 @@ local function initUpdater()
 			local items = GetEquipmentSetItemIDs(name)
 
 			for slot, id in pairs(items) do
-				setItems[id] = setID
+				setItems[id] = setItems[id] or {}
+				setItems[id][setID] = true
+				setItems[id][name] = true
 			end
 		end
 	end
@@ -55,12 +57,20 @@ local function initUpdater()
 	updateSets()
 end
 
-Implementation:Register("itemkey", "setID", function(i)
-	if(not setItems) then initUpdater() end
-	return setItems[i.id]
-end)
+local item
+local function checkSetItem(set)
+	local id = item and item.id
+	item = nil
+	if(not id) then return end
 
-Implementation:Register("itemkey", "set", function(i)
-	local setID = i.setID
-	return setID and GetEquipmentSetInfo(setID)
+	local sets = setItems[item.id]
+	if(sets and (not set or sets[set])) then
+		return true
+	end
+end
+
+Implementation:Register("itemkey", "inSet", function(i)
+	if(not setItems) then initUpdater() end
+	item = i
+	return checkSetItem
 end)
