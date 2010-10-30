@@ -22,7 +22,6 @@
 
 		<!-- Different stuff -->
 		<Script file='extensions\locale.lua' />
-		<Script file='extensions\parseBags.lua' />
 		<Script file='extensions\textFilter.lua' />
 
 		<!-- Defaults -->

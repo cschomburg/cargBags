@@ -279,3 +279,37 @@ function Implementation:Source_Update(name, state)
 		self:OnSourceUpdate(name, state)
 	end
 end
+
+Implementation:Register("bagString", "backpack",			{ 0 })
+Implementation:Register("bagString", "bags",				{ 1, 2, 3, 4 })
+Implementation:Register("bagString", "bankframe",			{ -1 })
+Implementation:Register("bagString", "bank",				{ 5, 6, 7, 8, 9, 10, 11 })
+Implementation:Register("bagString", "keyring",			{ -2 })
+
+function Implementation:ParseBags(bags)
+	-- Is already a bag table? Return it
+	if(type(bags) == "table") then return bags end
+
+	-- Check if it is a cached bagString
+	local bagString = Implementation:Get("bagString", bags)
+	if(bagString) then return bagString end
+
+	-- Build a bagString, combined from previous bagStrings or bagIDs
+	local idHash, idTable = {}, {}
+	for i, match in bags:gmatch("([+-,]?%w+)") do
+		local op, str = match:match("^([+-,]?)(%w+)$")
+		local subTable = Implementation:Get("bagString", bags)
+		if(subTable) then
+			for i, bagID in pairs(subTable) do
+				idHash[bagID] = (op ~= "-") and true or nil
+			end
+		elseif(tonumber(str)) then
+			idHash[tonumber(str)] = (op ~= "-") and true or nil
+		end
+	end
+	for bagID in pairs(idHash) do
+		table.insert(idTable, bagID)
+	end
+	Implementation:Register("bagString", bags, idTable)
+	return idTable
+end
