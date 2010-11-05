@@ -34,6 +34,13 @@ local widgets = setmetatable({}, {__index = function(self, widget)
 	return self[widget]
 end})
 
+--[[!
+	Creates a new class
+	-> name <string>
+	-> parent <string> parent class [optional]
+	-> widget <string> widget type [optional]
+	<- class <Prototype>
+]]
 function SimpleOOP:New(name, parent, widget)
 	if(classes[name]) then return end
 	local class = {}
@@ -61,10 +68,20 @@ function SimpleOOP:New(name, parent, widget)
 	return class
 end
 
+--[[!
+	Fetches a class, if available
+	-> name <string>
+	<- class <Prototype, nil>
+]]
 function SimpleOOP:Get(name)
 	return classes[name]
 end
 
+--[[!
+	Creates a new instance of this class
+	-> ... arguments passed to CreateFrame(X, ...) [optional]
+	<- instance <Instance>
+]]
 function Prototype:NewInstance(...)
 	local instance = self._widgetName and CreateFrame(self._widgetName, ...) or {}
 	return setmetatable(instance, self.__index)
@@ -75,6 +92,10 @@ local handlerFuncs = setmetatable({}, {__index=function(self, handler)
 	return self[handler]
 end})
 
+--[[!
+	Sets a row of script handlers, directing them to functions
+	-> ... <string> names of script handlers to set
+]]
 function Prototype:SetScriptHandlers(...)
 	for i=1, select("#", ...) do
 		local handler = select(i, ...)

@@ -18,34 +18,22 @@
 	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 DESCRIPTION
-	This file holds a list of default layouts
+	This file provides default sort-functions for your Containers.
+
+PROVIDES
+	sort: bagSlot
 ]]
+
 local addon, ns = ...
-local Implementation = ns.cargBags
+local Core = ns.cargBags
 
-Implementation:Register("layout", "grid", function(self, columns, spacing, xOffset, yOffset)
-	columns, spacing = columns or 8, spacing or 5
-	xOffset, yOffset = xOffset or 0, yOffset or 0
-
-
-	local width, height = 0, 0
-	local col, row = 0, 0
-	for i, button in ipairs(self.buttons) do
-
-		if(i == 1) then -- Hackish, I know
-			width, height = button:GetSize()
-		end
-
-		col = i % columns
-		if(col == 0) then col = columns end
-		row = math.ceil(i/columns)
-
-		local xPos = (col-1) * (width + spacing)
-		local yPos = -1 * (row-1) * (height + spacing)
-
-		button:ClearAllPoints()
-		button:SetPoint("TOPLEFT", self, "TOPLEFT", xPos+xOffset, yPos+yOffset)
+--[[
+	Sorts the buttons depending on their bagSlot
+]]
+Core:Register("sort", "bagSlot", function(a, b)
+	if(a.bagID == b.bagID) then
+		return a.slotID < b.slotID
+	else
+		return a.bagID < b.bagID
 	end
-
-	return columns * (width+spacing)-spacing, row * (height+spacing)-spacing
 end)

@@ -20,12 +20,12 @@
 DESCRIPTION
 	Item keys for the Blizz equipment sets
 
-DEPENDENCIES
-	mixins-add/itemkeys/basic.lua
+PROVIDES
+	itemkey: inSet
 ]]
 
 local addon, ns = ...
-local Implementation = ns.cargBags
+local Core = ns.cargBags
 
 local setItems
 
@@ -68,7 +68,7 @@ local function checkSetItem(set)
 	end
 end
 
-Implementation:Register("itemkey", "inSet", function(i)
+Core:Register("itemkey", "inSet", function(i)
 	if(not setItems) then initUpdater() end
 	item = i
 	return checkSetItem

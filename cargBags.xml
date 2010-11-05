@@ -5,7 +5,7 @@
 	-->
 
 		<Script file='core\simpleOOP.lua' />
-		<Script file='core\implementation.lua' />
+		<Script file='core\core.lua' />
 		<Script file='core\container.class.lua' />
 		<Script file='core\itemButton.class.lua' />
 
@@ -20,15 +20,15 @@
 		<Script file='extensions\sieves\bags.sieve.lua' />
 		<Script file='extensions\sieves\filters.sieve.lua' />
 
-		<!-- Different stuff -->
+		<!-- Mixed extensions -->
 		<Script file='extensions\locale.lua' />
 		<Script file='extensions\textFilter.lua' />
 
-		<!-- Defaults -->
-		<Script file='extensions\defaults\default.source.lua' />
-		<Script file='extensions\defaults\default.scaffold.lua' />
-		<Script file='extensions\defaults\default.sort.lua' />
-		<Script file='extensions\defaults\default.layout.lua' />
+		<!-- Default extensions -->
+		<Script file='extensions\default.source.lua' />
+		<Script file='extensions\default.scaffold.lua' />
+		<Script file='extensions\default.sort.lua' />
+		<Script file='extensions\default.layout.lua' />
 
 		<!-- Itemkeys -->
 		<Script file='extensions\itemkeys\basic.itemkey.lua' />

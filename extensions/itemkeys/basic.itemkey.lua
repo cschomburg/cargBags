@@ -1,5 +1,4 @@
 --[[
-LICENSE
 	cargBags: An inventory framework addon for World of Warcraft
 
 	Copyright (C) 2010  Constantin "Cargor" Schomburg <xconstruct@gmail.com>
@@ -18,29 +17,35 @@ LICENSE
 	along with cargBags; if not, write to the Free Software
 	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-DESCRIPTION:
+DESCRIPTION
 	A few simple item keys, mostly ones resulting through pattern matching
+
+PROVIDES
+	itemkey: id
+	itemkey: bagType
+	itemkey: string
+	itemkey: stats
 ]]
 
 local addon, ns = ...
-local Implementation = ns.cargBags
+local Core = ns.cargBags
 
 -- Returns the numeric item id (12345)
-Implementation:Register("itemkey", "id", function(i)
+Core:Register("itemkey", "id", function(i)
 	return i.link and tonumber(i.link:match("item:(%d+)"))
 end)
 
 --	Returns the type of the parent bag
-Implementation:Register("itemkey", "bagType", function(i)
+Core:Register("itemkey", "bagType", function(i)
 	return select(2, GetContainerNumFreeSlots(i.bagID))
 end)
 
 -- Returns the item string (12345:0:0:0)
-Implementation:Register("itemkey", "string", function(i)
+Core:Register("itemkey", "string", function(i)
 	return i.link and i.link:match("item:(%d+:%d+:%d+:%d+)")
 end)
 
-Implementation:Register("itemkey", "stats", function(i)
+Core:Register("itemkey", "stats", function(i)
 	if(not i.link or not GetItemStats) then return end
 	local stats = GetItemStats(i.link)
 	i.stats = stats

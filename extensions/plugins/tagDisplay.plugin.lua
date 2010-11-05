@@ -1,5 +1,4 @@
 --[[
-LICENSE
 	cargBags: An inventory framework addon for World of Warcraft
 
 	Copyright (C) 2010  Constantin "Cargor" Schomburg <xconstruct@gmail.com>
@@ -18,26 +17,22 @@ LICENSE
 	along with cargBags; if not, write to the Free Software
 	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
+
 DESCRIPTION
 	An infotext-module which can display several things based on tags.
 
 	Supported tags:
 		space - specify a formatstring as arg #1, using "free" / "max" / "used"
 		item - count of the item in arg #1 (itemID, itemLink, itemName)
-			shards - "sub-tag" of item, displays soul shard info
-		ammo - count of ammo slot
 		currency - displays the currency with id arg #1
 			currencies - displays all tracked currencies
 		money - formatted money display
 
 	The space-tag still needs .bags defined in the plugin!
-	e.g. tagDisplay.bags = cargBags:ParseBags("backpack+bags")
+	e.g. tagDisplay.bags = Core:ParseBags("backpack+bags")
 
-DEPENDENCIES
-	mixins/api-common.lua
-
-CALLBACKS
-	:OnTagUpdate(event) - When the tag is updated
+PROVIDES
+	plugin: TagDisplay
 ]]
 
 local addon, ns = ...

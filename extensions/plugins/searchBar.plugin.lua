@@ -1,5 +1,4 @@
 --[[
-LICENSE
 	cargBags: An inventory framework addon for World of Warcraft
 
 	Copyright (C) 2010  Constantin "Cargor" Schomburg <xconstruct@gmail.com>
@@ -18,17 +17,20 @@ LICENSE
 	along with cargBags; if not, write to the Free Software
 	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-DESCRIPTION:
+DESCRIPTION
 	Provides a searchbar for your containers.
 	If you specify a frame as arg #2, it will serve as a clickable placeholder to open it
 
-DEPENDENCIES
-	mixins/textFilter.lua
+NEEDS
+	class: FilterSet
+
+PROVIDES
+	plugin: SearchBar
 ]]
 
 local addon, ns = ...
-local Implementation = ns.cargBags
-Implementation:Needs("TextFilter")
+local Core = ns.cargBags
+Core:Needs("TextFilter")
 
 local function apply(self, container, text, mode)
 	if(text == "" or not text) then
@@ -48,20 +50,20 @@ local function SearchBar_DoSearch(self, text)
 	if(self.currFilters) then
 		self.currFilters:Empty()
 	else
-		self.currFilters = Implementation.Class:Get("FilterSet"):New()
+		self.currFilters = Core:Needs("Class", "FilterSet"):New()
 	end
 
 	self.currFilters:SetTextFilter(text, self.textFilters)
 
 	if(self.isGlobal) then
-		for id, container in pairs(Implementation.containers) do
+		for id, container in pairs(Core.containers) do
 			apply(self, container, text)
 		end
 	else
 		apply(self, self.parent, text)
 	end
 
-	Implementation:ForceUpdate()
+	Core:ForceUpdate()
 end
 
 local function Target_OpenSearch(self)
@@ -85,7 +87,7 @@ local function SearchBar_OnEnter(self)
 	if(self.OnEnterPressed) then self:OnEnterPressed() end
 end
 
-Implementation:Register("plugin", "SearchBar", function(self, target)
+Core:Register("plugin", "SearchBar", function(self, target)
 	local search = CreateFrame("EditBox", nil, self)
 	search:SetFontObject(GameFontHighlight)
 	search.parent = self

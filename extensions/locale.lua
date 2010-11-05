@@ -1,5 +1,4 @@
  --[[
-LICENSE
 	cargBags: An inventory framework addon for World of Warcraft
 
 	Copyright (C) 2010  Constantin "Cargor" Schomburg <xconstruct@gmail.com>
@@ -21,23 +20,26 @@ LICENSE
 DESCRIPTION
 	Provides translation-tables for the auction house categories
 
-USAGE:
+PROVIDES
+	extension: locale
+
+USAGE
 	local L = cargBags:GetLocalizedNames()
 	OR local L = Implementation:GetLocalizedNames()
 
 	L[englishName] returns localized name
 ]]
 local addon, ns = ...
-local Implementation = ns.cargBags
-Implementation:Provides("Locale")
+local Core = ns.cargBags
+Core:Provides("Locale")
 
 local L
 
 --[[!
 	Fetches/creates a table of localized type names
-	@return locale <table>
+	<- locale <table>
 ]]
-function Implementation:GetLocalizedTypes()
+function Core:GetLocalizedTypes()
 	if(L) then return L end
 
 	L = {}

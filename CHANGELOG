@@ -7,7 +7,7 @@ In most cases the version tagging follows the scheme Rewrite.Feature.Bugfix
 
 2.2
 * cargBags forces embedding, no standalone framework anymore
-* merged cargBags and Implementation
+* merged cargBags and Implementation -> Core
 * more intelligent updating: should reduce cpu usage greatly
 * file structure- and API-overhaul for more simplicity
 * Data Sources: a small, important step towards Anywhere bags, guild bank and/or stack compression
@@ -16,6 +16,7 @@ In most cases the version tagging follows the scheme Rewrite.Feature.Bugfix
 - Sorry, the list of API changes is too big, see cargBags_Simplicity
 - You can now switch between Sieves at runtime
 - removed tags: shards, ammo
+- removed layout: circle
 - dynamic generation of bagStrings
 
 2.1.2

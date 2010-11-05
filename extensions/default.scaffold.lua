@@ -20,13 +20,19 @@ LICENSE
 
 DESCRIPTION
 	Provides a Scaffold that generates a default Blizz' ContainerButton
+
+PROVIDES
+	scaffold: Default
 ]]
 
 local addon, ns = ...
-local Implementation = ns.cargBags
+local Core = ns.cargBags
 
 local function noop() end
 
+--[[!
+	Apply scaffold options to this instance
+]]
 local function ItemButton_Scaffold(self)
 	self:SetSize(37, 37)
 
@@ -39,8 +45,8 @@ local function ItemButton_Scaffold(self)
 end
 
 --[[!
-	Update the button with new item-information
-	@param item <table> The itemTable holding information, see Implementation:GetItemInfo()
+	Update the button with new item-data
+	-> item <ItemTable>)
 	@callback OnUpdate(item)
 ]]
 local function ItemButton_Update(self, item)
@@ -62,8 +68,8 @@ local function ItemButton_Update(self, item)
 end
 
 --[[!
-	Updates the buttons cooldown with new item-information
-	@param item <table> The itemTable holding information, see Implementation:GetItemInfo()
+	Updates the buttons cooldown with new item-data
+	-> item <ItemTable>
 	@callback OnUpdateCooldown(item)
 ]]
 local function ItemButton_UpdateCooldown(self, item)
@@ -78,8 +84,8 @@ local function ItemButton_UpdateCooldown(self, item)
 end
 
 --[[!
-	Updates the buttons lock with new item-information
-	@param item <table> The itemTable holding information, see Implementation:GetItemInfo()
+	Updates the buttons lock with new item-data
+	-> item <ItemTable>
 	@callback OnUpdateLock(item)
 ]]
 local function ItemButton_UpdateLock(self, item)
@@ -89,8 +95,8 @@ local function ItemButton_UpdateLock(self, item)
 end
 
 --[[!
-	Updates the buttons quest texture with new item information
-	@param item <table> The itemTable holding information, see Implementation:GetItemInfo()
+	Updates the buttons quest texture with new item-data
+	-> item <ItemTable>
 	@callback OnUpdateQuest(item)
 ]]
 local function ItemButton_UpdateQuest(self, item)
@@ -123,12 +129,12 @@ local function ItemButton_UpdateQuest(self, item)
 	if(self.OnUpdateQuest) then self:OnUpdateQuest(item) end
 end
 
-Implementation:Register("scaffold", "Default", function(self)
-	self.glowTex = "Interface\\Buttons\\UI-ActionButton-Border" --! @property glowTex <string> The textures used for the glow
-	self.glowAlpha = 0.8 --! @property glowAlpha <number> The alpha of the glow texture
-	self.glowBlend = "ADD" --! @property glowBlend <string> The blendMode of the glow texture
-	self.glowCoords = { 14/64, 50/64, 14/64, 50/64 } --! @property glowCoords <table> Indexed table of texCoords for the glow texture
-	self.bgTex = nil --! @property bgTex <string> Texture used as a background if no item is in the slot
+Core:Register("scaffold", "Default", function(self)
+	self.glowTex = "Interface\\Buttons\\UI-ActionButton-Border"		--! [] glowTex <string> The textures used for the glow
+	self.glowAlpha = 0.8											--! [] glowAlpha <number> The alpha of the glow texture
+	self.glowBlend = "ADD"											--! [] glowBlend <string> The blendMode of the glow texture
+	self.glowCoords = { 14/64, 50/64, 14/64, 50/64 }				--! [] glowCoords <table> Indexed table of texCoords for the glow texture
+	self.bgTex = nil												--! [] bgTex <string> Texture used as a background if no item is in the slot
 
 	self.CreateFrame = ItemButton_CreateFrame
 	self.Scaffold = ItemButton_Scaffold

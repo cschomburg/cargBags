@@ -23,18 +23,18 @@ DESCRIPTION
 	The buttons are not positioned automatically, use the standard-
 	function :LayoutButtons() for this
 
-DEPENDENCIES
-	mixins/parseBags (optional)
-	base-add/filters.sieve.lua (optional)
+OPTIONAL DEPENDENCIES
+	class: FilterSet
 
-CALLBACKS
-	BagButton:OnCreate(bagID)
+PROVIDES
+	plugin: BagBar
+	class: BagButton
 ]]
 
 local addon, ns = ...
-local Implementation = ns.cargBags
+local Core = ns.cargBags
 
-local BagButton = Implementation.Class:New("BagButton", nil, "CheckButton")
+local BagButton = Core.Class:New("BagButton", nil, "CheckButton")
 
 -- Default attributes
 BagButton.checkedTex = [[Interface\Buttons\CheckButtonHilight]]
@@ -70,7 +70,7 @@ function BagButton:Create(bagID)
 end
 
 function BagButton:Update()
-	local source = Implementation.source
+	local source = Core.source
 	local icon, link, locked, enabled = source:GetBagSlotInfo(self.bagID)
 	self.Icon:SetTexture(icon or self.bgTex)
 	self.Icon:SetDesaturated(locked)
@@ -97,7 +97,7 @@ function BagButton:OnEnter()
 
 	if(hlFunction) then
 		if(self.bar.isGlobal) then
-			for i, container in pairs(Implementation.containers) do
+			for i, container in pairs(Core.containers) do
 				container:ApplyToButtons(highlight, hlFunction, self.bagID)
 			end
 		else
@@ -105,7 +105,7 @@ function BagButton:OnEnter()
 		end
 	end
 
-	local icon, link, locked = Implementation.source:GetBagSlotInfo(self.bagID)
+	local icon, link, locked = Core.source:GetBagSlotInfo(self.bagID)
 
 	GameTooltip:SetOwner(self, "ANCHOR_LEFT")
 	if(link) then
@@ -120,7 +120,7 @@ function BagButton:OnLeave()
 
 	if(hlFunction) then
 		if(self.bar.isGlobal) then
-			for i, container in pairs(Implementation.contByID) do
+			for i, container in pairs(Core.contByID) do
 				container:ApplyToButtons(highlight, hlFunction)
 			end
 		else
@@ -138,7 +138,7 @@ function BagButton:OnClick()
 		return StaticPopup_Show("CONFIRM_BUY_BANK_SLOT")
 	end
 
-	if(Implementation.source:PutItemInBag(self.bagID)) then return end
+	if(Core.source:PutItemInBag(self.bagID)) then return end
 
 	-- Somehow we need to disconnect this from the filter-sieve
 	local container = self.bar.container
@@ -150,20 +150,20 @@ function BagButton:OnClick()
 		self.hidden = not self.hidden
 
 		if(self.bar.isGlobal) then
-			for i, container in pairs(Implementation.containers) do
+			for i, container in pairs(Core.containers) do
 				container:SetFilter(self.filter, self.hidden)
 			end
-			Implementation:ForceUpdate(self.bagID)
+			Core:ForceUpdate(self.bagID)
 		else
 			container:SetFilter(self.filter, self.hidden)
-			Implementation:ForceUpdate(self.bagID)
+			Core:ForceUpdate(self.bagID)
 		end
 	end
 end
 BagButton.OnReceiveDrag = BagButton.OnClick
 
 function BagButton:OnDragStart()
-	Implementation.source:PickupBag(self.bagID)
+	Core.source:PickupBag(self.bagID)
 end
 
 local disabled = {
@@ -173,25 +173,25 @@ local disabled = {
 }
 
 -- Register the plugin
-Implementation:Register("plugin", "BagBar", function(self, bags, bagButtonClass)
-	if(Implementation.ParseBags) then
-		bags = Implementation:ParseBags(bags)
+Core:Register("plugin", "BagBar", function(self, bags, bagButtonClass)
+	if(Core.ParseBags) then
+		bags = Core:ParseBags(bags)
 	end
 
 	local bar = CreateFrame("Frame",  nil, self)
 	bar.container = self
 
-	bar.LayoutButtons = Implementation.Class:Get("Container").LayoutButtons
+	bar.LayoutButtons = Core.Class:Get("Container").LayoutButtons
 
-	local buttonClass = Implementation:GetClass("BagButton", bagButtonClass)
+	local buttonClass = Core:GetClass("BagButton", bagButtonClass)
 	bar.buttons = {}
 	for i=1, #bags do
 		if(not disabled[bags[i]]) then -- Temporary until I include fake buttons for backpack, bankframe and keyring
 			local button = buttonClass:Create(bags[i])
 			button:SetParent(bar)
 			button.bar = bar
-			Implementation:RegisterCallback("Refresh", button, button.Update)
-			Implementation:RegisterCallback("Inventory_Lock_Changed", button, button.Update)
+			Core:RegisterCallback("Refresh", button, button.Update)
+			Core:RegisterCallback("Inventory_Lock_Changed", button, button.Update)
 			table.insert(bar.buttons, button)
 		end
 	end

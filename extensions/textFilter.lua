@@ -1,5 +1,4 @@
 --[[
-LICENSE
 	cargBags: An inventory framework addon for World of Warcraft
 
 	Copyright (C) 2010  Constantin "Cargor" Schomburg <xconstruct@gmail.com>
@@ -22,8 +21,11 @@ DESCRIPTION
 	Provides a text-based filtering approach, e.g. for searchbars or GUIs
 	Only one text filter per container can be active at any time!
 
-DEPENDENCIES:
-	base-add/filters.sieve.lua
+NEEDS
+	class: FilterSet
+
+PROVIDES
+	extension: TextFilter
 ]]
 
 local addon, ns = ...
@@ -45,10 +47,8 @@ FilterSet.textFilters = {
 
 --[[
 	Parses a text for filters and stores them in the FilterSet
-	@param text <string> the text filter
-	@param textFilters <table> table of text filters to parse from [optional]
-
-	@note Basically works like this: text ----textFilters----> FilterSet	
+	-> text <string> the text filter
+	-> caseSensitive <bool> [optional]
 ]]
 
 
@@ -80,11 +80,12 @@ function FilterSet:SetTextFilter(text, caseSensitive)
 end
 
 --[[!
-	Applies a text filter to the container, for convenience
-	@param text <string> the text filter
-	@param textFilters <table> a table of textFilters to parse from [optional]
+	Shortcut, applies a text filter to the container
+	-> text <string> the text filter
+	-> textFilters <table> a table of textFilters to parse from [optional]
 ]]
 function Container:SetTextFilter(text, textFilters)
 	self.filters = self.filters or FilterSet:New()
-	self.filters:SetTextFilter(text, textFilters)
+	self.filters.textFilters = textFilters
+	self.filters:SetTextFilter(text)
 end

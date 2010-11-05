@@ -1,5 +1,4 @@
 --[[
-LICENSE
 	cargBags: An inventory framework addon for World of Warcraft
 
 	Copyright (C) 2010  Constantin "Cargor" Schomburg <xconstruct@gmail.com>
@@ -18,12 +17,15 @@ LICENSE
 	along with cargBags; if not, write to the Free Software
 	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
-DESCRIPTION:
+DESCRIPTION
 	Item keys which require tooltip parsing to work
+
+PROVIDES
+	itemkey: bindOn
 ]]
 
 local addon, ns = ...
-local Implementation = ns.cargBags
+local Core = ns.cargBags
 
 local tipName = math.random(1, 1e3).."Tooltip"
 local tooltip
@@ -37,7 +39,7 @@ local function generateTooltip()
 	)
 end
 
-Implementation:Register("itemkey", "bindOn", function(i)
+Core:Register("itemkey", "bindOn", function(i)
 	if(not i.link) then return end
 
 	if(not tooltip) then generateTooltip() end

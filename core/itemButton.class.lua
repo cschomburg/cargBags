@@ -17,35 +17,19 @@
 	along with cargBags; if not, write to the Free Software
 	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 ]]
+
 local addon, ns = ...
-local Implementation = ns.cargBags
+local Core = ns.cargBags
 
---[[!
-	@class ItemButton
-		This class serves as the basis for all itemSlots in a container
-]]
-local ItemButton = Implementation.Class:New("ItemButton", nil, "Button")
-ItemButton.handlers = {}
-
---[[!
-	Gets a template name for the bagID
-	@param bagID <number> [optional]
-	@return tpl <string>
-]]
-function ItemButton:GetTemplate(bagID, slotID)
-	bagID = bagID or self.bagID
-	slotID = slotID or self.slotID
-
-	return Implementation.source:GetButtonTemplate(bagID, slotID)
-end
+local ItemButton = Core.Class:New("ItemButton", nil, "Button")
 
 local mt_gen_key = {__index = function(self,k) self[k] = {}; return self[k]; end}
 
 --[[!
 	Fetches a new instance of the ItemButton, creating one if necessary
-	@param bagID <number>
-	@param slotID <number>
-	@return button <ItemButton>
+	-> bagID <number>
+	-> slotID <number>
+	<- button <ItemButton>
 ]]
 function ItemButton:New(bagID, slotID)
 	self.recycled = self.recycled or setmetatable({}, mt_gen_key)
@@ -62,19 +46,31 @@ function ItemButton:New(bagID, slotID)
 end
 
 --[[!
+	Gets a template name for the bagID
+	-> bagID <number> [optional]
+	<- tpl <string>
+]]
+function ItemButton:GetTemplate(bagID, slotID)
+	bagID = bagID or self.bagID
+	slotID = slotID or self.slotID
+
+	return Core.source:GetButtonTemplate(bagID, slotID)
+end
+
+--[[!
 	Creates a new ItemButton
-	@param tpl <string> The template to use [optional]
-	@return button <ItemButton>
+	-> tpl <string> The template to use [optional]
+	<- button <ItemButton>
 	@callback button:OnCreate(tpl)
 ]]
 
 local numSlots = 0
 function ItemButton:Create(tpl)
 	numSlots = numSlots + 1
-	local name = ("%sSlot%d"):format(Implementation.name, numSlots)
+	local name = ("%sSlot%d"):format(Core.name, numSlots)
 
 	local button = self:NewInstance(name, nil, tpl)
-	if(Implementation.source.OnButtonCreate) then Implementation.source:OnButtonCreate(button) end
+	if(Core.source.OnButtonCreate) then Core.source:OnButtonCreate(button) end
 
 	if(button.Scaffold) then button:Scaffold(tpl) end
 	if(button.OnCreate) then button:OnCreate(tpl) end
@@ -90,6 +86,13 @@ function ItemButton:Free()
 	table.insert(self.recycled[self:GetTemplate()], self)
 end
 
+ItemButton.handlers = {}
+
+--[[!
+	Handle button-specific internal events
+	-> message <string> message-part of the event
+	-> item <ItemTable> item data
+]]
 function ItemButton:Handle(message, item)
 	local funcName = self.handlers[message]
 	if(funcName) then
@@ -98,14 +101,22 @@ function ItemButton:Handle(message, item)
 end
 
 --[[!
-	Fetches the item-info of the button, just a small wrapper for comfort
-	@param item <table> [optional]
-	@return item <table>
+	Shortcut, fetches the item-data of the button
+	-> item <table> [optional]
+	<- item <table>
 ]]
 function ItemButton:LoadItemInfo(item)
-	return Implementation:LoadItemInfo(self.bagID, self.slotID, item)
+	return Core:LoadItemInfo(self.bagID, self.slotID, item)
 end
 
-function ItemButton:Scaffold(name, ...)
-	return Implementation:Get("scaffold", name, true)(self, ...)
+--[[!
+	Applies a button Scaffold to the button class
+	-> scaffold <string, Scaffold>
+	-> ... arguments passed to scaffold function
+]]
+function ItemButton:Scaffold(scaffold, ...)
+	if(type(scaffold) == "string") then
+		scaffold = Core:Get("scaffold", scaffold, true)
+	end
+	return scaffold(self, ...)
 end

@@ -17,14 +17,15 @@
 	along with cargBags; if not, write to the Free Software
 	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 ]]
+
 local addon, ns = ...
-local Implementation = ns.cargBags
+local Core = ns.cargBags
 
 --[[!
 	@class Container
 		The container class provides the virtual bags for cargBags
 ]]
-local Container = Implementation.Class:New("Container", nil, "Button")
+local Container = Core.Class:New("Container", nil, "Button")
 
 local mt_bags = {__index=function(self, bagID)
 	self[bagID] = CreateFrame("Frame", nil, self.container)
@@ -34,21 +35,21 @@ end}
 
 --[[!
 	Creates a new instance of the class
-	@param name <string>
-	@param ... Arguments passed to the OnCreate-callback
-	@return container <Container>
+	-> name <string>
+	-> ... Arguments passed to the OnCreate-callback
+	<- container <Container>
 	@callback container:OnCreate(name, ...)
 ]]
 function Container:New(name, ...)
-	local container = self:NewInstance(Implementation.name..name)
+	local container = self:NewInstance(Core.name..name)
 
 	container.name = name
 	container.buttons = {}
 	container.bags = setmetatable({container = container}, mt_bags)
 	container:ScheduleContentCallback()
 
-	table.insert(Implementation.containers, container)
-	container:SetParent(Implementation)
+	table.insert(Core.containers, container)
+	container:SetParent(Core)
 
 	if(container.OnCreate) then container:OnCreate(name, ...) end
 
@@ -57,7 +58,7 @@ end
 
 --[[!
 	Adds an ItemButton to this container
-	@param button <ItemButton>
+	-> button <ItemButton>
 	@callback button:OnAdd(self)
 	@callback OnButtonAdd(button)
 ]]
@@ -72,7 +73,7 @@ end
 
 --[[!
 	Removes an ItemButton from the container
-	@param button <ItemButton>
+	-> button <ItemButton>
 	@callback button:OnRemove(self)
 	@callback OnButtonRemove(button)
 ]]
@@ -109,27 +110,39 @@ function Container:ScheduleContentCallback()
 	updater:Show()
 end
 
+--[[
+	Position the child buttons by specifying a layout to use
+	-> layout <string, function>
+	-> ... arguments passed to the layout function
+	<- width <number> width of the button layout
+	<- height <number> height of the button layout
+]]
 
 function Container:LayoutButtons(layout, ...)
 	if(type(layout) == "function") then
 		return layout(self, ...)
 	else
-		return Implementation:Get("layout", layout, true)(self, ...)
+		return Core:Get("layout", layout, true)(self, ...)
 	end
 end
 
-function Container:SortButtons(sort, ...)
+--[[
+	Sorts the child buttons with the specified sort function
+	-> sort <string, function>
+]]
+
+function Container:SortButtons(sort)
 	if(type(sort) == "function") then
 		table.sort(self.buttons, sort)
 	else
-		table.sort(self.buttons, Implementation:Get("sort", sort, true))
+		table.sort(self.buttons, Core:Get("sort", sort, true))
 	end
 end
 
 --[[
 	Applies a function to the contained buttons
-	@param func <function>
-	@param ... Arguments which are passed to the function
+	-> func <function>
+	-> ... Arguments which are passed to the function
 ]]
 function Container:ApplyToButtons(func, ...)
 	for i, button in pairs(self.buttons) do
@@ -137,4 +150,4 @@ function Container:ApplyToButtons(func, ...)
 	end
 end
 
-Container.SpawnPlugin = Implementation.SpawnPlugin
+Container.SpawnPlugin = Core.SpawnPlugin
