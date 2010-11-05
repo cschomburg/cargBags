@@ -27,9 +27,8 @@ DEPENDENCIES
 
 local addon, ns = ...
 local Implementation = ns.cargBags
-Implementation:Provides("Bags Sieve")
 
-local Container = Implementation:GetClass("Container")
+local Container = Implementation:Needs("Class", "Container")
 
 local bagToContainer = {}
 Implementation.bagToContainer = bagToContainer

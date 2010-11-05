@@ -33,7 +33,6 @@ CALLBACKS
 
 local addon, ns = ...
 local Implementation = ns.cargBags
-Implementation:Provides("BagBar")
 
 local BagButton = Implementation.Class:New("BagButton", nil, "CheckButton")
 

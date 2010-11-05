@@ -29,7 +29,6 @@ DEPENDENCIES
 local addon, ns = ...
 local Implementation = ns.cargBags
 Implementation:Needs("TextFilter")
-Implementation:Provides("SearchBar")
 
 local function apply(self, container, text, mode)
 	if(text == "" or not text) then

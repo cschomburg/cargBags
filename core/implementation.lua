@@ -25,18 +25,18 @@ local Implementation = CreateFrame("Button", nil, UIParent)
 ns.cargBags = Implementation
 
 Implementation.Class = ns.SimpleOOP
-Implementation.Version = "2.2"
-Implementation.name = "cargBags" -- gets overwritten by addon in :Setup()
+Implementation.Version = "cargBags-2.2"
 Implementation.extensions = {}
+Implementation.extensions.class = ns.SimpleOOP.classes
 
-local function error(s, ...) error(string.format("%s: "..s, Implementation.name, ...)) end
+local function error(s, ...) error(string.format("%s: "..s, Implementation.name or addon, ...)) end
 
-function Implementation:Register(type, name, value)
+function Implementation:Register(type, name, value, overwrite)
 	type = type:lower()
 	local ext = self.extensions
 	if(not ext[type]) then ext[type] = {} end
 
-	if(ext[type][name]) then
+	if(not overwrite and ext[type][name]) then
 		error("Extension '%s' of type '%s' already registered!", name, type)
 	end
 
@@ -52,9 +52,26 @@ function Implementation:Get(type, name, verbose)
 	return extension
 end
 
-function Implementation:Provides(extension) self:Register("extension", extension, true) end
-function Implementation:Has(extension) return self:Get("extension", extension) end
-function Implementation:Needs(extension) return self:Get("extension", extension, true) end
+function Implementation:Provides(type, name)
+	if(not name) then
+		name, type = type, "extension"
+	end
+	self:Register(type, name, true)
+end
+
+function Implementation:Has(type, name)
+	if(not name) then
+		name, type = type, "extension"
+	end
+	return self:Get(type, name)
+end
+
+function Implementation:Needs(type, name)
+	if(not name) then
+		name, type = type, "extension"
+	end
+	return self:Get(type, name, true)
+end
 
 function Implementation.toBagSlot(bagID, slotID)
 	return bagID*100+slotID
@@ -157,18 +174,28 @@ function Implementation:ReplaceBlizzard(bank)
 	end
 end
 
-function Implementation:SetSource(source)
+function Implementation:SetSource(source, noVerbose)
 	if(type(source) == "string") then
-		source = self:Get("source", source, true)
+		source = self:Get("source", source, not noVerbose)
 	end
 	self.source = source
+	return self.source
 end
 
-function Implementation:SetSieve(sieve)
+function Implementation:SetFirstSource(...)
+	for i = 1, select('#', ...) do
+		if(self:SetSource(select(i, ...), true)) then
+			return true
+		end
+	end
+end
+
+function Implementation:SetSieve(sieve, noVerbose)
 	if(type(sieve) == "string") then
-		sieve = self:Get("sieve", sieve, true)
+		sieve = self:Get("sieve", sieve, not noVerbose)
 	end
 	self.sieve = sieve
+	return self.sieve
 end
 
 --[[!
@@ -274,17 +301,34 @@ function Implementation:Item_Update(bagID, slotID, message)
 	end
 end
 
-function Implementation:Source_Update(name, state)
-	if(self.OnSourceUpdate) then
-		self:OnSourceUpdate(name, state)
+function Implementation:Group_State(name, state)
+	if(self.OnGroupState) then
+		self:OnGroupState(name, state)
 	end
 end
 
-Implementation:Register("bagString", "backpack",			{ 0 })
-Implementation:Register("bagString", "bags",				{ 1, 2, 3, 4 })
-Implementation:Register("bagString", "bankframe",			{ -1 })
-Implementation:Register("bagString", "bank",				{ 5, 6, 7, 8, 9, 10, 11 })
-Implementation:Register("bagString", "keyring",			{ -2 })
+Implementation:Register("bagString", "backpack",	{ 0 })
+Implementation:Register("bagString", "bags",		{ 1, 2, 3, 4 })
+Implementation:Register("bagString", "bankframe",	{ -1 })
+Implementation:Register("bagString", "bank",		{ 5, 6, 7, 8, 9, 10, 11 })
+Implementation:Register("bagString", "keyring",		{ -2 })
+
+local function parseBags_Change(bags, op, bagID)
+	if(op == "-") then
+		for i, id2 in pairs(bags) do
+			if(id2 == bagID) then
+				return table.remove(bags, i)
+			end
+		end
+	else
+		for i, id2 in pairs(bags) do
+			if(id2 == bagID) then
+				return
+			end
+		end
+		table.insert(bags, bagID)
+	end
+end
 
 function Implementation:ParseBags(bags)
 	-- Is already a bag table? Return it
@@ -295,21 +339,19 @@ function Implementation:ParseBags(bags)
 	if(bagString) then return bagString end
 
 	-- Build a bagString, combined from previous bagStrings or bagIDs
-	local idHash, idTable = {}, {}
-	for i, match in bags:gmatch("([+-,]?%w+)") do
+	local bagTable = {}
+	for match in bags:gmatch("([+-,]?%w+)") do
 		local op, str = match:match("^([+-,]?)(%w+)$")
-		local subTable = Implementation:Get("bagString", bags)
+		local subTable = Implementation:Get("bagString", str)
+
 		if(subTable) then
-			for i, bagID in pairs(subTable) do
-				idHash[bagID] = (op ~= "-") and true or nil
+			for i, bagID in ipairs(subTable) do
+				parseBags_Change(bagTable, op, bagID)
 			end
 		elseif(tonumber(str)) then
-			idHash[tonumber(str)] = (op ~= "-") and true or nil
+			parseBags_Change(bagTable, op, tonumber(str))
 		end
 	end
-	for bagID in pairs(idHash) do
-		table.insert(idTable, bagID)
-	end
-	Implementation:Register("bagString", bags, idTable)
-	return idTable
+	Implementation:Register("bagString", bags, bagTable)
+	return bagTable
 end

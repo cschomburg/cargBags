@@ -24,7 +24,6 @@ DESCRIPTION:
 
 local addon, ns = ...
 local Implementation = ns.cargBags
-Implementation:Provides("Tooltip Itemkey")
 
 local tipName = math.random(1, 1e3).."Tooltip"
 local tooltip

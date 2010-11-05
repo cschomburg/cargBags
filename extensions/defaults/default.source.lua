@@ -67,7 +67,9 @@ updater.BAG_CLOSED = updater.BAG_UPDATE
 
 function updater:PLAYERBANKSLOTS_CHANGED(event, bagID)
 	if(bagID <= NUM_BANKGENERIC_SLOTS) then
-		return checkSlot(-1, bagID)
+		checkSlot(-1, bagID)
+		fire("Items_Update")
+		return
 	else
 		self:BAG_UPDATE(event, bagID - NUM_BANKGENERIC_SLOTS)
 	end
@@ -79,7 +81,7 @@ function updater:BANKFRAME_OPENED(event)
 	for bagID=5, 11 do
 		self:BAG_UPDATE(event, bagID)
 	end
-	fire("Source_Update", "bank", true)
+	fire("Group_State", "bank", true)
 end
 
 function updater:BANKFRAME_CLOSED(event)
@@ -88,13 +90,13 @@ function updater:BANKFRAME_CLOSED(event)
 	for bagID=5, 11 do
 		self:BAG_UPDATE(event, bagID)
 	end
-	fire("Source_Update", "bank", nil)
+	fire("Group_State", "bank", nil)
 end
 
 function updater:BAG_UPDATE_COOLDOWN(event, bagID)
 	if(not bagID) then
 		for bagID=-1, 11 do
-			self:BAG_UPDATE(event, bagID)
+			self:BAG_UPDATE_COOLDOWN(event, bagID)
 		end
 		return
 	end
@@ -133,6 +135,7 @@ updater:SetScript("OnUpdate", function(self)
 		end
 	end
 
+	fire("Items_Update")
 	forcedUpdate = nil
 end)
 
@@ -226,8 +229,8 @@ function DefaultSource:CanInteract(bagID)
 	end
 end
 
-function DefaultSource:Has(source)
-	return has[source]
+function DefaultSource:Has(group)
+	return has[group]
 end
 
 function DefaultSource:GetButtonTemplate(bagID, slotID)

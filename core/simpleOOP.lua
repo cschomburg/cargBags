@@ -24,6 +24,7 @@ local SimpleOOP = {}
 ns.SimpleOOP = SimpleOOP
 
 local classes = {}
+SimpleOOP.classes = classes
 
 local Prototype = {}
 SimpleOOP.Prototype = Prototype

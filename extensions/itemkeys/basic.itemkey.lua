@@ -24,7 +24,6 @@ DESCRIPTION:
 
 local addon, ns = ...
 local Implementation = ns.cargBags
-Implementation:Provides("Basic Itemkey")
 
 -- Returns the numeric item id (12345)
 Implementation:Register("itemkey", "id", function(i)

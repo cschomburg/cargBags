@@ -141,6 +141,7 @@ Implementation:Register("scaffold", "Default", function(self)
 	self.handlers['added'] = "Update"
 	self.handlers['removed'] = "Update"
 	self.handlers['changed'] = "Update"
+	self.handlers['forced'] = "Update"
 	self.handlers['count'] = "Update"
 	self.handlers['lock'] = "UpdateLock"
 	self.handlers['cooldown'] = "UpdateCooldown"

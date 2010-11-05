@@ -28,11 +28,10 @@ DEPENDENCIES:
 
 local addon, ns = ...
 local Implementation = ns.cargBags
-Implementation:Needs("FilterSet")
-Implementation:Provides("TextFilter")
 
-local Container = Implementation.Class:Get("Container")
-local FilterSet = Implementation.Class:Get("FilterSet")
+local Container = Implementation:Needs("Class", "Container")
+local FilterSet = Implementation:Needs("Class", "FilterSet")
+Implementation:Provides("TextFilter")
 
 FilterSet.defaultTextFilter = "n"
 FilterSet.textFilters = {

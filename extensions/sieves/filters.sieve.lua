@@ -25,10 +25,8 @@ DESCRIPTION
 ]]
 local addon, ns = ...
 local Implementation = ns.cargBags
-Implementation:Provides("FilterSet")
-Implementation:Provides("Filter Sieve")
 
-local Container = Implementation.Class:Get("Container")
+local Container = Implementation:Needs("Class", "Container")
 local FilterSet = Implementation.Class:New("FilterSet")
 
 --[[!

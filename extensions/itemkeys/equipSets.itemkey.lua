@@ -26,7 +26,6 @@ DEPENDENCIES
 
 local addon, ns = ...
 local Implementation = ns.cargBags
-Implementation:Provides("EquipSets Itemkey")
 
 local setItems
 

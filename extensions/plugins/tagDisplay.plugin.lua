@@ -41,45 +41,59 @@ CALLBACKS
 ]]
 
 local addon, ns = ...
-local cargBags = ns.cargBags
-cargBags:Provides("TagDisplay")
+local Implementation = ns.cargBags
 
 local tagPool, tagEvents, object = {}, {}
-local function tagger(tag, ...) return object.tags[tag] and object.tags[tag](object, ...) or "" end
-
--- Update the space display
-local function updater(self, event)
-	object = self
-	self:SetText(self.tagString:gsub("%[([^%]:]+):?(.-)%]", tagger))
-
-	if(self.OnTagUpdate) then self:OnTagUpdate(event) end
+local function tagger(tag, ...)
+	local tagFunc = Implementation:Get("tag", tag)
+	return tagFunc and tagFunc(object, ...) or ""
 end
 
-local function setTagString(self, tagString)
+-- Update the space display
+local function EventFrame_Update(self)
+	object = self.parent
+	object:SetText(object.tagString:gsub("%[([^%]:]+):?(.-)%]", tagger))
+
+	if(object.OnTagUpdate) then object:OnTagUpdate(event) end
+end
+
+local function TagDisplay_SetTagString(self, tagString)
 	self.tagString = tagString
+	self.eventframe:UnregisterAllEvents()
 	for tag in tagString:gmatch("%[([^%]:]+):?.-]") do
-		if(self.tagEvents[tag]) then
-			for k, event in pairs(self.tagEvents[tag]) do
-				self.implementation:RegisterEvent(event, self, updater)
+		local tagEvents = Implementation:Get("tagEvents", tag)
+		if(tagEvents) then
+			for i, event in pairs(tagEvents) do
+				if(event:upper() == event) then
+					self.eventframe:RegisterEvent(event)
+				else
+					Implementation:RegisterCallback(event, self.eventframe, EventFrame_Update)
+				end
 			end
 		end
 	end
+	EventFrame_Update(self.eventframe)
 end
 
-cargBags:Register("plugin", "TagDisplay", function(self, tagString, parent)
+Implementation:Register("plugin", "TagDisplay", function(self, tagString, parent)
 	parent = parent or self
 	tagString = tagString or ""
 
 	local plugin = parent:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
 	plugin.implementation = self.implementation
-	plugin.SetTagString = setTagString
+	plugin.SetTagString = TagDisplay_SetTagString
 	plugin.tags = tagPool
 	plugin.tagEvents = tagEvents
 	plugin.iconValues = "16:16:0:0"
 
-	setTagString(plugin, tagString)
+	local eventframe = CreateFrame("Frame")
+	eventframe:SetScript("OnEvent", EventFrame_Update)
+	eventframe.parent = plugin
+	plugin.eventframe = eventframe
+	Implementation:RegisterEvent("Refresh", plugin.eventframe, EventFrame_Update)
 
-	self.implementation:RegisterEvent("BAG_UPDATE", plugin, updater)
+	plugin:SetTagString(tagString)
+
 	return plugin
 end)
 
@@ -93,19 +107,23 @@ end
 
 -- Tags
 
-tagPool["space"] = function(self, str)
-	local free,max = 0, 0
-	if(self.bags) then
-		for _, id in pairs(self.bags) do
-			free = free + self.source.GetContainerNumFreeSlots(id)
-			max = max + self.source.GetContainerNumSlots(id)
-		end
+Implementation:Register("tag", "space", function(self, str)
+	if(not self.bags) then
+		return "no bags defined"
+	end
+	
+	local free, max = 0, 0
+	for i, bagID in pairs(self.bags) do
+		local bMax, bFree = Implementation.source:GetBagSlotInfo(bagID, "slots")
+		free = free + bFree
+		max = max + bMax
 	end
 	str = str or "free/max"
 	return str:gsub("free", free):gsub("max", max):gsub("used", max-free)
-end
+end)
+Implementation:Register("tagEvents", "space", { "Items_Update" })
 
-tagPool["item"] = function(self, item)
+Implementation:Register("tag", "item", function(self, item)
 	local bags = GetItemCount(item, nil)
 	local total = GetItemCount(item, true)
 	local bank = total-bags
@@ -113,22 +131,10 @@ tagPool["item"] = function(self, item)
 	if(total > 0) then
 		return bags .. (bank and " ("..bank..")") .. createIcon(GetItemIcon(item), self.iconValues)
 	end
-end
-tagPool["shards"] = function(self) return self.tags["item"](self, 6265) end
+end)
 
-tagPool["ammo"] = function(self)
-	local slot = GetInventorySlotInfo("AmmoSlot")
-	local count = GetInventoryItemCount("player", slot)
-	local icon = GetInventoryItemTexture("player", slot)
-
-	if(icon and count > 0) then
-		return count .. createIcon(icon, self.iconValues)
-	end
-end
-tagEvents["ammo"] = { "UNIT_INVENTORY_CHANGED" }
-
-tagPool["currency"] = function(self, id)
-	local name, count, type, icon = GetBackpackCurrencyInfo(id)
+Implementation:Register("tag", "currency", function(self, id)
+	local name, count, icon = GetBackpackCurrencyInfo(id)
 
 	if(type == 1) then
 		icon = "Interface\\PVPFrame\\PVP-ArenaPoints-Icon"
@@ -139,22 +145,22 @@ tagPool["currency"] = function(self, id)
 	if(count) then
 		return count .. createIcon(icon, self.iconValues)
 	end
-end
-tagEvents["currency"] = { "CURRENCY_DISPLAY_UPDATE" }
+end)
+Implementation:Register("tagEvents", "currency", { "CURRENCY_DISPLAY_UPDATE" })
 
-tagPool["currencies"] = function(self)
+Implementation:Register("tag", "currencies", function(self)
 	local str
 	for i=1, GetNumWatchedTokens() do
-		local curr = self.tags["currency"](self, i)
+		local curr = Implementation:Get("tag", "currency")(self, i)
 		if(curr) then
 			str = (str and str.." " or "")..curr
 		end
 	end
 	return str
-end
-tagEvents["currencies"] = tagEvents["currency"]
+end)
+Implementation:Register("tagEvents", "currencies", Implementation:Get("tagEvents", "currency"))
 
-tagPool["money"] = function(self)
+Implementation:Register("tag", "money", function(self)
 	local money = GetMoney() or 0
 	local str
 
@@ -164,5 +170,5 @@ tagPool["money"] = function(self)
 	if(s > 0) then str = (str and str.." " or "") .. s .. createIcon("Interface\\MoneyFrame\\UI-SilverIcon", self.iconValues) end
 	if(c > 0) then str = (str and str.." " or "") .. c .. createIcon("Interface\\MoneyFrame\\UI-CopperIcon", self.iconValues) end
 	return str
-end
-tagEvents["money"] = { "PLAYER_MONEY" }
+end)
+Implementation:Register("tagEvents", "money", { "PLAYER_MONEY" })

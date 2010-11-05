@@ -38,5 +38,5 @@
 		<!-- Plugins -->
 		<Script file='extensions\plugins\bagBar.plugin.lua' />
 		<Script file='extensions\plugins\searchBar.plugin.lua' />
-		<!--<Script file='extensions\plugins\tagDisplay.plugin.lua' />-->
+		<Script file='extensions\plugins\tagDisplay.plugin.lua' />
 </Ui>
