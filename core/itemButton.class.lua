@@ -35,7 +35,7 @@ function ItemButton:New(bagID, slotID)
 	self.recycled = self.recycled or setmetatable({}, mt_gen_key)
 
 	local tpl = self:GetTemplate(bagID, slotID)
-	local button = table.remove(self.recycled[tpl]) or self:Create(tpl)
+	local button = table.remove(self.recycled[tpl]) or self:Create(tpl, bagID)
 
 	button.bagID = bagID
 	button.slotID = slotID
@@ -65,11 +65,13 @@ end
 ]]
 
 local numSlots = 0
-function ItemButton:Create(tpl)
+function ItemButton:Create(tpl, bagID)
 	numSlots = numSlots + 1
 	local name = ("%sSlot%d"):format(Core.name, numSlots)
 
-	local button = self:NewInstance(name, nil, tpl)
+	local frame = CreateFrame("Frame")
+	frame:SetID(bagID)
+	local button = self:NewInstance(name, frame, tpl)
 	if(Core.source.OnButtonCreate) then Core.source:OnButtonCreate(button) end
 
 	if(button.Scaffold) then button:Scaffold(tpl) end

@@ -88,36 +88,12 @@ local function SearchBar_OnEnter(self)
 end
 
 Core:Register("plugin", "SearchBar", function(self, target)
-	local search = CreateFrame("EditBox", nil, self)
+	local search = CreateFrame("EditBox", nil, self, "SearchBoxTemplate")
 	search:SetFontObject(GameFontHighlight)
 	search.parent = self
 
 	search.Clear = SearchBar_OnEscape
 	search.DoSearch = SearchBar_DoSearch
-
-	local left = search:CreateTexture(nil, "BACKGROUND")
-	left:SetTexture("Interface\\Common\\Common-Input-Border")
-	left:SetTexCoord(0, 0.0625, 0, 0.625)
-	left:SetWidth(8)
-	left:SetHeight(20)
-	left:SetPoint("LEFT", -5, 0)
-	search.Left = left
-
-	local right = search:CreateTexture(nil, "BACKGROUND")
-	right:SetTexture("Interface\\Common\\Common-Input-Border")
-	right:SetTexCoord(0.9375, 1, 0, 0.625)
-	right:SetWidth(8)
-	right:SetHeight(20)
-	right:SetPoint("RIGHT", 0, 0)
-	search.Right = right
-
-	local center = search:CreateTexture(nil, "BACKGROUND")
-	center:SetTexture("Interface\\Common\\Common-Input-Border")
-	center:SetTexCoord(0.0625, 0.9375, 0, 0.625)
-	center:SetHeight(20)
-	center:SetPoint("RIGHT", right, "LEFT", 0, 0)
-	center:SetPoint("LEFT", left, "RIGHT", 0, 0)
-	search.Center = center
 
 	search:SetScript("OnTextChanged", SearchBar_DoSearch)
 	search:SetScript("OnEscapePressed", SearchBar_OnEscape)

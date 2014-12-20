@@ -93,7 +93,7 @@ Implementation:Register("plugin", "TagDisplay", function(self, tagString, parent
 end)
 
 local function createIcon(icon, iconValues)
-	if(type(iconValues) == "table") then
+	if (type(iconValues) == "table") then
 		iconValues = table.concat(iconValues, ":")
 	end
 	return ("|T%s:%s|t"):format(icon, iconValues)
@@ -131,9 +131,9 @@ end)
 Implementation:Register("tag", "currency", function(self, id)
 	local name, count, icon = GetBackpackCurrencyInfo(id)
 
-	if(type == 1) then
+	if (type == 1) then
 		icon = "Interface\\PVPFrame\\PVP-ArenaPoints-Icon"
-	elseif(type == 2) then
+	elseif (type == 2) then
 		icon = "Interface\\PVPFrame\\PVP-Currency-"..UnitFactionGroup("player")
 	end
 

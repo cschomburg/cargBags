@@ -91,14 +91,23 @@ function updater:BAG_UPDATE(event, bagID)
 end
 updater.BAG_CLOSED = updater.BAG_UPDATE
 
-function updater:PLAYERBANKSLOTS_CHANGED(event, bagID)
-	if(bagID <= NUM_BANKGENERIC_SLOTS) then
-		checkSlot(-1, bagID)
-		fire("Items_Update")
-		return
-	else
-		self:BAG_UPDATE(event, bagID - NUM_BANKGENERIC_SLOTS)
-	end
+function updater:BAG_UPDATE_COOLDOWN(event, bagID)
+    if (not bagID) then
+        for bagID = -1, 11 do
+            self:BAG_UPDATE_COOLDOWN(event, bagID)
+        end
+        return
+    end
+
+    for slotID = 1, GetContainerNumSlots(bagID) do
+        if (getDB(bagID, slotID)) then
+            fire("Item_Update", bagID, slotID, "cooldown")
+        end
+    end
+end
+
+function updater:BAG_NEW_ITEMS_UPDATED(event, ...)
+    print("default.source", event, ...)
 end
 
 function updater:BANKFRAME_OPENED(event)
@@ -119,31 +128,30 @@ function updater:BANKFRAME_CLOSED(event)
 	fire("Group_State", "bank", nil)
 end
 
-function updater:BAG_UPDATE_COOLDOWN(event, bagID)
-	if(not bagID) then
-		for bagID=-1, 11 do
-			self:BAG_UPDATE_COOLDOWN(event, bagID)
-		end
-		return
-	end
-
-	for slotID=1, GetContainerNumSlots(bagID) do
-		if(getDB(bagID, slotID)) then
-			fire("Item_Update", bagID, slotID, "cooldown")
-		end
-	end
+function updater:PLAYERBANKSLOTS_CHANGED(event, bagID)
+    if(bagID <= NUM_BANKGENERIC_SLOTS) then
+        checkSlot(-1, bagID)
+        fire("Items_Update")
+        return
+    else
+        self:BAG_UPDATE(event, bagID - NUM_BANKGENERIC_SLOTS)
+    end
 end
 
 function updater:ITEM_LOCK_CHANGED(event, bagID, slotID)
-	if(bagID == -1 and slotID > 28) then
-		bagID, slotID = ContainerIDToInventoryID(slotID-28)
-	end
+    if(bagID == -1 and slotID > 28) then
+        bagID, slotID = ContainerIDToInventoryID(slotID-28)
+    end
 
-	if(bagID and slotID) then
-		fire("Item_Update", bagID, slotID, "lock")
-	elseif(bagID) then
-		fire("Inventory_Lock_Changed", bagID)
-	end
+    if(bagID and slotID) then
+        fire("Item_Update", bagID, slotID, "lock")
+    elseif(bagID) then
+        fire("Inventory_Lock_Changed", bagID)
+    end
+end
+
+function updater:INVENTORY_SEARCH_UPDATE(event, ...)
+    print("default.source", event, ...)
 end
 
 updater:SetScript("OnUpdate", function(self)
@@ -169,12 +177,16 @@ local DefaultSource = {}
 
 function DefaultSource:Enable()
 	updater:RegisterEvent("BAG_UPDATE")
-	updater:RegisterEvent("BAG_CLOSED")
+    updater:RegisterEvent("BAG_CLOSED")
+    updater:RegisterEvent("BAG_UPDATE_COOLDOWN")
+    updater:RegisterEvent("BAG_NEW_ITEMS_UPDATED")
+
 	updater:RegisterEvent("BANKFRAME_OPENED")
 	updater:RegisterEvent("BANKFRAME_CLOSED")
 	updater:RegisterEvent("PLAYERBANKSLOTS_CHANGED")
-	updater:RegisterEvent("BAG_UPDATE_COOLDOWN")
-	updater:RegisterEvent("ITEM_LOCK_CHANGED")
+
+    updater:RegisterEvent("ITEM_LOCK_CHANGED")
+    updater:RegisterEvent("INVENTORY_SEARCH_UPDATE")
 end
 
 function DefaultSource:Disable()
@@ -202,10 +214,10 @@ function DefaultSource:LoadItemInfo(i)
 	local link = GetContainerItemLink(bagID, slotID)
 
 	if(link) then
-		i.texture, i.count, i.locked, i.quality, i.readable = GetContainerItemInfo(bagID, slotID)
+		i.texture, i.count, i.locked, i.quality, i.readable, i.lootable, i.link, i.isFiltered = GetContainerItemInfo(bagID, slotID)
 		i.cdStart, i.cdFinish, i.cdEnable = GetContainerItemCooldown(bagID, slotID)
 		i.isQuestItem, i.questID, i.questActive = GetContainerItemQuestInfo(bagID, slotID)
-		i.name, i.link, i.rarity, i.level, i.minLevel, i.type, i.subType, i.stackCount, i.equipLoc, i.texture = GetItemInfo(link)
+		i.name, i.link, i.quality, i.level, i.minLevel, i.type, i.subType, i.stackCount, i.equipLoc, i.texture, i.sellPrice = GetItemInfo(link)
 	end
 end
 
@@ -260,7 +272,15 @@ function DefaultSource:Has(group)
 end
 
 function DefaultSource:GetButtonTemplate(bagID, slotID)
-	return (bagID == -1 and "BankItemButtonGenericTemplate") or (bagID and "ContainerFrameItemButtonTemplate") or "ItemButtonTemplate"
+    local template = "ItemButtonTemplate"
+    if bagID == -1 then
+        template = "BankItemButtonGenericTemplate"
+    elseif bagID == -3 then
+        template = "ReagentBankItemButtonGenericTemplate"
+    elseif bagID and bagID >= 0 then
+        template = "ContainerFrameItemButtonTemplate"
+    end
+	return template
 end
 
 Implementation:Register("source", "Default", DefaultSource)

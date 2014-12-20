@@ -291,6 +291,7 @@ function Core:ReplaceBlizzard(bank)
 	local function closeBag()			self:Close()			end	
 
 	-- Can we maybe live without hooking ToggleBag(id)?
+	ToggleAllBags = toggleNoForce
 	ToggleBag = toggleNoForce
 	ToggleBackpack = toggleNoForce
 	OpenAllBags = toggleBag	-- Name is misleading, Blizz-function actually toggles bags

@@ -56,10 +56,11 @@ function BagButton:Create(bagID)
 
 	button:SetSize(37, 37)
 
-	button.Icon = 		_G[name.."IconTexture"]
-	button.Count = 		_G[name.."Count"]
-	button.Cooldown = 	_G[name.."Cooldown"]
-	button.Quest = 		_G[name.."IconQuestTexture"]
+    -- button.icon - IconTexture
+    -- button.Count
+    button.Stock =      _G[name.."Stock"]
+    -- button.searchOverlay
+    -- button.IconBorder
 	button.Border =		_G[name.."NormalTexture"]
 
 	button:SetScriptHandlers("OnClick", "OnReceiveDrag", "OnEnter", "OnLeave", "OnDragStart")
@@ -72,15 +73,15 @@ end
 function BagButton:Update()
 	local source = Core.source
 	local icon, link, locked, enabled = source:GetBagSlotInfo(self.bagID)
-	self.Icon:SetTexture(icon or self.bgTex)
-	self.Icon:SetDesaturated(locked)
+	self.icon:SetTexture(icon or self.bgTex)
+	self.icon:SetDesaturated(locked)
 
 	if(source:GetBagSlotInfo(self.bagID, "purchased")) then
-		self.Icon:SetVertexColor(1, 1, 1)
+		self.icon:SetVertexColor(1, 1, 1)
 		self.notBought = nil
 	else
 		self.notBought = true
-		self.Icon:SetVertexColor(1, 0, 0)
+		self.icon:SetVertexColor(1, 0, 0)
 	end
 
 	self:SetChecked(not self.hidden and not self.notBought)

@@ -37,11 +37,23 @@ local function ItemButton_Scaffold(self)
 	self:SetSize(37, 37)
 
 	local name = self:GetName()
-	self.Icon = _G[name.."IconTexture"]
-	self.Count = _G[name.."Count"]
+    --[[ keyed in ItemButtonTemplate 
+        self.icon - IconTexture
+        self.Count
+        self.searchOverlay
+        self.IconBorder
+    ]]
+    self.Stock =      _G[name.."Stock"]
+    self.Border =     _G[name.."NormalTexture"]
+
+    --[[ keyed in ContainerFrameItemButtonTemplate 
+        self.JunkIcon
+        self.flash
+        self.NewItemTexture
+        self.BattlepayItemTexture
+    ]]
+    self.Quest = _G[name.."IconQuestTexture"]
 	self.Cooldown = _G[name.."Cooldown"]
-	self.Quest = _G[name.."IconQuestTexture"]
-	self.Border = _G[name.."NormalTexture"]
 end
 
 --[[!
@@ -50,7 +62,7 @@ end
 	@callback OnUpdate(item)
 ]]
 local function ItemButton_Update(self, item)
-	self.Icon:SetTexture(item.texture or self.bgTex)
+	self.icon:SetTexture(item.texture or self.bgTex)
 
 	if(item.count and item.count > 1) then
 		self.Count:SetText(item.count >= 1e3 and "*" or item.count)
@@ -58,7 +70,35 @@ local function ItemButton_Update(self, item)
 	else
 		self.Count:Hide()
 	end
-	self.count = item.count -- Thank you Blizz for not using local variables >.> (BankFrame.lua @ 234 )
+	self.count = item.count
+
+    if self.NewItemTexture then
+        if C_NewItems.IsNewItem(item.bagID, item.slotID) then
+            if IsBattlePayItem(item.bagID, item.slotID) then
+                self.NewItemTexture:Hide();
+                self.BattlepayItemTexture:Show();
+            else
+                if (self.quality and NEW_ITEM_ATLAS_BY_QUALITY[self.quality]) then
+                    self.NewItemTexture:SetAtlas(NEW_ITEM_ATLAS_BY_QUALITY[self.quality]);
+                else
+                    self.NewItemTexture:SetAtlas("bags-glow-white");
+                end
+                self.BattlepayItemTexture:Hide();
+                self.NewItemTexture:Show();
+            end
+            if (not self.flashAnim:IsPlaying() and not self.newitemglowAnim:IsPlaying()) then
+                self.flashAnim:Play();
+                self.newitemglowAnim:Play();
+            end
+        else
+            self.BattlepayItemTexture:Hide();
+            self.NewItemTexture:Hide();
+            if (self.flashAnim:IsPlaying() or self.newitemglowAnim:IsPlaying()) then
+                self.flashAnim:Stop();
+                self.newitemglowAnim:Stop();
+            end
+        end
+    end
 
 	self:UpdateCooldown(item)
 	self:UpdateLock(item)
@@ -89,7 +129,7 @@ end
 	@callback OnUpdateLock(item)
 ]]
 local function ItemButton_UpdateLock(self, item)
-	self.Icon:SetDesaturated(item.locked)
+	self.icon:SetDesaturated(item.locked)
 
 	if(self.OnUpdateLock) then self:OnUpdateLock(item) end
 end
@@ -100,6 +140,7 @@ end
 	@callback OnUpdateQuest(item)
 ]]
 local function ItemButton_UpdateQuest(self, item)
+    if not self.Quest then return end
 	local r,g,b,a = 1,1,1,1
 	local tL,tR,tT,tB = 0,1, 0,1
 	local blend = "BLEND"
@@ -109,14 +150,14 @@ local function ItemButton_UpdateQuest(self, item)
 		texture = TEXTURE_ITEM_QUEST_BANG
 	elseif(item.questID or item.isQuestItem) then
 		texture = TEXTURE_ITEM_QUEST_BORDER
-	elseif(item.rarity and item.rarity > 1 and self.glowTex) then
-		a, r,g,b = self.glowAlpha, GetItemQualityColor(item.rarity)
+	elseif(item.quality and item.quality > 1 and self.glowTex) then
+		a, r,g,b = self.glowAlpha, GetItemQualityColor(item.quality)
 		texture = self.glowTex
 		blend = self.glowBlend
 		tL,tR,tT,tB = unpack(self.glowCoords)
 	end
 
-	if(texture) then
+	if (texture) then
 		self.Quest:SetTexture(texture)
 		self.Quest:SetTexCoord(tL,tR,tT,tB)
 		self.Quest:SetBlendMode(blend)
