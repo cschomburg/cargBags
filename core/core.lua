@@ -89,7 +89,7 @@ end
 	-> name <string>
 	<- value <...> the extension, if any
 ]]
-	
+
 function Core:Has(type, name)
 	if(not name) then
 		name, type = type, "extension"
@@ -288,7 +288,7 @@ function Core:ReplaceBlizzard(bank)
 	local function toggleBag(forceopen)	self:Toggle(forceopen)	end
 	local function toggleNoForce()		self:Toggle()			end
 	local function openBag()			self:Open()				end
-	local function closeBag()			self:Close()			end	
+	local function closeBag()			self:Close()			end
 
 	-- Can we maybe live without hooking ToggleBag(id)?
 	ToggleAllBags = toggleNoForce
@@ -439,7 +439,7 @@ function Core:Item_Update(bagID, slotID, message)
 			end
 			return
 		end
-	
+
 		if(button) then
 			if(container ~= button.container) then
 				button.container:RemoveButton(button)
@@ -471,11 +471,12 @@ end
 	BagStrings & ParseBags
 ###########################]]
 
-Core:Register("bagString", "backpack",	{ 0 })
-Core:Register("bagString", "bags",		{ 1, 2, 3, 4 })
-Core:Register("bagString", "bankframe",	{ -1 })
-Core:Register("bagString", "bank",		{ 5, 6, 7, 8, 9, 10, 11 })
+Core:Register("bagString", "backpack",		{ 0 })
+Core:Register("bagString", "bags",			{ 1, 2, 3, 4 })
+Core:Register("bagString", "bankframe",	    { -1 })
+Core:Register("bagString", "bank",			{ 5, 6, 7, 8, 9, 10, 11 })
 Core:Register("bagString", "keyring",		{ -2 })
+Core:Register("bagString", "reagentbank", 	{ -3 })
 
 local function parseBags_Change(bags, op, bagID)
 	if(op == "-") then

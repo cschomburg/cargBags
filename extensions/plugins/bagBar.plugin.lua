@@ -168,6 +168,7 @@ function BagButton:OnDragStart()
 end
 
 local disabled = {
+	[-3] = true,
 	[-2] = true,
 	[-1] = true,
 	[0] = true,
