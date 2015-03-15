@@ -113,6 +113,7 @@ end
 function updater:BANKFRAME_OPENED(event)
 	hasSource["bank"] = true
 	self:BAG_UPDATE(event, -1)
+	self:BAG_UPDATE(event, -3)
 	for bagID=5, 11 do
 		self:BAG_UPDATE(event, bagID)
 	end
@@ -122,6 +123,7 @@ end
 function updater:BANKFRAME_CLOSED(event)
 	hasSource["bank"] = nil
 	self:BAG_UPDATE(event, -1)
+	self:BAG_UPDATE(event, -3)
 	for bagID=5, 11 do
 		self:BAG_UPDATE(event, bagID)
 	end
@@ -136,6 +138,10 @@ function updater:PLAYERBANKSLOTS_CHANGED(event, bagID)
     else
         self:BAG_UPDATE(event, bagID - NUM_BANKGENERIC_SLOTS)
     end
+end
+
+function updater:PLAYERREAGENTBANKSLOTS_CHANGED(event, slotID)
+	self:BAG_UPDATE(event, -3)
 end
 
 function updater:ITEM_LOCK_CHANGED(event, bagID, slotID)
@@ -184,6 +190,7 @@ function DefaultSource:Enable()
 	updater:RegisterEvent("BANKFRAME_OPENED")
 	updater:RegisterEvent("BANKFRAME_CLOSED")
 	updater:RegisterEvent("PLAYERBANKSLOTS_CHANGED")
+	updater:RegisterEvent("PLAYERREAGENTBANKSLOTS_CHANGED")
 
     updater:RegisterEvent("ITEM_LOCK_CHANGED")
     updater:RegisterEvent("INVENTORY_SEARCH_UPDATE")
